@@ -1,108 +1,90 @@
-/************************
- QUICKPRESS CART – FINAL FIX
- TOTAL BUG + MOBILE BADGE
-************************/
+/*************************
+ QUICKPRESS CART – STABLE
+*************************/
 
-// ADMIN CHARGES
 const DELIVERY_CHARGE = 20;
 const HANDLING_CHARGE = 3;
 
-// CART STATE
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// SAVE
-function saveCart(){
+function save(){
   localStorage.setItem("cart", JSON.stringify(cart));
-  updateBadge();
 }
 
-// ADD ITEM
+function itemsTotal(){
+  return cart.reduce((s,i)=>s+i.price*i.qty,0);
+}
+
+function grandTotal(){
+  if(cart.length===0) return 0;
+  return itemsTotal() + DELIVERY_CHARGE + HANDLING_CHARGE;
+}
+
+// ADD
 window.addItem = (name, price) => {
-  const item = cart.find(i => i.name === name);
-  if(item){
-    item.qty++;
-  }else{
-    cart.push({ name, price, qty: 1 });
+  const f = cart.find(i=>i.name===name);
+  f ? f.qty++ : cart.push({name,price,qty:1});
+  save();
+  renderAll();
+  if(window.innerWidth>=768){
+    document.getElementById("cartDrawer").classList.add("open");
   }
-  saveCart();
-  renderDrawer();
 };
 
-// QTY +
-window.increaseQty = (i) => {
-  cart[i].qty++;
-  saveCart();
-  renderDrawer();
-};
-
-// QTY -
-window.decreaseQty = (i) => {
+// QTY
+window.increaseQty = i => { cart[i].qty++; save(); renderAll(); };
+window.decreaseQty = i => {
   cart[i].qty--;
-  if(cart[i].qty <= 0) cart.splice(i,1);
-  saveCart();
-  renderDrawer();
+  if(cart[i].qty<=0) cart.splice(i,1);
+  save(); renderAll();
 };
 
-// TOTAL CALC (🔥 MAIN FIX)
-function getTotals(){
-  let itemsTotal = 0;
-  cart.forEach(i => {
-    itemsTotal += i.price * i.qty;
-  });
-  const delivery = cart.length ? DELIVERY_CHARGE : 0;
-  const handling = cart.length ? HANDLING_CHARGE : 0;
-  return {
-    itemsTotal,
-    grandTotal: itemsTotal + delivery + handling
-  };
-}
-
-// DRAWER RENDER (DESKTOP)
-window.renderDrawer = () => {
+// DESKTOP DRAWER
+function renderDrawer(){
   const box = document.getElementById("cartItems");
-  const totalBox = document.getElementById("grandTotal");
+  const total = document.getElementById("drawerTotal");
   if(!box) return;
 
-  box.innerHTML = "";
-  const t = getTotals();
-
-  cart.forEach((item,i)=>{
-    box.innerHTML += `
+  box.innerHTML="";
+  cart.forEach((i,idx)=>{
+    box.innerHTML+=`
       <div class="cart-item">
-        <div>
-          <b>${item.name}</b><br>
-          ₹${item.price}
-        </div>
+        <div><b>${i.name}</b><br>₹${i.price}</div>
         <div class="qty-box">
-          <button onclick="decreaseQty(${i})">−</button>
-          <span>${item.qty}</span>
-          <button onclick="increaseQty(${i})">+</button>
+          <button onclick="decreaseQty(${idx})">−</button>
+          <span>${i.qty}</span>
+          <button onclick="increaseQty(${idx})">+</button>
         </div>
       </div>
     `;
   });
 
-  if(totalBox){
-    totalBox.innerText = "₹" + t.grandTotal;
-  }
-};
+  if(total) total.innerText="₹"+grandTotal();
+}
 
-// 🔥 MOBILE BADGE UPDATE
-function updateBadge(){
-  const badge = document.getElementById("cartBadge");
-  if(!badge) return;
+// MOBILE BADGE
+function renderBadge(){
+  const b=document.getElementById("cartBadge");
+  if(!b) return;
 
-  const t = getTotals();
-  if(t.grandTotal > 0){
-    badge.style.display = "flex";
-    badge.innerText = "₹" + t.grandTotal;
+  if(window.innerWidth<768 && grandTotal()>0){
+    b.style.display="flex";
+    b.innerText="₹"+grandTotal();
   }else{
-    badge.style.display = "none";
+    b.style.display="none";
   }
 }
 
-// AUTO LOAD
-document.addEventListener("DOMContentLoaded", ()=>{
+// CART / CHECKOUT PAGE
+window.renderCartPage = ()=>{
+  const t=document.getElementById("cartGrandTotal");
+  if(t) t.innerText="₹"+grandTotal();
+};
+
+function renderAll(){
   renderDrawer();
-  updateBadge();
-});
+  renderBadge();
+  renderCartPage();
+}
+
+document.addEventListener("DOMContentLoaded",renderAll);
