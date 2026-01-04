@@ -5,12 +5,28 @@
 <link rel="stylesheet" href="css/style.css">
 <title>QuickPress</title>
 </head>
-<body onload="protect()">
-<h1>QuickPress</h1>
-<p>10 Minute Ironing</p>
-<button onclick="location.href='products.html'">Order Now</button>
-<button onclick="logout()">Logout</button>
+<body>
 
-<script type="module" src="js/auth.js"></script>
+<div class="header">QuickPress</div>
+
+<div class="hero">
+  <h1>10-Minute Ironing</h1>
+  <p>Pickup • Iron • Deliver</p>
+  <button class="cta" onclick="location.href='products.html'">
+    Order Now
+  </button>
+</div>
+
+<div class="card">
+  <b>Why QuickPress?</b>
+  <p>Fast service • Affordable • Doorstep delivery</p>
+</div>
+
+<div class="nav">
+  <a href="index.html">Home</a>
+  <a href="products.html">Order</a>
+  <a href="cart.html">Cart</a>
+</div>
+
 </body>
 </html>
