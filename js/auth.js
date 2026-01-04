@@ -1,16 +1,29 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } 
-from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { auth } from "./firebase.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-window.signup = function(){
-  const e = email.value, p = password.value;
-  createUserWithEmailAndPassword(auth, e, p)
+window.signup = () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  createUserWithEmailAndPassword(auth, email, password)
     .then(()=> location.href="index.html")
-    .catch(err=> alert(err.message));
-}
+    .catch(e=> alert(e.message));
+};
 
-window.login = function(){
-  const e = email.value, p = password.value;
-  signInWithEmailAndPassword(auth, e, p)
+window.login = () => {
+  const email = emailInput.value;
+  const password = passwordInput.value;
+  signInWithEmailAndPassword(auth, email, password)
     .then(()=> location.href="index.html")
-    .catch(err=> alert(err.message));
-}
+    .catch(e=> alert(e.message));
+};
+
+window.logout = () => signOut(auth).then(()=> location.href="login.html");
+
+window.protect = () => {
+  onAuthStateChanged(auth, u => { if(!u) location.href="login.html"; });
+};
