@@ -7,23 +7,15 @@
 </head>
 <body>
 
-<div class="header">Checkout</div>
+<h2 class="header">Checkout</h2>
 
 <div class="card">
   <textarea placeholder="Delivery Address"></textarea>
-
-  <div class="bill">
-    <div class="row"><span>Delivery</span><span>₹20</span></div>
-    <div class="row"><span>Handling</span><span>₹3</span></div>
-    <div class="row grand">
-      <span>Payable</span>
-      <span id="cartGrandTotal">₹0</span>
-    </div>
-  </div>
-
-  <button class="btn">Place Order</button>
+  <h3>Total: <span id="cartGrandTotal">₹0</span></h3>
+  <button>Place Order</button>
 </div>
 
 <script src="js/cart.js"></script>
+<script>renderCartPage()</script>
 </body>
 </html>
