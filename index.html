@@ -1,47 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress – Ironed in 10 Minutes</title>
-<link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QuickPress – Ironed in 10 Minutes</title>
+
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="css/style.css" />
 </head>
-<!-- BLINKIT STYLE NAVBAR -->
+
+<body>
+
+<!-- ================= NAVBAR ================= -->
 <div class="navbar">
   <div class="nav-left">
     <span class="logo">QuickPress</span>
     <div class="location">
-      <b>Delivery in 10 min</b><br>
+      <b>Delivery in 10 min</b><br />
       <small>Kasganj</small>
     </div>
   </div>
 
   <div class="nav-right">
-    <input class="nav-search" placeholder="Search clothes">
+    <input class="nav-search" placeholder="Search clothes" />
     <div class="nav-cart" onclick="location.href='cart.html'">
       🛒 <span id="navCartAmount">₹0</span>
     </div>
+
+    <!-- Profile / Login -->
+    <div class="nav-profile" onclick="handleProfileClick()">
+      👤 <span class="nav-profile-text">Login</span>
+    </div>
   </div>
 </div>
+<!-- =============== NAVBAR END =============== -->
 
-<body>
 
-<!-- TOP BAR -->
-<div class="topbar">QuickPress</div>
-
-<!-- SEARCH -->
+<!-- ================= SEARCH BAR ================= -->
 <div class="search">
-  <input placeholder="Search clothes (shirt, pant, saree)">
+  <input placeholder="Search clothes (shirt, pant, saree)" />
 </div>
 
-<!-- HERO SECTION -->
+
+<!-- ================= HERO SECTION ================= -->
 <div class="hero">
   <h1>Ironed in 10 Minutes</h1>
   <p>Pickup • Iron • Deliver</p>
   <button onclick="location.href='products.html'">Order Now</button>
 </div>
 
-<!-- OFFER CARDS -->
+
+<!-- ================= OFFER CARDS ================= -->
 <div class="offer-row">
   <div class="offer green">
     <h3>⚡ Express Ironing</h3>
@@ -59,19 +68,24 @@
   </div>
 </div>
 
-<!-- SINGLE CATEGORY SECTION (BLINKIT STYLE) -->
+
+<!-- ================= CATEGORIES ================= -->
 <h2 class="section-title">Shop by Category</h2>
 
 <div class="blinkit-categories">
-  <a href="products.html" class="bcat">👕<span>Shirt</span></a>
-  <a href="products.html" class="bcat">👖<span>Pant</span></a>
-  <a href="products.html" class="bcat">🥻<span>Saree</span></a>
-  <a href="products.html" class="bcat">🧥<span>Woollen</span></a>
-  <a href="products.html" class="bcat">👚<span>Ladies</span></a>
-  <a href="products.html" class="bcat">👔<span>Office</span></a>
-  <a href="products.html" class="bcat">👶<span>Kids</span></a>
-  <a href="products.html" class="bcat">🧺<span>All Items</span></a>
+  <a href="products.html" class="bcat">👕 <span>Shirt</span></a>
+  <a href="products.html" class="bcat">👖 <span>Pant</span></a>
+  <a href="products.html" class="bcat">🥻 <span>Saree</span></a>
+  <a href="products.html" class="bcat">🧥 <span>Woollen</span></a>
+  <a href="products.html" class="bcat">👚 <span>Ladies</span></a>
+  <a href="products.html" class="bcat">👔 <span>Office</span></a>
+  <a href="products.html" class="bcat">👶 <span>Kids</span></a>
+  <a href="products.html" class="bcat">🧺 <span>All Items</span></a>
 </div>
+
+
+<!-- ================= JS ================= -->
+<script src="js/cart.js"></script>
 
 </body>
 </html>
