@@ -245,3 +245,15 @@ a{text-decoration:none;color:inherit}
     grid-template-columns:repeat(4,1fr);
   }
 }
+/* ===== FIX: HIDE OLD CATEGORY SECTION ===== */
+/* Old simple category buttons hide */
+.categories{
+  display:none !important;
+}
+
+/* Agar koi aur old category wrapper ho */
+.category-list,
+.old-categories,
+.home-categories{
+  display:none !important;
+}
