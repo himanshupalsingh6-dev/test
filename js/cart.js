@@ -1,3 +1,6 @@
+// ===== ADMIN CONTROLLED CHARGES =====
+const DELIVERY_CHARGE = 20;   // admin panel se change hoga
+const HANDLING_CHARGE = 3;    // fixed ₹3
 /***************
  QUICKPRESS CART SYSTEM
  LIVE DRAWER + QTY + TOTAL
