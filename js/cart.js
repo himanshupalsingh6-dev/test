@@ -43,3 +43,15 @@ window.renderDrawer = () => {
 };
 
 document.addEventListener("DOMContentLoaded", renderDrawer);
+window.increaseQty = (index) => {
+  cart[index].qty++;
+  saveCart();
+};
+
+window.decreaseQty = (index) => {
+  cart[index].qty--;
+  if(cart[index].qty <= 0){
+    cart.splice(index, 1);
+  }
+  saveCart();
+};
