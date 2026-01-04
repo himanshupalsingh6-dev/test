@@ -156,3 +156,65 @@ body{
   border-radius:12px;
   font-weight:800;
 }
+/* ===== MOBILE FIRST PRODUCT GRID ===== */
+.product-grid{
+  display:grid;
+  grid-template-columns:repeat(2, minmax(0,1fr));
+  gap:12px;
+  padding:12px;
+}
+
+.p-card{
+  background:#fff;
+  border-radius:16px;
+  padding:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,.12);
+  text-align:center;
+}
+
+.p-img{
+  font-size:34px;
+  margin-bottom:4px;
+}
+
+.p-name{
+  font-size:15px;
+  font-weight:800;
+  line-height:1.2;
+}
+
+.p-price{
+  font-size:13px;
+  color:#555;
+  margin:4px 0 8px;
+}
+
+/* BIG THUMB FRIENDLY BUTTON */
+.p-card button{
+  width:100%;
+  background:#FFD400;
+  border:none;
+  padding:10px 0;
+  border-radius:12px;
+  font-size:15px;
+  font-weight:800;
+}
+
+/* SEARCH BAR MOBILE FIX */
+.search input{
+  font-size:15px;
+  padding:12px;
+}
+
+/* BOTTOM NAV SAFE AREA */
+.nav{
+  padding-bottom:env(safe-area-inset-bottom);
+}
+
+/* DESKTOP / TABLET IMPROVEMENT */
+@media (min-width:768px){
+  .product-grid{
+    grid-template-columns:repeat(4,1fr);
+    padding:16px;
+  }
+}
