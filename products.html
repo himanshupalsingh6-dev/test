@@ -63,5 +63,20 @@
 
 <script src="js/cart.js"></script>
 <script type="module" src="js/auth.js"></script>
+  <!-- LIVE CART DRAWER -->
+<div id="cartDrawer" class="cart-drawer">
+  <div class="cart-header">
+    <span>My Cart</span>
+    <button onclick="toggleCart()">✕</button>
+  </div>
+
+  <div id="cartItems" class="cart-items"></div>
+
+  <div class="cart-footer">
+    <div id="cartTotal">Total ₹0</div>
+    <button onclick="location.href='cart.html'">View Cart</button>
+  </div>
+</div>
+
 </body>
 </html>
