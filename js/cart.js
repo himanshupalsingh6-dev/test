@@ -74,3 +74,31 @@ function getQty(name){
 
 // INIT
 document.addEventListener("DOMContentLoaded", updateNav);
+// ===== FIX ₹0 ISSUE =====
+function renderCartPage(){
+  const itemsBox = document.getElementById("cartItems");
+  const totalBox = document.getElementById("cartTotal");
+
+  if(!itemsBox || !totalBox) return;
+
+  itemsBox.innerHTML = "";
+
+  if(cart.length === 0){
+    totalBox.innerText = "₹0";
+    return;
+  }
+
+  let sum = 0;
+  cart.forEach(item => {
+    sum += item.price * item.qty;
+    itemsBox.innerHTML += `
+      <div class="cart-item">
+        ${item.name} × ${item.qty}
+      </div>
+    `;
+  });
+
+  // SAME LOGIC JO NAVBAR USE KAR RAHA HAI
+  const grand = sum + DELIVERY_CHARGE + HANDLING_CHARGE;
+  totalBox.innerText = "₹" + grand;
+}
