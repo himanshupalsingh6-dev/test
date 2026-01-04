@@ -7,27 +7,14 @@
 </head>
 <body>
 
-<div class="header">Your Cart</div>
+<h2 class="header">Your Cart</h2>
 
 <div class="card">
-  <div id="cartList"></div>
-
-  <hr>
-
-  <div class="bill">
-    <div class="row"><span>Delivery</span><span>₹20</span></div>
-    <div class="row"><span>Handling</span><span>₹3</span></div>
-    <div class="row grand">
-      <span>Total</span>
-      <span id="cartGrandTotal">₹0</span>
-    </div>
-  </div>
-
-  <button class="btn" onclick="location.href='checkout.html'">
-    Proceed to Checkout
-  </button>
+  <div id="cartGrandTotal">₹0</div>
+  <button onclick="location.href='checkout.html'">Proceed to Checkout</button>
 </div>
 
 <script src="js/cart.js"></script>
+<script>renderCartPage()</script>
 </body>
 </html>
