@@ -1,11 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Clothes – QuickPress</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
 <body onload="protect()">
-<h2>Select Items</h2>
-<div>Shirt ₹10 <button onclick="addItem('Shirt',10)">Add</button></div>
-<div>Pant ₹15 <button onclick="addItem('Pant',15)">Add</button></div>
-<div>Saree ₹20 <button onclick="addItem('Saree',20)">Add</button></div>
-<button onclick="location.href='cart.html'">Cart</button>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="logo">QuickPress</div>
+  <div class="location">🧺 Ironing</div>
+</div>
+
+<!-- SEARCH -->
+<div class="search">
+  <input placeholder="Search clothes (shirt, pant, saree)">
+</div>
+
+<!-- SECTION -->
+<h2 class="section-title">Popular Items</h2>
+
+<!-- PRODUCT GRID -->
+<div class="product-grid">
+
+  <div class="p-card">
+    <div class="p-img">👕</div>
+    <div class="p-name">Shirt</div>
+    <div class="p-price">₹10 / piece</div>
+    <button onclick="addItem('Shirt',10)">ADD</button>
+  </div>
+
+  <div class="p-card">
+    <div class="p-img">👖</div>
+    <div class="p-name">Pant</div>
+    <div class="p-price">₹15 / piece</div>
+    <button onclick="addItem('Pant',15)">ADD</button>
+  </div>
+
+  <div class="p-card">
+    <div class="p-img">🥻</div>
+    <div class="p-name">Saree</div>
+    <div class="p-price">₹20 / piece</div>
+    <button onclick="addItem('Saree',20)">ADD</button>
+  </div>
+
+  <div class="p-card">
+    <div class="p-img">🧥</div>
+    <div class="p-name">Woollen</div>
+    <div class="p-price">₹25 / piece</div>
+    <button onclick="addItem('Woollen',25)">ADD</button>
+  </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="nav">
+  <a href="index.html">Home</a>
+  <a href="products.html">Order</a>
+  <a href="cart.html">Cart</a>
+</div>
 
 <script src="js/cart.js"></script>
 <script type="module" src="js/auth.js"></script>
