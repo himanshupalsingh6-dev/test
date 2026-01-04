@@ -1,20 +1,51 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css">
-<title>Cart</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Cart – QuickPress</title>
+
+  <!-- MAIN CSS -->
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
+<!-- PAGE TITLE -->
 <h2 class="header">Your Cart</h2>
 
+<!-- CART CONTAINER -->
 <div class="card">
-  <div id="cartGrandTotal">₹0</div>
-  <button onclick="location.href='checkout.html'">Proceed to Checkout</button>
+
+  <!-- CART ITEMS -->
+  <div id="cartItems">
+    <!-- JS se items yahan render honge -->
+  </div>
+
+  <hr />
+
+  <!-- TOTAL -->
+  <h3 style="display:flex;justify-content:space-between;">
+    <span>Total</span>
+    <span id="cartTotal">₹0</span>
+  </h3>
+
+  <!-- CHECKOUT BUTTON -->
+  <button onclick="location.href='checkout.html'">
+    Proceed to Checkout
+  </button>
+
 </div>
 
+<!-- CART JS -->
 <script src="js/cart.js"></script>
-<script>renderCartPage()</script>
+
+<!-- IMPORTANT: CART PAGE RENDER CALL -->
+<script>
+  if (typeof renderCartPage === "function") {
+    renderCartPage();
+  }
+</script>
+
 </body>
 </html>
