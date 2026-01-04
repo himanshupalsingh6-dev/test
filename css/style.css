@@ -1,2 +1,83 @@
-body{font-family:Arial;padding:20px}
-button{padding:10px 16px;margin:6px}
+:root{
+  --yellow:#FFD400;
+  --black:#111;
+  --bg:#FFF9E6;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg);
+  color:var(--black);
+}
+.header{
+  background:var(--yellow);
+  padding:16px;
+  text-align:center;
+  font-size:22px;
+  font-weight:700;
+}
+.hero{
+  padding:30px 16px;
+  text-align:center;
+}
+.hero button{
+  background:#111;
+  color:#fff;
+  border:none;
+  padding:14px 26px;
+  border-radius:14px;
+  font-size:18px;
+}
+.card{
+  background:#fff;
+  margin:14px;
+  padding:16px;
+  border-radius:16px;
+  box-shadow:0 6px 16px rgba(0,0,0,.15);
+}
+.product{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.product button{
+  background:var(--yellow);
+  border:none;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:700;
+}
+input,textarea{
+  width:100%;
+  padding:14px;
+  margin-top:10px;
+  border-radius:12px;
+  border:1px solid #ddd;
+}
+.btn{
+  width:100%;
+  background:var(--yellow);
+  border:none;
+  padding:16px;
+  margin-top:16px;
+  border-radius:16px;
+  font-size:18px;
+  font-weight:700;
+}
+.nav{
+  position:fixed;
+  bottom:0;
+  width:100%;
+  display:flex;
+  background:#fff;
+  border-top:1px solid #ddd;
+}
+.nav a{
+  flex:1;
+  text-align:center;
+  padding:12px;
+  text-decoration:none;
+  color:#333;
+  font-weight:600;
+}
