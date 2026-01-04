@@ -1,6 +1,6 @@
 /************************
- QUICKPRESS CART – FINAL
- MOBILE + DESKTOP WORKING
+ QUICKPRESS CART – FINAL FIX
+ TOTAL BUG + MOBILE BADGE
 ************************/
 
 // ADMIN CHARGES
@@ -13,9 +13,10 @@ let cart = JSON.parse(localStorage.getItem("cart")) || [];
 // SAVE
 function saveCart(){
   localStorage.setItem("cart", JSON.stringify(cart));
+  updateBadge();
 }
 
-// ADD ITEM (WORKS BOTH MOBILE + DESKTOP)
+// ADD ITEM
 window.addItem = (name, price) => {
   const item = cart.find(i => i.name === name);
   if(item){
@@ -25,13 +26,6 @@ window.addItem = (name, price) => {
   }
   saveCart();
   renderDrawer();
-  openCart();
-};
-
-// OPEN CART
-window.openCart = () => {
-  const d = document.getElementById("cartDrawer");
-  if(d) d.classList.add("open");
 };
 
 // QTY +
@@ -49,16 +43,30 @@ window.decreaseQty = (i) => {
   renderDrawer();
 };
 
-// RENDER DRAWER (LIVE CART)
+// TOTAL CALC (🔥 MAIN FIX)
+function getTotals(){
+  let itemsTotal = 0;
+  cart.forEach(i => {
+    itemsTotal += i.price * i.qty;
+  });
+  const delivery = cart.length ? DELIVERY_CHARGE : 0;
+  const handling = cart.length ? HANDLING_CHARGE : 0;
+  return {
+    itemsTotal,
+    grandTotal: itemsTotal + delivery + handling
+  };
+}
+
+// DRAWER RENDER (DESKTOP)
 window.renderDrawer = () => {
   const box = document.getElementById("cartItems");
+  const totalBox = document.getElementById("grandTotal");
   if(!box) return;
 
-  let itemsTotal = 0;
   box.innerHTML = "";
+  const t = getTotals();
 
   cart.forEach((item,i)=>{
-    itemsTotal += item.price * item.qty;
     box.innerHTML += `
       <div class="cart-item">
         <div>
@@ -74,38 +82,27 @@ window.renderDrawer = () => {
     `;
   });
 
-  const delivery = cart.length ? DELIVERY_CHARGE : 0;
-  const handling = cart.length ? HANDLING_CHARGE : 0;
-  const grand = itemsTotal + delivery + handling;
-
-  // SAFE CHECK (elements exist or not)
-  if(document.getElementById("itemsTotal")){
-    document.getElementById("itemsTotal").innerText = "₹"+itemsTotal;
-    document.getElementById("deliveryCharge").innerText = "₹"+delivery;
-    document.getElementById("handlingCharge").innerText = "₹"+handling;
-    document.getElementById("grandTotal").innerText = "₹"+grand;
+  if(totalBox){
+    totalBox.innerText = "₹" + t.grandTotal;
   }
 };
 
-// CART PAGE TOTAL (cart.html)
-window.renderCartPage = () => {
-  const list = document.getElementById("cartList");
-  const totalBox = document.getElementById("cartGrandTotal");
-  if(!list || !totalBox) return;
+// 🔥 MOBILE BADGE UPDATE
+function updateBadge(){
+  const badge = document.getElementById("cartBadge");
+  if(!badge) return;
 
-  let total = 0;
-  list.innerHTML = "";
-
-  cart.forEach(i=>{
-    total += i.price * i.qty;
-    list.innerHTML += `<div>${i.name} x ${i.qty} = ₹${i.price*i.qty}</div>`;
-  });
-
-  totalBox.innerText = "₹" + (total + DELIVERY_CHARGE + HANDLING_CHARGE);
-};
+  const t = getTotals();
+  if(t.grandTotal > 0){
+    badge.style.display = "flex";
+    badge.innerText = "₹" + t.grandTotal;
+  }else{
+    badge.style.display = "none";
+  }
+}
 
 // AUTO LOAD
 document.addEventListener("DOMContentLoaded", ()=>{
   renderDrawer();
-  renderCartPage();
+  updateBadge();
 });
