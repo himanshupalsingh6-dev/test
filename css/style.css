@@ -348,3 +348,27 @@ header,
     display:none; /* mobile me sirf icon */
   }
 }
+/* ===== INLINE QTY (PRODUCT CARD) ===== */
+.inline-qty{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:12px;
+  margin-top:8px;
+}
+
+.inline-qty button{
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:#FFD400;
+  font-size:18px;
+  font-weight:900;
+}
+
+.inline-qty span{
+  font-weight:900;
+  min-width:20px;
+  text-align:center;
+}
