@@ -313,3 +313,16 @@ a{text-decoration:none;color:inherit}
     display:none;
   }
 }
+/* ===== FIX: HIDE OLD / DUPLICATE NAVBAR ===== */
+
+/* Old top bar hide */
+.topbar{
+  display:none !important;
+}
+
+/* Agar koi extra header / navbar ho */
+header,
+.old-navbar,
+.navbar-old{
+  display:none !important;
+}
