@@ -1,10 +1,29 @@
 <!DOCTYPE html>
 <html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="css/style.css">
+<title>Checkout</title>
+</head>
 <body>
-<h2>Checkout (COD)</h2>
-<textarea id="addr" placeholder="Address"></textarea><br>
-<button onclick="placeOrder()">Place Order</button>
 
-<script type="module" src="js/order.js"></script>
+<div class="header">Checkout</div>
+
+<div class="card">
+  <textarea placeholder="Delivery Address"></textarea>
+
+  <div class="bill">
+    <div class="row"><span>Delivery</span><span>₹20</span></div>
+    <div class="row"><span>Handling</span><span>₹3</span></div>
+    <div class="row grand">
+      <span>Payable</span>
+      <span id="cartGrandTotal">₹0</span>
+    </div>
+  </div>
+
+  <button class="btn">Place Order</button>
+</div>
+
+<script src="js/cart.js"></script>
 </body>
 </html>
