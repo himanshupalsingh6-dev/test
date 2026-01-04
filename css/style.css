@@ -212,3 +212,36 @@ a{text-decoration:none;color:inherit}
   border-radius:14px;
 }
 .header{text-align:center}
+/* ===== BLINKIT STYLE HOME CATEGORIES ===== */
+
+.blinkit-categories{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+  padding:14px;
+}
+
+.bcat{
+  background:#fff;
+  border-radius:16px;
+  padding:16px 6px;
+  text-align:center;
+  font-size:14px;
+  font-weight:700;
+  box-shadow:0 6px 14px rgba(0,0,0,.12);
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+  align-items:center;
+}
+
+.bcat span{
+  font-size:13px;
+}
+
+/* MOBILE FEEL LIKE BLINKIT */
+@media(max-width:600px){
+  .blinkit-categories{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
