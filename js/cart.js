@@ -107,3 +107,9 @@ function renderAll(){
   updateNavCart();
 }
 updateNavCart();
+// PROFILE / LOGIN CLICK
+window.handleProfileClick = () => {
+  // abhi simple flow
+  // future me auth check yahin hoga
+  window.location.href = "login.html";
+};
