@@ -326,3 +326,25 @@ header,
 .navbar-old{
   display:none !important;
 }
+/* ===== NAVBAR PROFILE / LOGIN ===== */
+.nav-profile{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#fff;
+  border:1px solid #eee;
+  padding:8px 10px;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.nav-profile:hover{
+  background:#f7f7f7;
+}
+
+@media(max-width:600px){
+  .nav-profile-text{
+    display:none; /* mobile me sirf icon */
+  }
+}
