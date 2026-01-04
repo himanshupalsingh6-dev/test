@@ -88,3 +88,22 @@ function renderAll(){
 }
 
 document.addEventListener("DOMContentLoaded",renderAll);
+// NAVBAR CART AMOUNT UPDATE
+function updateNavCart(){
+  const el = document.getElementById("navCartAmount");
+  if(!el) return;
+
+  let total = 0;
+  cart.forEach(i => total += i.price * i.qty);
+  if(cart.length) total += DELIVERY_CHARGE + HANDLING_CHARGE;
+
+  el.innerText = "₹" + total;
+}
+
+// call with render
+const _oldRenderAll = typeof renderAll === "function" ? renderAll : null;
+function renderAll(){
+  if(_oldRenderAll) _oldRenderAll();
+  updateNavCart();
+}
+updateNavCart();
