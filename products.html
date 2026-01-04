@@ -1,29 +1,21 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Select Clothes – QuickPress</title>
+<title>Select Clothes - QuickPress</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body onload="protect()">
+<body>
 
-<!-- TOP BAR -->
-<div class="topbar">
-  <div class="logo">QuickPress</div>
-  <div class="location">🧺 Ironing</div>
-</div>
+<div class="topbar">QuickPress</div>
 
-<!-- SEARCH -->
 <div class="search">
   <input placeholder="Search clothes (shirt, pant, saree)">
 </div>
 
-<!-- SECTION -->
 <h2 class="section-title">Popular Items</h2>
 
-<!-- PRODUCT GRID -->
 <div class="product-grid">
-
   <div class="p-card">
     <div class="p-img">👕</div>
     <div class="p-name">Shirt</div>
@@ -44,43 +36,26 @@
     <div class="p-price">₹20 / piece</div>
     <button onclick="addItem('Saree',20)">ADD</button>
   </div>
-
-  <div class="p-card">
-    <div class="p-img">🧥</div>
-    <div class="p-name">Woollen</div>
-    <div class="p-price">₹25 / piece</div>
-    <button onclick="addItem('Woollen',25)">ADD</button>
-  </div>
-
 </div>
 
-<!-- BOTTOM NAV -->
-<div class="nav">
-  <a href="index.html">Home</a>
-  <a href="products.html">Order</a>
-  <a href="cart.html">Cart</a>
-</div>
-
-<script src="js/cart.js"></script>
-<script type="module" src="js/auth.js"></script>
-  <!-- LIVE CART DRAWER -->
+<!-- DESKTOP CART DRAWER -->
 <div id="cartDrawer" class="cart-drawer">
   <div class="cart-header">
-    <span>My Cart</span>
-    <button onclick="toggleCart()">✕</button>
+    My Cart
+    <button onclick="document.getElementById('cartDrawer').classList.remove('open')">✕</button>
   </div>
 
-  <div id="cartItems" class="cart-items"></div>
+  <div id="cartItems"></div>
 
   <div class="cart-footer">
-    <div id="cartTotal">Total ₹0</div>
-    <button onclick="location.href='cart.html'">View Cart</button>
+    <div class="total" id="drawerTotal">₹0</div>
+    <button onclick="location.href='cart.html'">Proceed to Checkout</button>
   </div>
 </div>
-<!-- MOBILE CART AMOUNT BADGE -->
-<div id="cartBadge" onclick="location.href='cart.html'">
-  ₹0
-</div>
 
+<!-- MOBILE AMOUNT BADGE -->
+<div id="cartBadge" onclick="location.href='cart.html'">₹0</div>
+
+<script src="js/cart.js"></script>
 </body>
 </html>
