@@ -1,40 +1,65 @@
+/***************
+ QUICKPRESS CART SYSTEM
+ LIVE DRAWER + QTY + TOTAL
+****************/
+
+// CART STATE
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-function saveCart(){
+// SAVE + RENDER
+function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
   renderDrawer();
 }
 
+// ADD ITEM (FROM PRODUCT PAGE)
 window.addItem = (name, price) => {
-  const i = cart.find(x => x.name === name);
-  i ? i.qty++ : cart.push({name, price, qty:1});
+  const item = cart.find(i => i.name === name);
+  if (item) {
+    item.qty += 1;
+  } else {
+    cart.push({ name, price, qty: 1 });
+  }
   saveCart();
   openCart();
 };
 
-window.toggleCart = () => {
-  document.getElementById("cartDrawer").classList.toggle("open");
-};
-
+// OPEN / CLOSE CART
 window.openCart = () => {
-  document.getElementById("cartDrawer").classList.add("open");
+  const drawer = document.getElementById("cartDrawer");
+  if (drawer) drawer.classList.add("open");
 };
 
+window.toggleCart = () => {
+  const drawer = document.getElementById("cartDrawer");
+  if (drawer) drawer.classList.toggle("open");
+};
+
+// RENDER CART DRAWER
 window.renderDrawer = () => {
-  const box = document.getElementById("cartItems");
+  const itemsBox = document.getElementById("cartItems");
   const totalBox = document.getElementById("cartTotal");
 
-  if(!box || !totalBox) return;
+  if (!itemsBox || !totalBox) return;
 
+  itemsBox.innerHTML = "";
   let total = 0;
-  box.innerHTML = "";
 
-  cart.forEach(i=>{
-    total += i.price * i.qty;
-    box.innerHTML += `
+  cart.forEach((item, index) => {
+    total += item.price * item.qty;
+
+    itemsBox.innerHTML += `
       <div class="cart-item">
-        <span>${i.name} x ${i.qty}</span>
-        <span>₹${i.price*i.qty}</span>
+        <div>
+          <b>${item.name}</b><br>
+          ₹${item.price}
+        </div>
+
+        <div class="qty-box">
+          <button onclick="decreaseQty(${index})">−</button>
+          <span>${item.qty}</span>
+          <button onclick="increaseQty(${index})">+</button>
+        </div>
       </div>
     `;
   });
@@ -42,16 +67,28 @@ window.renderDrawer = () => {
   totalBox.innerText = "Total ₹" + total;
 };
 
-document.addEventListener("DOMContentLoaded", renderDrawer);
+// INCREASE QTY
 window.increaseQty = (index) => {
-  cart[index].qty++;
+  cart[index].qty += 1;
   saveCart();
 };
 
+// DECREASE QTY / REMOVE
 window.decreaseQty = (index) => {
-  cart[index].qty--;
-  if(cart[index].qty <= 0){
+  cart[index].qty -= 1;
+  if (cart[index].qty <= 0) {
     cart.splice(index, 1);
   }
   saveCart();
 };
+
+// CLEAR CART (OPTIONAL)
+window.clearCart = () => {
+  cart = [];
+  saveCart();
+};
+
+// AUTO RENDER ON PAGE LOAD
+document.addEventListener("DOMContentLoaded", () => {
+  renderDrawer();
+});
