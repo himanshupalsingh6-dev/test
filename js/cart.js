@@ -113,3 +113,54 @@ window.handleProfileClick = () => {
   // future me auth check yahin hoga
   window.location.href = "login.html";
 };
+// ===== INLINE QTY LOGIC (PRODUCT CARD) =====
+
+// ADD FROM CARD
+window.addItem = (name, price, btn) => {
+  const item = cart.find(i => i.name === name);
+  item ? item.qty++ : cart.push({name, price, qty:1});
+  save();
+  renderAll();
+
+  // toggle UI
+  if(btn){
+    btn.style.display = "none";
+    const box = btn.nextElementSibling;
+    box.style.display = "flex";
+    box.querySelector("span").innerText = getItemQty(name);
+  }
+};
+
+// +
+window.incInline = (name, price, btn) => {
+  const item = cart.find(i => i.name === name);
+  if(item){
+    item.qty++;
+    save();
+    renderAll();
+    btn.parentElement.querySelector("span").innerText = item.qty;
+  }
+};
+
+// -
+window.decInline = (name, btn) => {
+  const item = cart.find(i => i.name === name);
+  if(!item) return;
+
+  item.qty--;
+  if(item.qty <= 0){
+    cart = cart.filter(i => i.name !== name);
+    btn.parentElement.style.display = "none";
+    btn.parentElement.previousElementSibling.style.display = "block";
+  }else{
+    btn.parentElement.querySelector("span").innerText = item.qty;
+  }
+  save();
+  renderAll();
+};
+
+// helper
+function getItemQty(name){
+  const i = cart.find(x => x.name === name);
+  return i ? i.qty : 0;
+}
