@@ -1,21 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="css/style.css">
-<title>Checkout</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout – QuickPress</title>
+
+  <link rel="stylesheet" href="css/style.css" />
 </head>
+
 <body>
 
 <h2 class="header">Checkout</h2>
 
 <div class="card">
-  <textarea placeholder="Delivery Address"></textarea>
-  <h3>Total: <span id="cartGrandTotal">₹0</span></h3>
-  <button>Place Order</button>
+
+  <!-- ADDRESS -->
+  <textarea placeholder="Enter delivery address" style="width:100%;padding:10px;"></textarea>
+
+  <hr>
+
+  <!-- BILL DETAILS -->
+  <h3 style="display:flex;justify-content:space-between;">
+    <span>Items Total</span>
+    <span id="itemsTotal">₹0</span>
+  </h3>
+
+  <h3 style="display:flex;justify-content:space-between;">
+    <span>Delivery Charge</span>
+    <span>₹20</span>
+  </h3>
+
+  <h3 style="display:flex;justify-content:space-between;">
+    <span>Handling Charge</span>
+    <span>₹3</span>
+  </h3>
+
+  <hr>
+
+  <h2 style="display:flex;justify-content:space-between;">
+    <span>Grand Total</span>
+    <span id="checkoutTotal">₹0</span>
+  </h2>
+
+  <button onclick="placeOrder()">
+    Place Order
+  </button>
+
 </div>
 
 <script src="js/cart.js"></script>
-<script>renderCartPage()</script>
+
+<script>
+/* ===== CHECKOUT TOTAL FIX ===== */
+
+function renderCheckout(){
+  const itemsEl = document.getElementById("itemsTotal");
+  const totalEl = document.getElementById("checkoutTotal");
+
+  if(!itemsEl || !totalEl) return;
+
+  // cart.js se cart read karo
+  let cartData = JSON.parse(localStorage.getItem("cart")) || [];
+
+  let itemsSum = 0;
+  cartData.forEach(i => {
+    itemsSum += i.price * i.qty;
+  });
+
+  itemsEl.innerText = "₹" + itemsSum;
+
+  if(cartData.length === 0){
+    totalEl.innerText = "₹0";
+  }else{
+    totalEl.innerText = "₹" + (itemsSum + 20 + 3);
+  }
+}
+
+function placeOrder(){
+  alert("Order placed successfully!");
+  // future: yahin Firebase save hoga
+}
+
+renderCheckout();
+</script>
+
 </body>
 </html>
