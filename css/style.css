@@ -257,3 +257,59 @@ a{text-decoration:none;color:inherit}
 .home-categories{
   display:none !important;
 }
+/* ===== BLINKIT STYLE NAVBAR ===== */
+.navbar{
+  position:sticky;
+  top:0;
+  z-index:1000;
+  background:#fff;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:10px 14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+
+.nav-left{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.logo{
+  font-size:20px;
+  font-weight:900;
+}
+
+.location small{
+  color:#555;
+}
+
+.nav-right{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.nav-search{
+  padding:8px 10px;
+  border-radius:10px;
+  border:1px solid #ddd;
+  font-size:14px;
+  width:160px;
+}
+
+.nav-cart{
+  background:#FFD400;
+  padding:8px 12px;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+}
+
+/* MOBILE */
+@media(max-width:600px){
+  .nav-search{
+    display:none;
+  }
+}
