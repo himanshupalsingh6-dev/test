@@ -1,21 +1,22 @@
-// ===== ADMIN CONTROLLED CHARGES =====
-const DELIVERY_CHARGE = 20;   // admin panel se change hoga
-const HANDLING_CHARGE = 3;    // fixed ₹3
-/***************
+/***********************
  QUICKPRESS CART SYSTEM
- LIVE DRAWER + QTY + TOTAL
-****************/
+ LIVE CART + BILLING
+***********************/
+
+// ADMIN CONTROLLED CHARGES
+const DELIVERY_CHARGE = 20;   // admin change karega
+const HANDLING_CHARGE = 3;    // fixed ₹3
 
 // CART STATE
 let cart = JSON.parse(localStorage.getItem("cart")) || [];
 
-// SAVE + RENDER
+// SAVE CART
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
   renderDrawer();
 }
 
-// ADD ITEM (FROM PRODUCT PAGE)
+// ADD ITEM
 window.addItem = (name, price) => {
   const item = cart.find(i => i.name === name);
   if (item) {
@@ -29,27 +30,40 @@ window.addItem = (name, price) => {
 
 // OPEN / CLOSE CART
 window.openCart = () => {
-  const drawer = document.getElementById("cartDrawer");
-  if (drawer) drawer.classList.add("open");
+  const d = document.getElementById("cartDrawer");
+  if (d) d.classList.add("open");
 };
 
 window.toggleCart = () => {
-  const drawer = document.getElementById("cartDrawer");
-  if (drawer) drawer.classList.toggle("open");
+  const d = document.getElementById("cartDrawer");
+  if (d) d.classList.toggle("open");
 };
 
-// RENDER CART DRAWER
+// QTY +
+window.increaseQty = (index) => {
+  cart[index].qty++;
+  saveCart();
+};
+
+// QTY -
+window.decreaseQty = (index) => {
+  cart[index].qty--;
+  if (cart[index].qty <= 0) {
+    cart.splice(index, 1);
+  }
+  saveCart();
+};
+
+// RENDER CART + BILL
 window.renderDrawer = () => {
   const itemsBox = document.getElementById("cartItems");
-  const totalBox = document.getElementById("cartTotal");
+  if (!itemsBox) return;
 
-  if (!itemsBox || !totalBox) return;
-
+  let itemsTotal = 0;
   itemsBox.innerHTML = "";
-  let total = 0;
 
   cart.forEach((item, index) => {
-    total += item.price * item.qty;
+    itemsTotal += item.price * item.qty;
 
     itemsBox.innerHTML += `
       <div class="cart-item">
@@ -67,31 +81,15 @@ window.renderDrawer = () => {
     `;
   });
 
-  totalBox.innerText = "Total ₹" + total;
+  const delivery = cart.length ? DELIVERY_CHARGE : 0;
+  const handling = cart.length ? HANDLING_CHARGE : 0;
+  const grand = itemsTotal + delivery + handling;
+
+  document.getElementById("itemsTotal").innerText = "₹" + itemsTotal;
+  document.getElementById("deliveryCharge").innerText = "₹" + delivery;
+  document.getElementById("handlingCharge").innerText = "₹" + handling;
+  document.getElementById("grandTotal").innerText = "₹" + grand;
 };
 
-// INCREASE QTY
-window.increaseQty = (index) => {
-  cart[index].qty += 1;
-  saveCart();
-};
-
-// DECREASE QTY / REMOVE
-window.decreaseQty = (index) => {
-  cart[index].qty -= 1;
-  if (cart[index].qty <= 0) {
-    cart.splice(index, 1);
-  }
-  saveCart();
-};
-
-// CLEAR CART (OPTIONAL)
-window.clearCart = () => {
-  cart = [];
-  saveCart();
-};
-
-// AUTO RENDER ON PAGE LOAD
-document.addEventListener("DOMContentLoaded", () => {
-  renderDrawer();
-});
+// AUTO LOAD
+document.addEventListener("DOMContentLoaded", renderDrawer);
