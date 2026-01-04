@@ -273,3 +273,26 @@ body{
   border-radius:14px;
   font-weight:800;
 }
+/* ===== CART QTY CONTROLS ===== */
+.qty-box{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.qty-box button{
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:#FFD400;
+  font-size:18px;
+  font-weight:800;
+  line-height:1;
+}
+
+.qty-box span{
+  min-width:20px;
+  text-align:center;
+  font-weight:700;
+}
