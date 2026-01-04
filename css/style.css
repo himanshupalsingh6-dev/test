@@ -296,3 +296,75 @@ body{
   text-align:center;
   font-weight:700;
 }
+/* ===== CART DRAWER (MOBILE + DESKTOP) ===== */
+.cart-drawer{
+  position:fixed;
+  bottom:0;
+  right:0;
+  width:100%;
+  height:70%;
+  background:#fff;
+  transform:translateY(100%);
+  transition:.3s ease;
+  z-index:9999;
+  display:flex;
+  flex-direction:column;
+  border-radius:18px 18px 0 0;
+  box-shadow:0 -6px 20px rgba(0,0,0,.25);
+}
+
+.cart-drawer.open{
+  transform:translateY(0);
+}
+
+@media (min-width:768px){
+  .cart-drawer{
+    top:0;
+    right:0;
+    width:380px;
+    height:100%;
+    transform:translateX(100%);
+    border-radius:0;
+  }
+  .cart-drawer.open{
+    transform:translateX(0);
+  }
+}
+
+/* CART ITEMS */
+.cart-item{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-size:14px;
+}
+
+/* QTY BUTTONS */
+.qty-box{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.qty-box button{
+  width:28px;
+  height:28px;
+  border:none;
+  border-radius:50%;
+  background:#FFD400;
+  font-size:18px;
+  font-weight:800;
+}
+
+/* BILLING */
+.bill{
+  font-size:14px;
+}
+.bill .row{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+.bill .grand{
+  font-size:16px;
+  font-weight:800;
+}
