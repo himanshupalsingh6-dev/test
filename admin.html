@@ -6,50 +6,50 @@
 <title>QuickPress Admin Panel</title>
 
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-.navbar{
-  background:#FFD400;
-  padding:14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:900;
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f4f4;
 }
-.nav-links a{margin:0 12px;cursor:pointer}
-.container{padding:16px}
-.section{display:none}
-.section.active{display:block}
-
+.header{
+  background:#FFD400;
+  padding:16px;
+  font-size:22px;
+  font-weight:900;
+  text-align:center;
+}
 .card{
   background:#fff;
+  margin:12px;
   padding:14px;
   border-radius:12px;
-  margin-bottom:10px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
-.row{
-  display:flex;
-  justify-content:space-between;
-  gap:10px;
-}
-input{padding:8px;width:100%;margin:6px 0}
 button{
-  padding:6px 12px;
+  padding:8px 14px;
   border:none;
   border-radius:8px;
   font-weight:800;
   cursor:pointer;
 }
-.add{background:#3498db;color:#fff}
-.approve{background:#2ecc71;color:#fff}
+.accept{background:#2ecc71;color:#fff}
 .reject{background:#e74c3c;color:#fff}
+.status{
+  font-weight:800;
+  margin-top:6px;
+}
 </style>
 
-<!-- 🔥 FIREBASE + REALTIME BELL -->
 <script type="module">
+/* ================= FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore, collection, getDocs, addDoc,
-  updateDoc, doc, onSnapshot
+  getFirestore,
+  collection,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -64,181 +64,105 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* 🔔 BELL SETUP */
+/* ================= 🔔 BELL SETUP (PERMANENT FIX) ================= */
+
+// bell audio
 const bell = new Audio("sounds/order.mp3");
+
+// remember sound permission
+let soundEnabled = localStorage.getItem("soundEnabled") === "yes";
+
+// enable sound on first user click
+document.body.addEventListener("click", () => {
+  soundEnabled = true;
+  localStorage.setItem("soundEnabled", "yes");
+});
+
+// avoid bell on initial load
 let firstLoad = true;
 
-/* 🔔 LIVE ORDER LISTENER */
-onSnapshot(collection(db,"orders"), (snapshot)=>{
-  if(firstLoad){
+/* ================= REAL-TIME LISTENER ================= */
+
+onSnapshot(collection(db, "orders"), (snapshot) => {
+
+  if (firstLoad) {
     firstLoad = false;
+    loadOrders();
     return;
   }
-  snapshot.docChanges().forEach(change=>{
-    if(change.type === "added"){
-      bell.play();
-      alert("🔔 New Order Received!");
+
+  snapshot.docChanges().forEach(change => {
+    if (change.type === "added") {
       loadOrders();
+
+      if (soundEnabled) {
+        bell.play();
+      }
+
+      alert("🔔 New Order Received");
     }
   });
 });
 
-/* ================= ORDERS ================= */
+/* ================= LOAD ORDERS ================= */
+
 async function loadOrders(){
-  ordersBox.innerHTML="";
-  const snap = await getDocs(collection(db,"orders"));
-  snap.forEach(d=>{
-    const o=d.data();
-    ordersBox.innerHTML+=`
+  const box = document.getElementById("orders");
+  box.innerHTML = "Loading orders...";
+
+  const snap = await getDocs(collection(db, "orders"));
+  box.innerHTML = "";
+
+  if (snap.empty) {
+    box.innerHTML = "<div class='card'>No orders yet</div>";
+    return;
+  }
+
+  snap.forEach(d => {
+    const o = d.data();
+
+    let itemsHtml = "";
+    if (o.items) {
+      o.items.forEach(i => {
+        itemsHtml += `${i.name} × ${i.qty}<br>`;
+      });
+    }
+
+    box.innerHTML += `
       <div class="card">
-        <b>Order ID:</b> ${d.id}<br>
+        <b>Order ID:</b> ${d.id}<br><br>
+
+        <b>Items:</b><br>
+        ${itemsHtml}<br>
+
         <b>Total:</b> ₹${o.grandTotal}<br>
-        <b>Status:</b> ${o.status}<br><br>
-        <button class="approve" onclick="setOrder('${d.id}','Accepted')">Accept</button>
-        <button class="reject" onclick="setOrder('${d.id}','Rejected')">Reject</button>
-        <button class="add" onclick="setOrder('${d.id}','Delivered')">Delivered</button>
-      </div>`;
+        <div class="status">Status: ${o.status}</div><br>
+
+        <button class="accept" onclick="setStatus('${d.id}','Accepted')">Accept</button>
+        <button class="reject" onclick="setStatus('${d.id}','Rejected')">Reject</button>
+      </div>
+    `;
   });
 }
-window.setOrder=async(id,status)=>{
-  await updateDoc(doc(db,"orders",id),{status});
+
+/* ================= UPDATE STATUS ================= */
+
+window.setStatus = async function(orderId, status){
+  await updateDoc(doc(db, "orders", orderId), { status });
   loadOrders();
 };
 
-/* ================= PARTNERS ================= */
-window.addPartner=async()=>{
-  if(!pname.value||!pphone.value){alert("Fill all");return;}
-  await addDoc(collection(db,"partners"),{
-    name:pname.value,
-    phone:pphone.value,
-    status:"pending"
-  });
-  pname.value="";pphone.value="";
-  loadPartners();
-};
+/* ================= INIT ================= */
 
-async function loadPartners(){
-  partnersBox.innerHTML="";
-  const snap=await getDocs(collection(db,"partners"));
-  snap.forEach(d=>{
-    const p=d.data();
-    partnersBox.innerHTML+=`
-      <div class="card row">
-        <div>
-          <b>${p.name}</b><br>${p.phone}<br>Status: ${p.status}
-        </div>
-        <div>
-          ${
-            p.status==="pending"?
-            `<button class="approve" onclick="setPartner('${d.id}','approved')">Approve</button>
-             <button class="reject" onclick="setPartner('${d.id}','rejected')">Reject</button>`
-            :""
-          }
-        </div>
-      </div>`;
-  });
-}
-window.setPartner=async(id,status)=>{
-  await updateDoc(doc(db,"partners",id),{status});
-  loadPartners();
-};
-
-/* ================= DELIVERY PARTNERS ================= */
-window.addDelivery=async()=>{
-  if(!dname.value||!dphone.value){alert("Fill all");return;}
-  await addDoc(collection(db,"delivery_boys"),{
-    name:dname.value,
-    phone:dphone.value,
-    status:"pending"
-  });
-  dname.value="";dphone.value="";
-  loadDelivery();
-};
-
-async function loadDelivery(){
-  deliveryBox.innerHTML="";
-  const snap=await getDocs(collection(db,"delivery_boys"));
-  snap.forEach(d=>{
-    const b=d.data();
-    deliveryBox.innerHTML+=`
-      <div class="card row">
-        <div>
-          <b>${b.name}</b><br>${b.phone}<br>Status: ${b.status}
-        </div>
-        <div>
-          ${
-            b.status==="pending"?
-            `<button class="approve" onclick="setDelivery('${d.id}','approved')">Approve</button>
-             <button class="reject" onclick="setDelivery('${d.id}','rejected')">Reject</button>`
-            :""
-          }
-        </div>
-      </div>`;
-  });
-}
-window.setDelivery=async(id,status)=>{
-  await updateDoc(doc(db,"delivery_boys",id),{status});
-  loadDelivery();
-};
-
-/* INIT */
-window.onload=()=>{
-  loadOrders();
-  loadPartners();
-  loadDelivery();
-};
+window.onload = loadOrders;
 </script>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-  <div>QuickPress Admin</div>
-  <div class="nav-links">
-    <a onclick="show('orders')">Orders</a>
-    <a onclick="show('partners')">Partners</a>
-    <a onclick="show('delivery')">Delivery Partners</a>
-  </div>
-</div>
+<div class="header">QuickPress – Admin Panel</div>
 
-<div class="container">
-
-<!-- ORDERS -->
-<div id="orders" class="section active">
-  <h2>Orders</h2>
-  <div id="ordersBox"></div>
-</div>
-
-<!-- PARTNERS -->
-<div id="partners" class="section">
-  <h2>Add Partner</h2>
-  <input id="pname" placeholder="Partner name">
-  <input id="pphone" placeholder="Partner phone">
-  <button class="add" onclick="addPartner()">Add Partner</button>
-  <hr>
-  <div id="partnersBox"></div>
-</div>
-
-<!-- DELIVERY -->
-<div id="delivery" class="section">
-  <h2>Add Delivery Partner</h2>
-  <input id="dname" placeholder="Name">
-  <input id="dphone" placeholder="Phone">
-  <button class="add" onclick="addDelivery()">Add Delivery Partner</button>
-  <hr>
-  <div id="deliveryBox"></div>
-</div>
-
-</div>
-
-<script>
-function show(id){
-  document.querySelectorAll(".section")
-    .forEach(s=>s.classList.remove("active"));
-  document.getElementById(id).classList.add("active");
-}
-</script>
+<div id="orders"></div>
 
 </body>
 </html>
