@@ -1,81 +1,64 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Select Clothes – QuickPress</title>
-<link rel="stylesheet" href="css/style.css">
+<title>Select Clothes - QuickPress</title>
+<script src="js/cart.js"></script>
+<style>
+body{font-family:Arial;background:#f4f4f4}
+.card{
+  background:#fff;
+  padding:16px;
+  margin:12px;
+  border-radius:12px;
+  display:inline-block;
+  width:200px;
+}
+button{
+  background:#FFD400;
+  border:none;
+  padding:10px;
+  width:100%;
+  font-weight:800;
+  border-radius:8px;
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  padding:10px;
+}
+</style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
-<div class="navbar">
-  <div class="nav-left">
-    <span class="logo">QuickPress</span>
-    <div class="location">
-      <b>Delivery in 10 min</b><br>
-      <small>Kasganj</small>
-    </div>
-  </div>
-  <div class="nav-right">
-    <div class="nav-cart" onclick="location.href='cart.html'">
-      🛒 <span id="navCartAmount">₹0</span>
-    </div>
-  </div>
+<div class="top">
+  <h2>QuickPress</h2>
+  <div id="navCartAmount">₹0</div>
 </div>
 
-<h2 class="section-title">Popular Items</h2>
+<h3>Popular Items</h3>
 
-<div class="product-grid">
-
-  <!-- SHIRT -->
-  <div class="p-card">
-    <div class="p-img">👕</div>
-    <div class="p-name">Shirt</div>
-    <div class="p-price">₹10 / piece</div>
-
-    <button class="add-btn" onclick="addItem('Shirt',10,this)">ADD</button>
-
-    <div class="inline-qty" style="display:none">
-      <button onclick="decFromCard('Shirt',this)">−</button>
-      <span>1</span>
-      <button onclick="incFromCard('Shirt',10,this)">+</button>
-    </div>
-  </div>
-
-  <!-- PANT -->
-  <div class="p-card">
-    <div class="p-img">👖</div>
-    <div class="p-name">Pant</div>
-    <div class="p-price">₹15 / piece</div>
-
-    <button class="add-btn" onclick="addFromCard('Pant',15,this)">ADD</button>
-
-    <div class="inline-qty" style="display:none">
-      <button onclick="decFromCard('Pant',this)">−</button>
-      <span>1</span>
-      <button onclick="incFromCard('Pant',15,this)">+</button>
-    </div>
-  </div>
-
-  <!-- SAREE -->
-  <div class="p-card">
-    <div class="p-img">🥻</div>
-    <div class="p-name">Saree</div>
-    <div class="p-price">₹20 / piece</div>
-
-    <button class="add-btn" onclick="addFromCard('Saree',20,this)">ADD</button>
-
-    <div class="inline-qty" style="display:none">
-      <button onclick="decFromCard('Saree',this)">−</button>
-      <span>1</span>
-      <button onclick="incFromCard('Saree',20,this)">+</button>
-    </div>
-  </div>
-
+<div class="card">
+  <h4>Shirt</h4>
+  <p>₹10 / piece</p>
+  <button onclick="addItem('Shirt',10)">ADD</button>
 </div>
 
-<script src="js/cart.js"></script>
+<div class="card">
+  <h4>Pant</h4>
+  <p>₹15 / piece</p>
+  <button onclick="addItem('Pant',15)">ADD</button>
+</div>
+
+<div class="card">
+  <h4>Saree</h4>
+  <p>₹20 / piece</p>
+  <button onclick="addItem('Saree',20)">ADD</button>
+</div>
+
+<br><br>
+<button onclick="location.href='cart.html'">Go to Cart</button>
+
 </body>
 </html>
