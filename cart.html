@@ -1,47 +1,163 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Your Cart</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your Cart – QuickPress</title>
+
+<!-- CART LOGIC -->
 <script src="js/cart.js"></script>
+
 <style>
-body{font-family:Arial}
-.row{display:flex;justify-content:space-between;margin:8px}
-button{padding:10px;background:#27ae60;color:#fff;border:none;width:100%}
+:root{--y:#FFD400}
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f6f6f6;
+}
+
+/* HEADER */
+.header{
+  background:#fff;
+  padding:14px;
+  font-size:20px;
+  font-weight:900;
+  text-align:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+}
+
+/* CARD */
+.card{
+  background:#fff;
+  margin:12px;
+  padding:14px;
+  border-radius:14px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
+}
+
+/* ITEM ROW */
+.item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:10px 0;
+}
+.qty{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.qty button{
+  width:26px;
+  height:26px;
+  border:none;
+  border-radius:50%;
+  font-weight:900;
+  background:var(--y);
+}
+
+/* TOTAL */
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin:6px 0;
+}
+.total{
+  font-size:18px;
+  font-weight:900;
+}
+
+/* FOOTER */
+.footer{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  padding:12px;
+  box-shadow:0 -4px 12px rgba(0,0,0,.1);
+}
+.footer button{
+  width:100%;
+  padding:14px;
+  background:#27ae60;
+  color:#fff;
+  border:none;
+  border-radius:16px;
+  font-weight:900;
+  font-size:16px;
+}
+.empty{
+  text-align:center;
+  opacity:.6;
+}
 </style>
 </head>
 
 <body>
 
-<h2>Your Cart</h2>
+<div class="header">Your Cart</div>
 
-<div id="cartItems"></div>
+<!-- CART ITEMS -->
+<div class="card" id="cartItems"></div>
 
-<div class="row">Items Total <span id="itemsTotal">₹0</span></div>
-<div class="row">Delivery <span>₹20</span></div>
-<div class="row">Handling <span>₹3</span></div>
-<hr>
-<div class="row"><b>Grand Total</b> <b id="grand">₹0</b></div>
+<!-- BILL -->
+<div class="card">
+  <div class="row">Items Total <span id="itemsTotal">₹0</span></div>
+  <div class="row">Delivery Charge <span>₹20</span></div>
+  <div class="row">Handling Charge <span>₹3</span></div>
+  <hr>
+  <div class="row total">Grand Total <span id="grandTotal">₹0</span></div>
+</div>
 
-<br>
-<button onclick="location.href='checkout.html'">Proceed to Checkout</button>
+<!-- FOOTER -->
+<div class="footer">
+  <button onclick="location.href='checkout.html'">
+    Proceed to Checkout
+  </button>
+</div>
 
 <script>
-function render(){
-  let box=document.getElementById("cartItems");
-  let cart=getCart();
-  box.innerHTML="";
-  let total=0;
+function renderCart(){
+  const box = document.getElementById("cartItems");
+  const cart = getCart();
+  box.innerHTML = "";
+
+  if(cart.length === 0){
+    box.innerHTML = `<div class="empty">Your cart is empty</div>`;
+    document.getElementById("itemsTotal").innerText = "₹0";
+    document.getElementById("grandTotal").innerText = "₹0";
+    return;
+  }
+
+  let total = 0;
 
   cart.forEach(i=>{
-    let p=i.price*i.qty;
-    total+=p;
-    box.innerHTML+=`<div class="row">${i.name} × ${i.qty}<span>₹${p}</span></div>`;
+    const price = i.price * i.qty;
+    total += price;
+
+    box.innerHTML += `
+      <div class="item">
+        <div>
+          <b>${i.name}</b><br>
+          ₹${i.price} × ${i.qty}
+        </div>
+        <div class="qty">
+          <button onclick="removeItem('${i.name}');renderCart()">−</button>
+          <b>${i.qty}</b>
+          <button onclick="addItem('${i.name}',${i.price});renderCart()">+</button>
+        </div>
+        <div>₹${price}</div>
+      </div>
+    `;
   });
 
-  document.getElementById("itemsTotal").innerText="₹"+total;
-  document.getElementById("grand").innerText="₹"+(total===0?0:total+20+3);
+  document.getElementById("itemsTotal").innerText = "₹" + total;
+  document.getElementById("grandTotal").innerText =
+    "₹" + (total === 0 ? 0 : total + 20 + 3);
 }
-render();
+
+renderCart();
 </script>
 
 </body>
