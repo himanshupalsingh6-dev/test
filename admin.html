@@ -11,23 +11,15 @@
 <style>
 body{margin:0;font-family:Arial;background:#f4f4f4}
 .navbar{
-  display:flex;
-  gap:16px;
-  padding:12px;
-  background:#FFD400;
-  font-weight:900;
-  overflow-x:auto;
+  display:flex;gap:16px;padding:12px;background:#FFD400;
+  font-weight:900;overflow-x:auto
 }
 .navbar span{cursor:pointer;white-space:nowrap}
 .section{display:none;padding:12px}
 .section.active{display:block}
-
 .card{
-  background:#fff;
-  margin-bottom:12px;
-  padding:14px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  background:#fff;margin-bottom:12px;padding:14px;border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1)
 }
 button{
   padding:8px 14px;border:none;border-radius:8px;
@@ -94,8 +86,8 @@ async function loadOrders(){
       <div class="card">
         <b>Order ID:</b> ${d.id}<br>
         ${items}
-        <b>Total:</b> ₹${o.grandTotal}<br>
-        <b>Status:</b> ${o.status}<br><br>
+        <b>Total:</b> ₹${o.grandTotal || 0}<br>
+        <b>Status:</b> ${o.status || "Placed"}<br><br>
         <button class="accept" onclick="setStatus('${d.id}','Accepted')">Accept</button>
         <button class="reject" onclick="setStatus('${d.id}','Rejected')">Reject</button>
       </div>`;
@@ -111,37 +103,65 @@ function initCharts(){
     type:"pie",
     data:{
       labels:["Placed","Accepted","Rejected","Delivered"],
-      datasets:[{data:[0,0,0,0],
-        backgroundColor:["#3498db","#2ecc71","#e74c3c","#9b59b6"]}]
+      datasets:[{
+        data:[0,0,0,0],
+        backgroundColor:["#3498db","#2ecc71","#e74c3c","#9b59b6"]
+      }]
     }
   });
 
   revenueChart=new Chart(revenueCanvas,{
     type:"line",
-    data:{labels:[],datasets:[{
-      label:"Revenue",
-      data:[],borderColor:"#27ae60",fill:false
-    }]}
+    data:{
+      labels:[],
+      datasets:[{
+        label:"Revenue",
+        data:[],
+        borderColor:"#27ae60",
+        fill:false,
+        tension:.3
+      }]
+    },
+    options:{
+      scales:{y:{beginAtZero:true}}
+    }
   });
 }
 
+/* ===== FIXED DASHBOARD LOGIC ===== */
 async function loadDashboard(){
   const snap=await getDocs(collection(db,"orders"));
+
   let totalOrders=0,todayOrders=0,totalRevenue=0;
   let statusCount={Placed:0,Accepted:0,Rejected:0,Delivered:0};
   let revenueByDay={};
-  const today=new Date().toDateString();
+
+  const todayStr=new Date().toISOString().slice(0,10);
 
   snap.forEach(d=>{
     const o=d.data();
     totalOrders++;
-    totalRevenue+=o.grandTotal||0;
-    if(o.status && statusCount[o.status]!=null) statusCount[o.status]++;
-    if(o.createdAt){
-      const day=new Date(o.createdAt.seconds*1000).toDateString();
-      if(day===today) todayOrders++;
-      revenueByDay[day]=(revenueByDay[day]||0)+(o.grandTotal||0);
+
+    const amount=Number(o.grandTotal)||0;
+    totalRevenue+=amount;
+
+    if(o.status && statusCount[o.status]!=null){
+      statusCount[o.status]++;
     }
+
+    let dateKey=todayStr;
+    if(o.createdAt){
+      try{
+        if(o.createdAt.seconds){
+          dateKey=new Date(o.createdAt.seconds*1000).toISOString().slice(0,10);
+        }else if(typeof o.createdAt==="string"){
+          dateKey=o.createdAt.slice(0,10);
+        }
+      }catch(e){}
+    }
+
+    if(dateKey===todayStr) todayOrders++;
+    revenueByDay[dateKey]=(revenueByDay[dateKey]||0)+amount;
   });
 
   totalOrdersEl.innerText=totalOrders;
@@ -149,12 +169,14 @@ async function loadDashboard(){
   totalRevenueEl.innerText=totalRevenue;
 
   statusChart.data.datasets[0].data=[
-    statusCount.Placed,statusCount.Accepted,
-    statusCount.Rejected,statusCount.Delivered
+    statusCount.Placed,
+    statusCount.Accepted,
+    statusCount.Rejected,
+    statusCount.Delivered
   ];
   statusChart.update();
 
-  const days=Object.keys(revenueByDay).slice(-7);
+  const days=Object.keys(revenueByDay).sort().slice(-7);
   revenueChart.data.labels=days;
   revenueChart.data.datasets[0].data=days.map(d=>revenueByDay[d]);
   revenueChart.update();
