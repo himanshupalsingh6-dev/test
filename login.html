@@ -1,13 +1,86 @@
 <!DOCTYPE html>
 <html>
-<body>
-<h2>Login / Signup</h2>
-<input id="emailInput" placeholder="Email"><br>
-<input id="passwordInput" type="password" placeholder="Password"><br>
-<button onclick="login()">Login</button>
-<button onclick="signup()">Signup</button>
+<head>
+<title>Partner Login – QuickPress</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script type="module" src="js/firebase.js"></script>
-<script type="module" src="js/auth.js"></script>
+<style>
+body{font-family:Arial;background:#f4f4f4}
+.box{
+  max-width:350px;
+  margin:80px auto;
+  background:#fff;
+  padding:20px;
+  border-radius:12px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+}
+button{
+  background:#FFD400;
+  border:none;
+  font-weight:900;
+}
+</style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from
+"https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import {
+  getFirestore, collection, query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.login = async function(){
+  const email = emailInp.value;
+  const pass = passInp.value;
+
+  try{
+    await signInWithEmailAndPassword(auth,email,pass);
+
+    // check partner approval
+    const q = query(
+      collection(db,"partners"),
+      where("email","==",email),
+      where("approved","==",true)
+    );
+    const snap = await getDocs(q);
+
+    if(snap.empty){
+      alert("Not approved yet");
+      return;
+    }
+
+    localStorage.setItem("partnerEmail",email);
+    location.href="partner.html";
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+</script>
+</head>
+
+<body>
+
+<div class="box">
+  <h2>Partner Login</h2>
+  <input id="emailInp" placeholder="Email">
+  <input id="passInp" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
 </body>
 </html>
