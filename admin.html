@@ -3,103 +3,99 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress Admin Panel</title>
+<title>QuickPress Admin</title>
 
 <style>
-body{font-family:Arial;background:#f5f5f5;margin:0}
-.header{background:#FFD400;padding:14px;font-size:22px;font-weight:900;text-align:center}
-.box{background:#fff;margin:12px;padding:12px;border-radius:12px}
-.order{background:#fff;margin:12px;padding:12px;border-radius:12px}
-select,input{padding:6px;margin-top:6px}
-button{padding:8px 14px;background:#FFD400;border:none;border-radius:8px;font-weight:800}
+body{margin:0;font-family:Arial;background:#f4f4f4}
+.navbar{
+  background:#FFD400;
+  padding:14px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:900;
+}
+.nav-links a{
+  margin:0 10px;
+  cursor:pointer;
+}
+.container{padding:16px}
+
+/* cards */
+.cards{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+  gap:16px;
+}
+.card{
+  background:#fff;
+  padding:16px;
+  border-radius:14px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+.card h2{margin:0}
 </style>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getFirestore, collection, getDocs, query, orderBy,
-  doc, updateDoc, getDoc, setDoc
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web",
-  storageBucket: "quickpress-web.firebasestorage.app",
-  messagingSenderId: "909067547966",
-  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-/* ===== CHARGES ===== */
-async function loadCharges(){
-  const ref = doc(db,"settings","charges");
-  const snap = await getDoc(ref);
-  if(snap.exists()){
-    delivery.value = snap.data().delivery;
-    handling.value = snap.data().handling;
-  }
-}
-
-async function saveCharges(){
-  await setDoc(doc(db,"settings","charges"),{
-    delivery: Number(delivery.value),
-    handling: Number(handling.value)
-  });
-  alert("Charges updated");
-}
-
-/* ===== ORDERS ===== */
-async function loadOrders(){
-  const box = document.getElementById("orders");
-  box.innerHTML = "Loading...";
-  const q = query(collection(db,"orders"),orderBy("createdAt","desc"));
-  const snap = await getDocs(q);
-  box.innerHTML = "";
-
-  snap.forEach(d=>{
-    const o = d.data();
-    let items="";
-    o.items.forEach(i=>items+=`${i.name} × ${i.qty}<br>`);
-    box.innerHTML+=`
-      <div class="order">
-        <b>Order:</b> ${d.id}<br>
-        ${items}
-        <b>Total:</b> ₹${o.grandTotal}<br>
-        <select onchange="updateStatus('${d.id}',this.value)">
-          ${["Placed","Picked","Ironed","Delivered"].map(s=>
-            `<option ${o.status===s?"selected":""}>${s}</option>`).join("")}
-        </select>
-      </div>`;
-  });
-}
-
-window.updateStatus = async (id,val)=>{
-  await updateDoc(doc(db,"orders",id),{status:val});
-  alert("Status updated");
-};
-
-window.onload = ()=>{
-  loadCharges();
-  loadOrders();
-};
-</script>
 </head>
 
 <body>
 
-<div class="header">QuickPress Admin Panel</div>
-
-<div class="box">
-  <h3>Delivery Charges</h3>
-  Delivery: ₹ <input id="delivery" type="number"><br>
-  Handling: ₹ <input id="handling" type="number"><br><br>
-  <button onclick="saveCharges()">Save Charges</button>
+<!-- NAVBAR -->
+<div class="navbar">
+  <div>QuickPress Admin</div>
+  <div class="nav-links">
+    <a onclick="show('dashboard')">Dashboard</a>
+    <a onclick="show('orders')">Orders</a>
+    <a onclick="show('delivery')">Delivery Boys</a>
+    <a onclick="show('partners')">Partners</a>
+    <a onclick="show('products')">Products</a>
+    <a onclick="show('wallet')">Wallet</a>
+  </div>
 </div>
 
-<div id="orders"></div>
+<div class="container">
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <h2>Dashboard</h2>
+  <div class="cards">
+    <div class="card">
+      <h2 id="totalOrders">0</h2>
+      <p>Total Orders</p>
+    </div>
+    <div class="card">
+      <h2 id="acceptedOrders">0</h2>
+      <p>Accepted</p>
+    </div>
+    <div class="card">
+      <h2 id="rejectedOrders">0</h2>
+      <p>Rejected</p>
+    </div>
+    <div class="card">
+      <h2 id="deliveredOrders">0</h2>
+      <p>Delivered</p>
+    </div>
+  </div>
+
+  <br>
+  <canvas id="orderChart"></canvas>
+</div>
+
+<!-- PLACEHOLDERS -->
+<div id="orders" style="display:none"><h2>Orders</h2></div>
+<div id="delivery" style="display:none"><h2>Delivery Boys</h2></div>
+<div id="partners" style="display:none"><h2>Partners</h2></div>
+<div id="products" style="display:none"><h2>Products</h2></div>
+<div id="wallet" style="display:none"><h2>Wallet</h2></div>
+
+</div>
+
+<script>
+function show(id){
+  document.querySelectorAll('.container > div')
+    .forEach(d=>d.style.display='none');
+  document.getElementById(id).style.display='block';
+}
+</script>
 
 </body>
 </html>
