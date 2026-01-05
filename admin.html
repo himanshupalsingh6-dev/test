@@ -1,168 +1,44 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress Admin Panel</title>
-
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f4f4;
-}
-.header{
-  background:#FFD400;
-  padding:16px;
-  font-size:22px;
-  font-weight:900;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:12px;
-  padding:14px;
-  border-radius:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
-}
-button{
-  padding:8px 14px;
-  border:none;
-  border-radius:8px;
-  font-weight:800;
-  cursor:pointer;
-}
-.accept{background:#2ecc71;color:#fff}
-.reject{background:#e74c3c;color:#fff}
-.status{
-  font-weight:800;
-  margin-top:6px;
-}
-</style>
+<title>Admin Debug</title>
 
 <script type="module">
-/* ================= FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  onSnapshot,
-  updateDoc,
-  doc
+  getFirestore, collection, getDocs, onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web",
-  storageBucket: "quickpress-web.firebasestorage.app",
-  messagingSenderId: "909067547966",
-  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+  projectId: "quickpress-web"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ================= 🔔 BELL SETUP (PERMANENT FIX) ================= */
-
-// bell audio
-const bell = new Audio("sounds/order.mp3");
-
-// remember sound permission
-let soundEnabled = localStorage.getItem("soundEnabled") === "yes";
-
-// enable sound on first user click
-document.body.addEventListener("click", () => {
-  soundEnabled = true;
-  localStorage.setItem("soundEnabled", "yes");
-});
-
-// avoid bell on initial load
-let firstLoad = true;
-
-/* ================= REAL-TIME LISTENER ================= */
-
-onSnapshot(collection(db, "orders"), (snapshot) => {
-
-  if (firstLoad) {
-    firstLoad = false;
-    loadOrders();
-    return;
-  }
-
-  snapshot.docChanges().forEach(change => {
-    if (change.type === "added") {
-      loadOrders();
-
-      if (soundEnabled) {
-        bell.play();
-      }
-
-      alert("🔔 New Order Received");
-    }
-  });
-});
-
-/* ================= LOAD ORDERS ================= */
+console.log("Admin connected to Firebase");
 
 async function loadOrders(){
-  const box = document.getElementById("orders");
-  box.innerHTML = "Loading orders...";
+  const snap = await getDocs(collection(db,"orders"));
+  console.log("Orders count:", snap.size);
 
-  const snap = await getDocs(collection(db, "orders"));
-  box.innerHTML = "";
-
-  if (snap.empty) {
-    box.innerHTML = "<div class='card'>No orders yet</div>";
-    return;
-  }
-
-  snap.forEach(d => {
-    const o = d.data();
-
-    let itemsHtml = "";
-    if (o.items) {
-      o.items.forEach(i => {
-        itemsHtml += `${i.name} × ${i.qty}<br>`;
-      });
-    }
-
-    box.innerHTML += `
-      <div class="card">
-        <b>Order ID:</b> ${d.id}<br><br>
-
-        <b>Items:</b><br>
-        ${itemsHtml}<br>
-
-        <b>Total:</b> ₹${o.grandTotal}<br>
-        <div class="status">Status: ${o.status}</div><br>
-
-        <button class="accept" onclick="setStatus('${d.id}','Accepted')">Accept</button>
-        <button class="reject" onclick="setStatus('${d.id}','Rejected')">Reject</button>
-      </div>
-    `;
+  snap.forEach(d=>{
+    console.log("Order:", d.id, d.data());
   });
 }
 
-/* ================= UPDATE STATUS ================= */
+onSnapshot(collection(db,"orders"), snap=>{
+  console.log("Realtime snapshot:", snap.size);
+});
 
-window.setStatus = async function(orderId, status){
-  await updateDoc(doc(db, "orders", orderId), { status });
-  loadOrders();
-};
-
-/* ================= INIT ================= */
-
-window.onload = loadOrders;
+loadOrders();
 </script>
 </head>
 
 <body>
-
-<div class="header">QuickPress – Admin Panel</div>
-
-<div id="orders"></div>
-
+<h2>Open Console (Inspect)</h2>
 </body>
 </html>
