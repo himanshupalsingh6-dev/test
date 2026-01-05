@@ -15,61 +15,34 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   align-items:center;
   font-weight:900;
 }
-.nav-links a{
-  margin:0 10px;
-  cursor:pointer;
-}
+.nav-links a{margin:0 10px;cursor:pointer}
 .container{padding:16px}
 .section{display:none}
 .section.active{display:block}
 
-/* dashboard cards */
-.cards{
-  display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
-  gap:16px;
-}
+/* common */
 .card{
   background:#fff;
-  padding:16px;
-  border-radius:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
-  text-align:center;
+  padding:14px;
+  border-radius:12px;
+  margin-bottom:10px;
 }
-.card h2{margin:0}
-
-/* delivery */
-.form{
-  background:#fff;
-  padding:16px;
-  border-radius:14px;
-  margin-bottom:16px;
-}
-input{
-  width:100%;
-  padding:10px;
-  margin:6px 0;
-  border-radius:8px;
-  border:1px solid #ccc;
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
 button{
-  padding:8px 14px;
+  padding:6px 12px;
   border:none;
   border-radius:8px;
   font-weight:800;
   cursor:pointer;
 }
-.add{background:#27ae60;color:#fff}
 .approve{background:#2ecc71;color:#fff}
 .reject{background:#e74c3c;color:#fff}
-.row{
-  background:#fff;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:8px;
-  display:flex;
-  justify-content:space-between;
-}
+.save{background:#3498db;color:#fff}
+input{padding:8px;width:100%;margin:6px 0}
 </style>
 
 <!-- 🔥 FIREBASE -->
@@ -92,61 +65,83 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ===== DASHBOARD ===== */
-async function loadDashboard(){
-  const snap = await getDocs(collection(db,"delivery_boys"));
-  let total=0, approved=0, pending=0, rejected=0;
+/* ================= ORDERS ================= */
+async function loadOrders(){
+  ordersBox.innerHTML="";
+  const snap = await getDocs(collection(db,"orders"));
   snap.forEach(d=>{
-    total++;
-    const s=d.data().status;
-    if(s==="approved") approved++;
-    if(s==="pending") pending++;
-    if(s==="rejected") rejected++;
+    const o=d.data();
+    ordersBox.innerHTML+=`
+      <div class="card">
+        <b>Order:</b> ${d.id}<br>
+        Total: ₹${o.grandTotal}<br>
+        Status: <b>${o.status}</b><br><br>
+        <button class="approve" onclick="setOrder('${d.id}','Accepted')">Accept</button>
+        <button class="reject" onclick="setOrder('${d.id}','Rejected')">Reject</button>
+        <button class="save" onclick="setOrder('${d.id}','Delivered')">Delivered</button>
+      </div>`;
   });
-  totalEl.innerText=total;
-  approvedEl.innerText=approved;
-  pendingEl.innerText=pending;
-  rejectedEl.innerText=rejected;
 }
-
-/* ===== DELIVERY BOYS ===== */
-window.addDeliveryBoy = async function(){
-  const name=nameInput.value.trim();
-  const phone=phoneInput.value.trim();
-  if(!name||!phone){alert("Fill all fields");return;}
-
-  await addDoc(collection(db,"delivery_boys"),{
-    name,phone,status:"pending",createdAt:Date.now()
-  });
-  nameInput.value="";phoneInput.value="";
-  loadDashboard();loadDeliveryList();
+window.setOrder=async(id,status)=>{
+  await updateDoc(doc(db,"orders",id),{status});
+  loadOrders();
 };
 
-async function loadDeliveryList(){
-  list.innerHTML="";
-  const snap=await getDocs(collection(db,"delivery_boys"));
+/* ================= PARTNERS ================= */
+async function loadPartners(){
+  partnersBox.innerHTML="";
+  const snap=await getDocs(collection(db,"partners"));
   snap.forEach(d=>{
-    const b=d.data();
-    list.innerHTML+=`
-      <div class="row">
+    const p=d.data();
+    partnersBox.innerHTML+=`
+      <div class="card row">
         <div>
-          <b>${b.name}</b><br>${b.phone}<br>Status: <b>${b.status}</b>
+          <b>${p.name}</b><br>${p.phone}<br>Status: ${p.status}
         </div>
         <div>
           ${
-            b.status==="pending"?
-            `<button class="approve" onclick="approve('${d.id}')">Approve</button>
-             <button class="reject" onclick="reject('${d.id}')">Reject</button>`
+            p.status==="pending"?
+            `<button class="approve" onclick="setPartner('${d.id}','approved')">Approve</button>
+             <button class="reject" onclick="setPartner('${d.id}','rejected')">Reject</button>`
             :""
           }
         </div>
       </div>`;
   });
 }
-window.approve=async(id)=>{await updateDoc(doc(db,"delivery_boys",id),{status:"approved"});loadDashboard();loadDeliveryList();}
-window.reject=async(id)=>{await updateDoc(doc(db,"delivery_boys",id),{status:"rejected"});loadDashboard();loadDeliveryList();}
+window.setPartner=async(id,status)=>{
+  await updateDoc(doc(db,"partners",id),{status});
+  loadPartners();
+};
 
-window.onload=()=>{loadDashboard();loadDeliveryList();}
+/* ================= PRODUCTS ================= */
+window.addProduct=async()=>{
+  if(!pname.value||!price.value){alert("Fill all");return;}
+  await addDoc(collection(db,"products"),{
+    name:pname.value,
+    price:Number(price.value)
+  });
+  pname.value="";price.value="";
+  loadProducts();
+};
+async function loadProducts(){
+  productBox.innerHTML="";
+  const snap=await getDocs(collection(db,"products"));
+  snap.forEach(d=>{
+    const p=d.data();
+    productBox.innerHTML+=`
+      <div class="card row">
+        <div>${p.name} – ₹${p.price}</div>
+      </div>`;
+  });
+}
+
+/* INIT */
+window.onload=()=>{
+  loadOrders();
+  loadPartners();
+  loadProducts();
+};
 </script>
 </head>
 
@@ -156,61 +151,34 @@ window.onload=()=>{loadDashboard();loadDeliveryList();}
 <div class="navbar">
   <div>QuickPress Admin</div>
   <div class="nav-links">
-    <a onclick="show('dashboard')">Dashboard</a>
     <a onclick="show('orders')">Orders</a>
-    <a onclick="show('delivery')">Delivery Boys</a>
     <a onclick="show('partners')">Partners</a>
     <a onclick="show('products')">Products</a>
-    <a onclick="show('wallet')">Wallet</a>
   </div>
 </div>
 
 <div class="container">
 
-<!-- DASHBOARD -->
-<div id="dashboard" class="section active">
-  <h2>Dashboard</h2>
-  <div class="cards">
-    <div class="card"><h2 id="totalEl">0</h2>Total Delivery</div>
-    <div class="card"><h2 id="approvedEl">0</h2>Approved</div>
-    <div class="card"><h2 id="pendingEl">0</h2>Pending</div>
-    <div class="card"><h2 id="rejectedEl">0</h2>Rejected</div>
-  </div>
-</div>
-
 <!-- ORDERS -->
-<div id="orders" class="section">
+<div id="orders" class="section active">
   <h2>Orders</h2>
-  <p>(Next step: full order management)</p>
-</div>
-
-<!-- DELIVERY -->
-<div id="delivery" class="section">
-  <h2>Delivery Boys</h2>
-  <div class="form">
-    <input id="nameInput" placeholder="Name">
-    <input id="phoneInput" placeholder="Phone">
-    <button class="add" onclick="addDeliveryBoy()">Add Delivery Boy</button>
-  </div>
-  <div id="list"></div>
+  <div id="ordersBox"></div>
 </div>
 
 <!-- PARTNERS -->
 <div id="partners" class="section">
-  <h2>Partners</h2>
-  <p>(Partner approval panel coming next)</p>
+  <h2>Partner Approval</h2>
+  <div id="partnersBox"></div>
 </div>
 
 <!-- PRODUCTS -->
 <div id="products" class="section">
-  <h2>Products</h2>
-  <p>(Add / edit product & price)</p>
-</div>
-
-<!-- WALLET -->
-<div id="wallet" class="section">
-  <h2>Wallet</h2>
-  <p>(Admin controlled wallet system)</p>
+  <h2>Add Product</h2>
+  <input id="pname" placeholder="Product name">
+  <input id="price" placeholder="Price">
+  <button class="save" onclick="addProduct()">Add</button>
+  <hr>
+  <div id="productBox"></div>
 </div>
 
 </div>
