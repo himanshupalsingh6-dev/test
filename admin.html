@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress Admin</title>
+<title>QuickPress Admin Dashboard</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#f4f4f4}
@@ -34,7 +34,80 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
 .card h2{margin:0}
+
+/* sections */
+.section{display:none}
+.section.active{display:block}
 </style>
+
+<!-- CHART.JS -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getFirestore, collection, getDocs
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web",
+  storageBucket: "quickpress-web.firebasestorage.app",
+  messagingSenderId: "909067547966",
+  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+let orders = [];
+
+async function loadDashboard(){
+  const snap = await getDocs(collection(db,"orders"));
+  orders = [];
+  snap.forEach(d=>orders.push(d.data()));
+
+  // stats
+  document.getElementById("totalOrders").innerText = orders.length;
+  document.getElementById("acceptedOrders").innerText =
+    orders.filter(o=>o.status==="Picked"||o.status==="Ironed").length;
+  document.getElementById("rejectedOrders").innerText =
+    orders.filter(o=>o.status==="Rejected").length;
+  document.getElementById("deliveredOrders").innerText =
+    orders.filter(o=>o.status==="Delivered").length;
+
+  drawChart();
+}
+
+function drawChart(){
+  const map = {};
+  orders.forEach(o=>{
+    if(!o.createdAt) return;
+    const d = o.createdAt.toDate().toLocaleDateString();
+    map[d] = (map[d]||0)+1;
+  });
+
+  const labels = Object.keys(map);
+  const data = Object.values(map);
+
+  new Chart(document.getElementById("orderChart"),{
+    type:"line",
+    data:{
+      labels,
+      datasets:[{
+        label:"Orders per day",
+        data,
+        borderWidth:2,
+        fill:false
+      }]
+    }
+  });
+}
+
+window.onload = loadDashboard;
+</script>
 </head>
 
 <body>
@@ -55,8 +128,9 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
 <div class="container">
 
 <!-- DASHBOARD -->
-<div id="dashboard">
+<div id="dashboard" class="section active">
   <h2>Dashboard</h2>
+
   <div class="cards">
     <div class="card">
       <h2 id="totalOrders">0</h2>
@@ -77,23 +151,23 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   </div>
 
   <br>
-  <canvas id="orderChart"></canvas>
+  <canvas id="orderChart" height="120"></canvas>
 </div>
 
 <!-- PLACEHOLDERS -->
-<div id="orders" style="display:none"><h2>Orders</h2></div>
-<div id="delivery" style="display:none"><h2>Delivery Boys</h2></div>
-<div id="partners" style="display:none"><h2>Partners</h2></div>
-<div id="products" style="display:none"><h2>Products</h2></div>
-<div id="wallet" style="display:none"><h2>Wallet</h2></div>
+<div id="orders" class="section"><h2>Orders</h2></div>
+<div id="delivery" class="section"><h2>Delivery Boys</h2></div>
+<div id="partners" class="section"><h2>Partners</h2></div>
+<div id="products" class="section"><h2>Products</h2></div>
+<div id="wallet" class="section"><h2>Wallet</h2></div>
 
 </div>
 
 <script>
 function show(id){
-  document.querySelectorAll('.container > div')
-    .forEach(d=>d.style.display='none');
-  document.getElementById(id).style.display='block';
+  document.querySelectorAll(".section")
+    .forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 </script>
 
