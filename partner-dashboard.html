@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Partner Dashboard – QuickPress</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f4f4;
+}
+.header{
+  background:#FFD400;
+  padding:14px;
+  text-align:center;
+  font-size:20px;
+  font-weight:900;
+}
+.sub{
+  text-align:center;
+  font-size:14px;
+  color:#333;
+}
+.card{
+  background:#fff;
+  margin:12px;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+button{
+  padding:8px 12px;
+  border:none;
+  border-radius:8px;
+  font-weight:700;
+  margin-right:6px;
+  cursor:pointer;
+}
+.iron{ background:#3498db; color:#fff; }
+.ready{ background:#2ecc71; color:#fff; }
+.logout{ background:#e74c3c; color:#fff; width:90%; margin:20px auto; display:block; }
+.empty{
+  text-align:center;
+  color:#777;
+  margin-top:40px;
+}
+</style>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import {
+  getFirestore, collection, query, where,
+  getDocs, updateDoc, doc
+} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+/* SAME FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+/* SESSION CHECK */
+const partnerEmail = localStorage.getItem("partnerEmail");
+if(!partnerEmail){
+  location.href = "partner-login.html";
+}
+
+/* LOAD ORDERS */
+async function loadOrders(){
+  const ordersBox = document.getElementById("orders");
+  ordersBox.innerHTML = "";
+
+  const q = query(
+    collection(db,"orders"),
+    where("partnerEmail","==",partnerEmail)
+  );
+
+  const snap = await getDocs(q);
+
+  if(snap.empty){
+    ordersBox.innerHTML = `<div class="empty">No orders assigned yet</div>`;
+    return;
+  }
+
+  snap.forEach(d=>{
+    const o = d.data();
+    let itemsHtml = "";
+
+    if(o.items){
+      o.items.forEach(i=>{
+        itemsHtml += `${i.name} × ${i.qty}<br>`;
+      });
+    }
+
+    ordersBox.innerHTML += `
+      <div class="card">
+        <b>Order ID:</b> ${d.id}<br><br>
+        ${itemsHtml}
+        <b>Status:</b> ${o.partnerStatus || "Assigned"}<br><br>
+        <button class="iron" onclick="updateStatus('${d.id}','Ironed')">Ironed</button>
+        <button class="ready" onclick="updateStatus('${d.id}','Ready')">Ready</button>
+      </div>
+    `;
+  });
+}
+
+/* UPDATE STATUS */
+window.updateStatus = async (orderId, status) => {
+  await updateDoc(doc(db,"orders",orderId),{
+    partnerStatus: status
+  });
+  loadOrders();
+};
+
+/* LOGOUT */
+window.logout = () => {
+  localStorage.removeItem("partnerEmail");
+  location.href = "partner-login.html";
+};
+
+/* INIT */
+loadOrders();
+</script>
+</head>
+
+<body>
+
+<div class="header">Partner Dashboard</div>
+<div class="sub">Logged in as: <b id="email"></b></div>
+
+<div id="orders"></div>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+<script>
+document.getElementById("email").innerText =
+  localStorage.getItem("partnerEmail");
+</script>
+
+</body>
+</html>
