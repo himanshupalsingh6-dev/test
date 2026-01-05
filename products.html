@@ -1,64 +1,205 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Select Clothes - QuickPress</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Select Clothes – QuickPress</title>
+
+<!-- CART JS -->
 <script src="js/cart.js"></script>
+
 <style>
-body{font-family:Arial;background:#f4f4f4}
-.card{
+:root{
+  --yellow:#FFD400;
+  --dark:#222;
+  --bg:#f6f6f6;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:var(--bg);
+  color:var(--dark);
+}
+
+/* ===== HEADER ===== */
+.header{
+  position:sticky;
+  top:0;
+  z-index:10;
   background:#fff;
-  padding:16px;
-  margin:12px;
-  border-radius:12px;
-  display:inline-block;
-  width:200px;
-}
-button{
-  background:#FFD400;
-  border:none;
-  padding:10px;
-  width:100%;
-  font-weight:800;
-  border-radius:8px;
-}
-.top{
+  padding:12px 16px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.logo{
+  font-size:20px;
+  font-weight:900;
+}
+.cart-badge{
+  background:var(--yellow);
+  padding:6px 12px;
+  border-radius:20px;
+  font-weight:900;
+}
+
+/* ===== HERO ===== */
+.hero{
+  background:linear-gradient(135deg,#ffe45c,#ffd400);
+  padding:24px 16px;
+  margin:12px;
+  border-radius:16px;
+}
+.hero h1{
+  margin:0 0 6px;
+  font-size:22px;
+}
+.hero p{
+  margin:0;
+  opacity:.8;
+}
+
+/* ===== SECTION ===== */
+.section{
+  padding:0 12px;
+}
+.section h2{
+  margin:16px 4px 8px;
+}
+
+/* ===== PRODUCT GRID ===== */
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:12px;
+}
+
+/* ===== PRODUCT CARD ===== */
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+
+.card img{
+  width:100%;
+  height:90px;
+  object-fit:contain;
+  margin-bottom:8px;
+}
+
+.card h3{
+  margin:4px 0;
+  font-size:16px;
+}
+.card p{
+  margin:0;
+  font-size:14px;
+  opacity:.8;
+}
+
+.add-btn{
+  margin-top:10px;
+  background:var(--yellow);
+  border:none;
   padding:10px;
+  border-radius:12px;
+  font-weight:900;
+  cursor:pointer;
+  transition:.15s;
+}
+.add-btn:active{
+  transform:scale(.97);
+}
+
+/* ===== FOOTER CTA ===== */
+.footer-cart{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  padding:10px 14px;
+  box-shadow:0 -4px 12px rgba(0,0,0,.1);
+}
+.footer-cart button{
+  width:100%;
+  padding:12px;
+  background:#27ae60;
+  color:#fff;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="top">
-  <h2>QuickPress</h2>
-  <div id="navCartAmount">₹0</div>
+<!-- HEADER -->
+<div class="header">
+  <div class="logo">QuickPress</div>
+  <div class="cart-badge" id="navCartAmount">₹0</div>
 </div>
 
-<h3>Popular Items</h3>
-
-<div class="card">
-  <h4>Shirt</h4>
-  <p>₹10 / piece</p>
-  <button onclick="addItem('Shirt',10)">ADD</button>
+<!-- HERO -->
+<div class="hero">
+  <h1>Ironed in 10 Minutes ⚡</h1>
+  <p>Pickup • Iron • Deliver</p>
 </div>
 
-<div class="card">
-  <h4>Pant</h4>
-  <p>₹15 / piece</p>
-  <button onclick="addItem('Pant',15)">ADD</button>
+<!-- PRODUCTS -->
+<div class="section">
+  <h2>Popular Items</h2>
+
+  <div class="grid">
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png">
+      <h3>Shirt</h3>
+      <p>₹10 / piece</p>
+      <button class="add-btn" onclick="addItem('Shirt',10)">ADD</button>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/892/892459.png">
+      <h3>Pant</h3>
+      <p>₹15 / piece</p>
+      <button class="add-btn" onclick="addItem('Pant',15)">ADD</button>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/892/892460.png">
+      <h3>Saree</h3>
+      <p>₹20 / piece</p>
+      <button class="add-btn" onclick="addItem('Saree',20)">ADD</button>
+    </div>
+
+    <div class="card">
+      <img src="https://cdn-icons-png.flaticon.com/512/892/892461.png">
+      <h3>Woollen</h3>
+      <p>₹25 / piece</p>
+      <button class="add-btn" onclick="addItem('Woollen',25)">ADD</button>
+    </div>
+
+  </div>
 </div>
 
-<div class="card">
-  <h4>Saree</h4>
-  <p>₹20 / piece</p>
-  <button onclick="addItem('Saree',20)">ADD</button>
+<!-- FIXED CART CTA -->
+<div class="footer-cart">
+  <button onclick="location.href='cart.html'">
+    View Cart & Checkout
+  </button>
 </div>
-
-<br><br>
-<button onclick="location.href='cart.html'">Go to Cart</button>
 
 </body>
 </html>
