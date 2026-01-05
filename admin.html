@@ -15,12 +15,12 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   align-items:center;
   font-weight:900;
 }
-.nav-links a{margin:0 10px;cursor:pointer}
+.nav-links a{margin:0 12px;cursor:pointer}
 .container{padding:16px}
 .section{display:none}
 .section.active{display:block}
 
-/* common */
+/* common UI */
 .card{
   background:#fff;
   padding:14px;
@@ -31,6 +31,7 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   display:flex;
   justify-content:space-between;
   align-items:center;
+  gap:10px;
 }
 button{
   padding:6px 12px;
@@ -41,7 +42,7 @@ button{
 }
 .approve{background:#2ecc71;color:#fff}
 .reject{background:#e74c3c;color:#fff}
-.save{background:#3498db;color:#fff}
+.add{background:#3498db;color:#fff}
 input{padding:8px;width:100%;margin:6px 0}
 </style>
 
@@ -73,12 +74,12 @@ async function loadOrders(){
     const o=d.data();
     ordersBox.innerHTML+=`
       <div class="card">
-        <b>Order:</b> ${d.id}<br>
-        Total: ₹${o.grandTotal}<br>
-        Status: <b>${o.status}</b><br><br>
+        <b>Order ID:</b> ${d.id}<br>
+        <b>Total:</b> ₹${o.grandTotal}<br>
+        <b>Status:</b> ${o.status}<br><br>
         <button class="approve" onclick="setOrder('${d.id}','Accepted')">Accept</button>
         <button class="reject" onclick="setOrder('${d.id}','Rejected')">Reject</button>
-        <button class="save" onclick="setOrder('${d.id}','Delivered')">Delivered</button>
+        <button class="add" onclick="setOrder('${d.id}','Delivered')">Delivered</button>
       </div>`;
   });
 }
@@ -88,6 +89,17 @@ window.setOrder=async(id,status)=>{
 };
 
 /* ================= PARTNERS ================= */
+window.addPartner=async()=>{
+  if(!pname.value||!pphone.value){alert("Fill all");return;}
+  await addDoc(collection(db,"partners"),{
+    name:pname.value,
+    phone:pphone.value,
+    status:"pending"
+  });
+  pname.value="";pphone.value="";
+  loadPartners();
+};
+
 async function loadPartners(){
   partnersBox.innerHTML="";
   const snap=await getDocs(collection(db,"partners"));
@@ -114,33 +126,49 @@ window.setPartner=async(id,status)=>{
   loadPartners();
 };
 
-/* ================= PRODUCTS ================= */
-window.addProduct=async()=>{
-  if(!pname.value||!price.value){alert("Fill all");return;}
-  await addDoc(collection(db,"products"),{
-    name:pname.value,
-    price:Number(price.value)
+/* ================= DELIVERY PARTNERS ================= */
+window.addDelivery=async()=>{
+  if(!dname.value||!dphone.value){alert("Fill all");return;}
+  await addDoc(collection(db,"delivery_boys"),{
+    name:dname.value,
+    phone:dphone.value,
+    status:"pending"
   });
-  pname.value="";price.value="";
-  loadProducts();
+  dname.value="";dphone.value="";
+  loadDelivery();
 };
-async function loadProducts(){
-  productBox.innerHTML="";
-  const snap=await getDocs(collection(db,"products"));
+
+async function loadDelivery(){
+  deliveryBox.innerHTML="";
+  const snap=await getDocs(collection(db,"delivery_boys"));
   snap.forEach(d=>{
-    const p=d.data();
-    productBox.innerHTML+=`
+    const b=d.data();
+    deliveryBox.innerHTML+=`
       <div class="card row">
-        <div>${p.name} – ₹${p.price}</div>
+        <div>
+          <b>${b.name}</b><br>${b.phone}<br>Status: ${b.status}
+        </div>
+        <div>
+          ${
+            b.status==="pending"?
+            `<button class="approve" onclick="setDelivery('${d.id}','approved')">Approve</button>
+             <button class="reject" onclick="setDelivery('${d.id}','rejected')">Reject</button>`
+            :""
+          }
+        </div>
       </div>`;
   });
 }
+window.setDelivery=async(id,status)=>{
+  await updateDoc(doc(db,"delivery_boys",id),{status});
+  loadDelivery();
+};
 
 /* INIT */
 window.onload=()=>{
   loadOrders();
   loadPartners();
-  loadProducts();
+  loadDelivery();
 };
 </script>
 </head>
@@ -153,7 +181,7 @@ window.onload=()=>{
   <div class="nav-links">
     <a onclick="show('orders')">Orders</a>
     <a onclick="show('partners')">Partners</a>
-    <a onclick="show('products')">Products</a>
+    <a onclick="show('delivery')">Delivery Partners</a>
   </div>
 </div>
 
@@ -167,18 +195,22 @@ window.onload=()=>{
 
 <!-- PARTNERS -->
 <div id="partners" class="section">
-  <h2>Partner Approval</h2>
+  <h2>Add Partner</h2>
+  <input id="pname" placeholder="Partner name">
+  <input id="pphone" placeholder="Partner phone">
+  <button class="add" onclick="addPartner()">Add Partner</button>
+  <hr>
   <div id="partnersBox"></div>
 </div>
 
-<!-- PRODUCTS -->
-<div id="products" class="section">
-  <h2>Add Product</h2>
-  <input id="pname" placeholder="Product name">
-  <input id="price" placeholder="Price">
-  <button class="save" onclick="addProduct()">Add</button>
+<!-- DELIVERY -->
+<div id="delivery" class="section">
+  <h2>Add Delivery Partner</h2>
+  <input id="dname" placeholder="Name">
+  <input id="dphone" placeholder="Phone">
+  <button class="add" onclick="addDelivery()">Add Delivery Partner</button>
   <hr>
-  <div id="productBox"></div>
+  <div id="deliveryBox"></div>
 </div>
 
 </div>
