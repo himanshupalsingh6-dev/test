@@ -3,134 +3,134 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Select Clothes – QuickPress</title>
+<title>QuickPress – Products</title>
 
-<!-- CART JS -->
 <script src="js/cart.js"></script>
 
 <style>
 :root{
   --yellow:#FFD400;
-  --dark:#222;
   --bg:#f6f6f6;
+  --dark:#222;
 }
 
 *{box-sizing:border-box}
-
 body{
   margin:0;
   font-family:Arial, sans-serif;
   background:var(--bg);
-  color:var(--dark);
 }
 
-/* ===== HEADER ===== */
+/* HEADER */
 .header{
   position:sticky;
   top:0;
-  z-index:10;
   background:#fff;
-  padding:12px 16px;
+  padding:12px;
   display:flex;
-  justify-content:space-between;
+  gap:10px;
   align-items:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
+  z-index:10;
 }
-.logo{
-  font-size:20px;
-  font-weight:900;
+.logo{font-weight:900}
+.search{
+  flex:1;
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid #ddd;
 }
-.cart-badge{
+.cart{
   background:var(--yellow);
   padding:6px 12px;
   border-radius:20px;
   font-weight:900;
 }
 
-/* ===== HERO ===== */
-.hero{
-  background:linear-gradient(135deg,#ffe45c,#ffd400);
-  padding:24px 16px;
-  margin:12px;
-  border-radius:16px;
+/* CATEGORY SLIDER */
+.categories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:10px;
 }
-.hero h1{
-  margin:0 0 6px;
-  font-size:22px;
-}
-.hero p{
-  margin:0;
-  opacity:.8;
-}
-
-/* ===== SECTION ===== */
-.section{
-  padding:0 12px;
-}
-.section h2{
-  margin:16px 4px 8px;
+.cat{
+  white-space:nowrap;
+  background:#fff;
+  padding:8px 14px;
+  border-radius:20px;
+  font-weight:700;
+  cursor:pointer;
 }
 
-/* ===== PRODUCT GRID ===== */
+/* GRID */
 .grid{
   display:grid;
   grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
   gap:12px;
+  padding:12px;
 }
 
-/* ===== PRODUCT CARD ===== */
+/* CARD */
 .card{
   background:#fff;
   border-radius:16px;
-  padding:14px;
-  box-shadow:0 4px 12px rgba(0,0,0,.08);
-  display:flex;
-  flex-direction:column;
-  justify-content:space-between;
+  padding:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
-
 .card img{
   width:100%;
-  height:90px;
+  height:80px;
   object-fit:contain;
-  margin-bottom:8px;
 }
+.card h3{margin:6px 0}
+.price{opacity:.7}
 
-.card h3{
-  margin:4px 0;
-  font-size:16px;
+/* ADD / QTY */
+.add-box{
+  margin-top:8px;
 }
-.card p{
-  margin:0;
-  font-size:14px;
-  opacity:.8;
-}
-
 .add-btn{
-  margin-top:10px;
+  width:100%;
+  padding:8px;
   background:var(--yellow);
   border:none;
-  padding:10px;
-  border-radius:12px;
+  border-radius:10px;
   font-weight:900;
-  cursor:pointer;
-  transition:.15s;
 }
-.add-btn:active{
-  transform:scale(.97);
+.qty{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:var(--yellow);
+  border-radius:10px;
+  padding:6px 10px;
+  font-weight:900;
 }
 
-/* ===== FOOTER CTA ===== */
-.footer-cart{
+/* SKELETON */
+.skeleton{
+  height:140px;
+  background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
+  animation:load 1.2s infinite;
+  border-radius:16px;
+}
+@keyframes load{
+  0%{background-position:-200px}
+  100%{background-position:200px}
+}
+
+/* FOOTER */
+.footer{
   position:fixed;
   bottom:0;
   left:0;
   right:0;
   background:#fff;
-  padding:10px 14px;
-  box-shadow:0 -4px 12px rgba(0,0,0,.1);
+  padding:10px;
+  box-shadow:0 -4px 10px rgba(0,0,0,.1);
 }
-.footer-cart button{
+.footer button{
   width:100%;
   padding:12px;
   background:#27ae60;
@@ -138,7 +138,6 @@ body{
   border:none;
   border-radius:14px;
   font-weight:900;
-  font-size:16px;
 }
 </style>
 </head>
@@ -148,58 +147,75 @@ body{
 <!-- HEADER -->
 <div class="header">
   <div class="logo">QuickPress</div>
-  <div class="cart-badge" id="navCartAmount">₹0</div>
+  <input class="search" placeholder="Search clothes…">
+  <div class="cart" id="navCartAmount">₹0</div>
 </div>
 
-<!-- HERO -->
-<div class="hero">
-  <h1>Ironed in 10 Minutes ⚡</h1>
-  <p>Pickup • Iron • Deliver</p>
+<!-- CATEGORY SLIDER -->
+<div class="categories">
+  <div class="cat">All</div>
+  <div class="cat">Shirts</div>
+  <div class="cat">Pants</div>
+  <div class="cat">Saree</div>
+  <div class="cat">Woollen</div>
 </div>
 
 <!-- PRODUCTS -->
-<div class="section">
-  <h2>Popular Items</h2>
+<div class="grid" id="grid">
 
-  <div class="grid">
+  <!-- SKELETON -->
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
+  <div class="skeleton"></div>
 
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/892/892458.png">
-      <h3>Shirt</h3>
-      <p>₹10 / piece</p>
-      <button class="add-btn" onclick="addItem('Shirt',10)">ADD</button>
-    </div>
-
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/892/892459.png">
-      <h3>Pant</h3>
-      <p>₹15 / piece</p>
-      <button class="add-btn" onclick="addItem('Pant',15)">ADD</button>
-    </div>
-
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/892/892460.png">
-      <h3>Saree</h3>
-      <p>₹20 / piece</p>
-      <button class="add-btn" onclick="addItem('Saree',20)">ADD</button>
-    </div>
-
-    <div class="card">
-      <img src="https://cdn-icons-png.flaticon.com/512/892/892461.png">
-      <h3>Woollen</h3>
-      <p>₹25 / piece</p>
-      <button class="add-btn" onclick="addItem('Woollen',25)">ADD</button>
-    </div>
-
-  </div>
 </div>
 
-<!-- FIXED CART CTA -->
-<div class="footer-cart">
-  <button onclick="location.href='cart.html'">
-    View Cart & Checkout
-  </button>
+<!-- FOOTER -->
+<div class="footer">
+  <button onclick="location.href='cart.html'">View Cart</button>
 </div>
+
+<script>
+/* PRODUCTS DATA */
+const products=[
+  {name:"Shirt",price:10,img:"https://cdn-icons-png.flaticon.com/512/892/892458.png"},
+  {name:"Pant",price:15,img:"https://cdn-icons-png.flaticon.com/512/892/892459.png"},
+  {name:"Saree",price:20,img:"https://cdn-icons-png.flaticon.com/512/892/892460.png"},
+  {name:"Woollen",price:25,img:"https://cdn-icons-png.flaticon.com/512/892/892461.png"}
+];
+
+setTimeout(()=>{
+  render();
+},800); // skeleton delay
+
+function render(){
+  const grid=document.getElementById("grid");
+  grid.innerHTML="";
+  products.forEach(p=>{
+    const q=getQty(p.name);
+    grid.innerHTML+=`
+      <div class="card">
+        <img src="${p.img}">
+        <h3>${p.name}</h3>
+        <div class="price">₹${p.price} / piece</div>
+
+        <div class="add-box">
+          ${
+            q===0
+            ? `<button class="add-btn" onclick="addItem('${p.name}',${p.price});render()">ADD</button>`
+            : `<div class="qty">
+                 <span onclick="removeItem('${p.name}');render()">−</span>
+                 <span>${q}</span>
+                 <span onclick="addItem('${p.name}',${p.price});render()">+</span>
+               </div>`
+          }
+        </div>
+      </div>
+    `;
+  });
+}
+</script>
 
 </body>
 </html>
