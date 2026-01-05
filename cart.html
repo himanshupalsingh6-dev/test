@@ -1,64 +1,48 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Your Cart – QuickPress</title>
-
+<title>Your Cart</title>
+<script src="js/cart.js"></script>
 <style>
-body{font-family:Arial;background:#f4f4f4;margin:0}
-.header{
-  background:#FFD400;
-  padding:14px;
-  font-size:22px;
-  font-weight:900;
-  text-align:center;
-}
-.card{
-  background:#fff;
-  margin:14px;
-  padding:14px;
-  border-radius:12px;
-}
-.item{
-  display:flex;
-  justify-content:space-between;
-  margin:8px 0;
-}
-.total{
-  font-size:18px;
-  font-weight:900;
-}
-button{
-  padding:10px;
-  border:none;
-  border-radius:8px;
-  font-weight:800;
-  background:#27ae60;
-  color:#fff;
-  width:100%;
-}
+body{font-family:Arial}
+.row{display:flex;justify-content:space-between;margin:8px}
+button{padding:10px;background:#27ae60;color:#fff;border:none;width:100%}
 </style>
 </head>
 
 <body>
 
-<div class="header">Your Cart</div>
+<h2>Your Cart</h2>
 
-<div class="card" id="cartItems"></div>
+<div id="cartItems"></div>
 
-<div class="card">
-  <div class="item">Items Total <span id="itemsTotal">₹0</span></div>
-  <div class="item">Delivery Charge <span id="delivery">₹20</span></div>
-  <div class="item">Handling Charge <span id="handling">₹3</span></div>
-  <hr>
-  <div class="item total">Grand Total <span id="grandTotal">₹0</span></div>
-</div>
+<div class="row">Items Total <span id="itemsTotal">₹0</span></div>
+<div class="row">Delivery <span>₹20</span></div>
+<div class="row">Handling <span>₹3</span></div>
+<hr>
+<div class="row"><b>Grand Total</b> <b id="grand">₹0</b></div>
 
-<div class="card">
-  <button onclick="checkout()">Proceed to Checkout</button>
-</div>
+<br>
+<button onclick="location.href='checkout.html'">Proceed to Checkout</button>
 
-<script src="js/cart.js"></script>
+<script>
+function render(){
+  let box=document.getElementById("cartItems");
+  let cart=getCart();
+  box.innerHTML="";
+  let total=0;
+
+  cart.forEach(i=>{
+    let p=i.price*i.qty;
+    total+=p;
+    box.innerHTML+=`<div class="row">${i.name} × ${i.qty}<span>₹${p}</span></div>`;
+  });
+
+  document.getElementById("itemsTotal").innerText="₹"+total;
+  document.getElementById("grand").innerText="₹"+(total===0?0:total+20+3);
+}
+render();
+</script>
+
 </body>
 </html>
