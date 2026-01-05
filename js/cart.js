@@ -1,80 +1,70 @@
-/*************************
- QUICKPRESS CART – FINAL
-*************************/
+/******** QUICKPRESS CART – ADMIN CHARGES ********/
 
-const DELIVERY_CHARGE = 20;
-const HANDLING_CHARGE = 3;
+let DELIVERY_CHARGE = 20;
+let HANDLING_CHARGE = 3;
 
-// LOAD CART
-function getCart(){
-  return JSON.parse(localStorage.getItem("cart")) || [];
+/* LOAD CHARGES */
+async function loadCharges(){
+  try{
+    const res = await fetch(
+      "https://firestore.googleapis.com/v1/projects/quickpress-web/databases/(default)/documents/settings/charges"
+    );
+    const data = await res.json();
+    if(data.fields){
+      DELIVERY_CHARGE = Number(data.fields.delivery.integerValue);
+      HANDLING_CHARGE = Number(data.fields.handling.integerValue);
+    }
+  }catch(e){}
+}
+loadCharges();
+
+/* CART */
+function getCart(){ return JSON.parse(localStorage.getItem("cart"))||[] }
+function saveCart(c){ localStorage.setItem("cart",JSON.stringify(c)) }
+
+function addItem(name,price){
+  let c=getCart();
+  const f=c.find(i=>i.name===name);
+  f?f.qty++:c.push({name,price,qty:1});
+  saveCart(c);
+  updateNav();
+  if(typeof showAddFeedback==="function") showAddFeedback();
 }
 
-// SAVE CART
-function saveCart(cart){
-  localStorage.setItem("cart", JSON.stringify(cart));
-}
-
-// ADD ITEM
-function addItem(name, price){
-  let cart = getCart();
-  const f = cart.find(i => i.name === name);
-  f ? f.qty++ : cart.push({name, price, qty:1});
-  saveCart(cart);
-  updateNavCart();
-  if(typeof showAddFeedback === "function") showAddFeedback();
-}
-
-// TOTALS
 function itemsTotal(){
   return getCart().reduce((s,i)=>s+i.price*i.qty,0);
 }
 function grandTotal(){
-  if(getCart().length === 0) return 0;
-  return itemsTotal() + DELIVERY_CHARGE + HANDLING_CHARGE;
+  const c=getCart();
+  if(!c.length) return 0;
+  return itemsTotal()+DELIVERY_CHARGE+HANDLING_CHARGE;
 }
 
-// NAVBAR AMOUNT
-function updateNavCart(){
-  const el = document.getElementById("navCartAmount");
-  if(el) el.innerText = "₹" + grandTotal();
+function updateNav(){
+  const el=document.getElementById("navCartAmount");
+  if(el) el.innerText="₹"+grandTotal();
 }
 
-// CART PAGE
+/* CART PAGE */
 function renderCartPage(){
-  const box = document.getElementById("cartItems");
-  const total = document.getElementById("cartTotal");
-  if(!box || !total) return;
-
-  const cart = getCart();
-  box.innerHTML = "";
-
-  if(cart.length === 0){
-    box.innerHTML = "<p>Your cart is empty</p>";
-    total.innerText = "₹0";
-    return;
-  }
-
-  cart.forEach(i=>{
-    box.innerHTML += `
-      <div class="cart-item">
-        <span>${i.name} × ${i.qty}</span>
-        <span>₹${i.price*i.qty}</span>
-      </div>
-    `;
+  const b=document.getElementById("cartItems");
+  const t=document.getElementById("cartTotal");
+  if(!b||!t) return;
+  b.innerHTML="";
+  getCart().forEach(i=>{
+    b.innerHTML+=`${i.name} × ${i.qty}<br>`;
   });
-
-  total.innerText = "₹" + grandTotal();
+  t.innerText="₹"+grandTotal();
 }
 
-// CHECKOUT PAGE
+/* CHECKOUT */
 function renderCheckoutPage(){
-  const itemsEl = document.getElementById("itemsTotal");
-  const totalEl = document.getElementById("checkoutTotal");
-  if(!itemsEl || !totalEl) return;
-
-  itemsEl.innerText = "₹" + itemsTotal();
-  totalEl.innerText = "₹" + grandTotal();
+  const i=document.getElementById("itemsTotal");
+  const t=document.getElementById("checkoutTotal");
+  if(i&&t){
+    i.innerText="₹"+itemsTotal();
+    t.innerText="₹"+grandTotal();
+  }
 }
 
-document.addEventListener("DOMContentLoaded", updateNavCart);
+document.addEventListener("DOMContentLoaded",updateNav);
