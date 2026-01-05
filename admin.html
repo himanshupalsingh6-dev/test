@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress Admin Dashboard</title>
+<title>QuickPress Admin Panel</title>
 
 <style>
 body{margin:0;font-family:Arial;background:#f4f4f4}
@@ -15,10 +15,7 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   align-items:center;
   font-weight:900;
 }
-.nav-links a{
-  margin:0 10px;
-  cursor:pointer;
-}
+.nav-links a{margin:0 10px;cursor:pointer}
 .container{padding:16px}
 
 /* cards */
@@ -33,21 +30,37 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   border-radius:14px;
   box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
-.card h2{margin:0}
-
-/* sections */
 .section{display:none}
 .section.active{display:block}
-</style>
 
-<!-- CHART.JS -->
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+.table{
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid #eee;
+}
+button{
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  font-weight:800;
+  cursor:pointer;
+}
+.approve{background:#27ae60;color:#fff}
+.reject{background:#e74c3c;color:#fff}
+</style>
 
 <!-- FIREBASE -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore, collection, getDocs
+  getFirestore, collection, getDocs,
+  doc, updateDoc, addDoc
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -62,52 +75,50 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-let orders = [];
+/* ===== LOAD DELIVERY BOYS ===== */
+async function loadDeliveryBoys(){
+  const box = document.getElementById("deliveryList");
+  box.innerHTML = "Loading...";
+  const snap = await getDocs(collection(db,"delivery_boys"));
+  box.innerHTML = "";
 
-async function loadDashboard(){
-  const snap = await getDocs(collection(db,"orders"));
-  orders = [];
-  snap.forEach(d=>orders.push(d.data()));
-
-  // stats
-  document.getElementById("totalOrders").innerText = orders.length;
-  document.getElementById("acceptedOrders").innerText =
-    orders.filter(o=>o.status==="Picked"||o.status==="Ironed").length;
-  document.getElementById("rejectedOrders").innerText =
-    orders.filter(o=>o.status==="Rejected").length;
-  document.getElementById("deliveredOrders").innerText =
-    orders.filter(o=>o.status==="Delivered").length;
-
-  drawChart();
-}
-
-function drawChart(){
-  const map = {};
-  orders.forEach(o=>{
-    if(!o.createdAt) return;
-    const d = o.createdAt.toDate().toLocaleDateString();
-    map[d] = (map[d]||0)+1;
-  });
-
-  const labels = Object.keys(map);
-  const data = Object.values(map);
-
-  new Chart(document.getElementById("orderChart"),{
-    type:"line",
-    data:{
-      labels,
-      datasets:[{
-        label:"Orders per day",
-        data,
-        borderWidth:2,
-        fill:false
-      }]
-    }
+  snap.forEach(d=>{
+    const boy = d.data();
+    box.innerHTML += `
+      <div class="row">
+        <div>
+          <b>${boy.name || "No Name"}</b><br>
+          ${boy.phone || ""}
+          <br>Status: <b>${boy.status}</b>
+        </div>
+        <div>
+          ${
+            boy.status==="pending" ?
+            `<button class="approve" onclick="approve('${d.id}')">Approve</button>
+             <button class="reject" onclick="reject('${d.id}')">Reject</button>`
+            : boy.status
+          }
+        </div>
+      </div>
+    `;
   });
 }
 
-window.onload = loadDashboard;
+window.approve = async function(id){
+  await updateDoc(doc(db,"delivery_boys",id),{status:"approved"});
+  alert("Delivery boy approved");
+  loadDeliveryBoys();
+};
+
+window.reject = async function(id){
+  await updateDoc(doc(db,"delivery_boys",id),{status:"rejected"});
+  alert("Delivery boy rejected");
+  loadDeliveryBoys();
+};
+
+window.onload = loadDeliveryBoys;
 </script>
+
 </head>
 
 <body>
@@ -117,11 +128,7 @@ window.onload = loadDashboard;
   <div>QuickPress Admin</div>
   <div class="nav-links">
     <a onclick="show('dashboard')">Dashboard</a>
-    <a onclick="show('orders')">Orders</a>
     <a onclick="show('delivery')">Delivery Boys</a>
-    <a onclick="show('partners')">Partners</a>
-    <a onclick="show('products')">Products</a>
-    <a onclick="show('wallet')">Wallet</a>
   </div>
 </div>
 
@@ -130,36 +137,14 @@ window.onload = loadDashboard;
 <!-- DASHBOARD -->
 <div id="dashboard" class="section active">
   <h2>Dashboard</h2>
-
-  <div class="cards">
-    <div class="card">
-      <h2 id="totalOrders">0</h2>
-      <p>Total Orders</p>
-    </div>
-    <div class="card">
-      <h2 id="acceptedOrders">0</h2>
-      <p>Accepted</p>
-    </div>
-    <div class="card">
-      <h2 id="rejectedOrders">0</h2>
-      <p>Rejected</p>
-    </div>
-    <div class="card">
-      <h2 id="deliveredOrders">0</h2>
-      <p>Delivered</p>
-    </div>
-  </div>
-
-  <br>
-  <canvas id="orderChart" height="120"></canvas>
+  <p>Welcome to Admin Panel</p>
 </div>
 
-<!-- PLACEHOLDERS -->
-<div id="orders" class="section"><h2>Orders</h2></div>
-<div id="delivery" class="section"><h2>Delivery Boys</h2></div>
-<div id="partners" class="section"><h2>Partners</h2></div>
-<div id="products" class="section"><h2>Products</h2></div>
-<div id="wallet" class="section"><h2>Wallet</h2></div>
+<!-- DELIVERY BOYS -->
+<div id="delivery" class="section">
+  <h2>Delivery Boy Approvals</h2>
+  <div class="table" id="deliveryList"></div>
+</div>
 
 </div>
 
