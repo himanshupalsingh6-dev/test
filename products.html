@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,213 +8,123 @@
 <script src="js/cart.js"></script>
 
 <style>
-:root{
-  --yellow:#FFD400;
-  --bg:#f6f6f6;
-  --dark:#222;
-}
-
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:var(--bg);
-}
+:root{--y:#FFD400}
+body{margin:0;font-family:Arial;background:#f6f6f6}
 
 /* HEADER */
 .header{
-  position:sticky;
-  top:0;
-  background:#fff;
-  padding:12px;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
-  z-index:10;
+  position:sticky;top:0;z-index:10;
+  background:#fff;padding:10px;
+  display:flex;gap:10px;align-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.1)
 }
 .logo{font-weight:900}
-.search{
-  flex:1;
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-}
-.cart{
-  background:var(--yellow);
-  padding:6px 12px;
-  border-radius:20px;
-  font-weight:900;
-}
+.search{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd}
+.cart{background:var(--y);padding:6px 12px;border-radius:20px;font-weight:900}
 
-/* CATEGORY SLIDER */
-.categories{
-  display:flex;
-  gap:10px;
-  overflow-x:auto;
-  padding:10px;
-}
-.cat{
-  white-space:nowrap;
-  background:#fff;
-  padding:8px 14px;
-  border-radius:20px;
-  font-weight:700;
-  cursor:pointer;
-}
+/* CATEGORY */
+.cats{display:flex;gap:10px;overflow-x:auto;padding:10px}
+.cat{padding:8px 14px;background:#fff;border-radius:20px;font-weight:700;cursor:pointer}
+.cat.active{background:var(--y)}
 
 /* GRID */
-.grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
-  gap:12px;
-  padding:12px;
-}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
 
 /* CARD */
 .card{
-  background:#fff;
-  border-radius:16px;
-  padding:12px;
+  background:#fff;border-radius:16px;padding:12px;
   box-shadow:0 4px 10px rgba(0,0,0,.08);
+  animation:slide .4s ease;
 }
-.card img{
-  width:100%;
-  height:80px;
-  object-fit:contain;
-}
-.card h3{margin:6px 0}
-.price{opacity:.7}
+@keyframes slide{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
 
-/* ADD / QTY */
-.add-box{
-  margin-top:8px;
+.card img{width:100%;height:80px;object-fit:contain}
+.add-btn,.qty{
+  margin-top:8px;background:var(--y);
+  border-radius:10px;padding:8px;
+  font-weight:900;border:none;width:100%
 }
-.add-btn{
-  width:100%;
-  padding:8px;
-  background:var(--yellow);
-  border:none;
-  border-radius:10px;
-  font-weight:900;
-}
-.qty{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  background:var(--yellow);
-  border-radius:10px;
-  padding:6px 10px;
-  font-weight:900;
-}
-
-/* SKELETON */
-.skeleton{
-  height:140px;
-  background:linear-gradient(90deg,#eee,#f5f5f5,#eee);
-  animation:load 1.2s infinite;
-  border-radius:16px;
-}
-@keyframes load{
-  0%{background-position:-200px}
-  100%{background-position:200px}
-}
+.qty{display:flex;justify-content:space-between}
+.qty span{cursor:pointer;animation:bounce .2s}
+@keyframes bounce{50%{transform:scale(1.2)}}
 
 /* FOOTER */
-.footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  padding:10px;
-  box-shadow:0 -4px 10px rgba(0,0,0,.1);
-}
+.footer{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:10px}
 .footer button{
-  width:100%;
-  padding:12px;
-  background:#27ae60;
-  color:#fff;
-  border:none;
-  border-radius:14px;
-  font-weight:900;
+  width:100%;padding:12px;background:#27ae60;
+  color:#fff;border:none;border-radius:14px;font-weight:900
 }
 </style>
 </head>
 
 <body>
 
-<!-- HEADER -->
 <div class="header">
   <div class="logo">QuickPress</div>
-  <input class="search" placeholder="Search clothes…">
+  <input class="search" id="search" placeholder="Search clothes">
   <div class="cart" id="navCartAmount">₹0</div>
 </div>
 
-<!-- CATEGORY SLIDER -->
-<div class="categories">
-  <div class="cat">All</div>
-  <div class="cat">Shirts</div>
-  <div class="cat">Pants</div>
-  <div class="cat">Saree</div>
-  <div class="cat">Woollen</div>
-</div>
+<div class="cats" id="cats"></div>
+<div class="grid" id="grid"></div>
 
-<!-- PRODUCTS -->
-<div class="grid" id="grid">
-
-  <!-- SKELETON -->
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-  <div class="skeleton"></div>
-
-</div>
-
-<!-- FOOTER -->
 <div class="footer">
   <button onclick="location.href='cart.html'">View Cart</button>
 </div>
 
 <script>
-/* PRODUCTS DATA */
+/* CDN IMAGES */
 const products=[
-  {name:"Shirt",price:10,img:"https://cdn-icons-png.flaticon.com/512/892/892458.png"},
-  {name:"Pant",price:15,img:"https://cdn-icons-png.flaticon.com/512/892/892459.png"},
-  {name:"Saree",price:20,img:"https://cdn-icons-png.flaticon.com/512/892/892460.png"},
-  {name:"Woollen",price:25,img:"https://cdn-icons-png.flaticon.com/512/892/892461.png"}
+ {name:"Shirt",price:10,cat:"Shirts",img:"https://img.icons8.com/color/96/shirt.png"},
+ {name:"Pant",price:15,cat:"Pants",img:"https://img.icons8.com/color/96/trousers.png"},
+ {name:"Saree",price:20,cat:"Saree",img:"https://img.icons8.com/color/96/sari.png"},
+ {name:"Woollen",price:25,cat:"Woollen",img:"https://img.icons8.com/color/96/jacket.png"}
 ];
 
-setTimeout(()=>{
+const categories=["All",...new Set(products.map(p=>p.cat))];
+let activeCat="All";
+
+const catsBox=document.getElementById("cats");
+categories.forEach(c=>{
+  catsBox.innerHTML+=`<div class="cat ${c==="All"?"active":""}" onclick="setCat('${c}',this)">${c}</div>`;
+});
+
+function setCat(c,el){
+  activeCat=c;
+  document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
+  el.classList.add("active");
   render();
-},800); // skeleton delay
+}
+
+document.getElementById("search").addEventListener("input",render);
 
 function render(){
+  const q=document.getElementById("search").value.toLowerCase();
   const grid=document.getElementById("grid");
   grid.innerHTML="";
-  products.forEach(p=>{
-    const q=getQty(p.name);
-    grid.innerHTML+=`
+
+  products
+   .filter(p=>(activeCat==="All"||p.cat===activeCat) && p.name.toLowerCase().includes(q))
+   .forEach(p=>{
+     const qty=getQty(p.name);
+     grid.innerHTML+=`
       <div class="card">
         <img src="${p.img}">
-        <h3>${p.name}</h3>
-        <div class="price">₹${p.price} / piece</div>
-
-        <div class="add-box">
-          ${
-            q===0
-            ? `<button class="add-btn" onclick="addItem('${p.name}',${p.price});render()">ADD</button>`
-            : `<div class="qty">
-                 <span onclick="removeItem('${p.name}');render()">−</span>
-                 <span>${q}</span>
-                 <span onclick="addItem('${p.name}',${p.price});render()">+</span>
-               </div>`
-          }
-        </div>
-      </div>
-    `;
-  });
+        <h4>${p.name}</h4>
+        ₹${p.price}
+        ${
+          qty===0
+          ? `<button class="add-btn" onclick="addItem('${p.name}',${p.price});render()">ADD</button>`
+          : `<div class="qty">
+               <span onclick="removeItem('${p.name}');render()">−</span>
+               <span>${qty}</span>
+               <span onclick="addItem('${p.name}',${p.price});render()">+</span>
+             </div>`
+        }
+      </div>`;
+   });
 }
+render();
 </script>
 
 </body>
