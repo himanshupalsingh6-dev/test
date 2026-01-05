@@ -7,14 +7,21 @@
 
 <style>
 body{margin:0;font-family:Arial;background:#f4f4f4}
-.header{
+.navbar{
+  display:flex;
+  gap:14px;
+  padding:12px;
   background:#FFD400;
-  padding:16px;
-  font-size:22px;
   font-weight:900;
-  text-align:center;
+  overflow-x:auto;
 }
-.container{padding:12px}
+.navbar span{
+  cursor:pointer;
+  white-space:nowrap;
+}
+.section{display:none;padding:12px}
+.section.active{display:block}
+
 .card{
   background:#fff;
   margin-bottom:12px;
@@ -22,29 +29,23 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
   border-radius:12px;
   box-shadow:0 4px 10px rgba(0,0,0,.1);
 }
-.items{font-size:14px;opacity:.9;margin:6px 0}
-.status{font-weight:900;margin:6px 0}
 button{
-  padding:8px 14px;border:none;border-radius:8px;
-  font-weight:800;cursor:pointer;margin-right:6px
+  padding:6px 12px;
+  border:none;
+  border-radius:8px;
+  font-weight:800;
+  margin-right:6px;
 }
 .accept{background:#2ecc71;color:#fff}
 .reject{background:#e74c3c;color:#fff}
-.new{border:2px solid #FFD400}
 </style>
 
 <script type="module">
-/* ================= FIREBASE ================= */
+/* ============ FIREBASE ============ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore,
-  collection,
-  getDocs,
-  onSnapshot,
-  updateDoc,
-  doc,
-  query,
-  orderBy
+  getFirestore, collection, getDocs, addDoc,
+  updateDoc, doc, onSnapshot, query, orderBy
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -56,84 +57,130 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* ================= 🔔 BELL ================= */
+/* ============ NAV ============ */
+window.show = function(id){
+  document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+};
+
+/* ============ 🔔 BELL ============ */
 const bell = new Audio("sounds/order.mp3");
-let soundEnabled = localStorage.getItem("soundEnabled") === "yes";
+let soundEnabled = localStorage.getItem("soundEnabled")==="yes";
 document.body.addEventListener("click",()=>{
-  soundEnabled = true;
+  soundEnabled=true;
   localStorage.setItem("soundEnabled","yes");
 });
 
-let firstLoad = true;
+/* ============ ORDERS ============ */
+const ordersQuery = query(collection(db,"orders"),orderBy("createdAt","desc"));
 
-/* ================= REALTIME (NEW ORDER ON TOP) ================= */
-const ordersQuery = query(
-  collection(db,"orders"),
-  orderBy("createdAt","desc")
-);
-
-onSnapshot(ordersQuery, snap=>{
-  if(firstLoad){
-    firstLoad = false;
-    renderSnapshot(snap);
-    return;
-  }
-
+onSnapshot(ordersQuery,snap=>{
   snap.docChanges().forEach(c=>{
-    if(c.type === "added"){
-      renderSnapshot(snap);
+    if(c.type==="added"){
       if(soundEnabled) bell.play();
-      alert("🔔 New Order Received");
+      loadOrders();
     }
   });
 });
 
-/* ================= RENDER ================= */
-function renderSnapshot(snap){
-  const box = document.getElementById("orders");
-  box.innerHTML = "";
-
+async function loadOrders(){
+  const box=document.getElementById("ordersList");
+  box.innerHTML="";
+  const snap=await getDocs(ordersQuery);
   snap.forEach(d=>{
-    const o = d.data();
-
-    let itemsHtml = "";
-    if(o.items){
-      o.items.forEach(i=>{
-        itemsHtml += `${i.name} × ${i.qty}<br>`;
-      });
-    }
-
-    box.innerHTML += `
-      <div class="card new">
-        <b>Order ID:</b> ${d.id}<br>
-        <div class="items"><b>Items:</b><br>${itemsHtml}</div>
+    const o=d.data();
+    let items="";
+    o.items?.forEach(i=>items+=`${i.name} × ${i.qty}<br>`);
+    box.innerHTML+=`
+      <div class="card">
+        <b>Order:</b> ${d.id}<br>
+        ${items}
         <b>Total:</b> ₹${o.grandTotal}<br>
-        <div class="status">Status: ${o.status}</div>
-
+        <b>Status:</b> ${o.status}<br><br>
         <button class="accept" onclick="setStatus('${d.id}','Accepted')">Accept</button>
         <button class="reject" onclick="setStatus('${d.id}','Rejected')">Reject</button>
       </div>
     `;
   });
 }
+window.setStatus=async(id,s)=>updateDoc(doc(db,"orders",id),{status:s});
 
-/* ================= UPDATE STATUS ================= */
-window.setStatus = async function(id,status){
-  await updateDoc(doc(db,"orders",id),{status});
+/* ============ PRODUCT ============ */
+window.addProduct=async()=>{
+  const name=pname.value,price=+pprice.value;
+  await addDoc(collection(db,"products"),{name,price});
+  alert("Product added");
 };
 
-/* ================= INIT ================= */
-window.onload = async ()=>{
-  const snap = await getDocs(ordersQuery);
-  renderSnapshot(snap);
+/* ============ PARTNER / DELIVERY ============ */
+window.addPartner=async()=>addDoc(collection(db,"partners"),{name:partner.value,approved:false});
+window.addDelivery=async()=>addDoc(collection(db,"delivery"),{name:delivery.value,approved:false});
+
+/* ============ WALLET ============ */
+window.addWallet=async()=>{
+  await addDoc(collection(db,"wallet"),{user:walletUser.value,amount:+walletAmt.value});
+  alert("Wallet updated");
 };
+
+loadOrders();
 </script>
 </head>
 
 <body>
 
-<div class="header">QuickPress – Admin Panel</div>
-<div class="container" id="orders"></div>
+<!-- NAVBAR -->
+<div class="navbar">
+  <span onclick="show('dashboard')">Dashboard</span>
+  <span onclick="show('orders')">Orders</span>
+  <span onclick="show('products')">Products</span>
+  <span onclick="show('partners')">Partners</span>
+  <span onclick="show('delivery')">Delivery</span>
+  <span onclick="show('wallet')">Wallet</span>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="section active">
+  <div class="card">Welcome to QuickPress Admin Panel</div>
+</div>
+
+<!-- ORDERS -->
+<div id="orders" class="section">
+  <div id="ordersList"></div>
+</div>
+
+<!-- PRODUCTS -->
+<div id="products" class="section">
+  <div class="card">
+    <input id="pname" placeholder="Product name">
+    <input id="pprice" placeholder="Price">
+    <button onclick="addProduct()">Add Product</button>
+  </div>
+</div>
+
+<!-- PARTNERS -->
+<div id="partners" class="section">
+  <div class="card">
+    <input id="partner" placeholder="Partner name">
+    <button onclick="addPartner()">Add Partner</button>
+  </div>
+</div>
+
+<!-- DELIVERY -->
+<div id="delivery" class="section">
+  <div class="card">
+    <input id="delivery" placeholder="Delivery boy name">
+    <button onclick="addDelivery()">Add Delivery Boy</button>
+  </div>
+</div>
+
+<!-- WALLET -->
+<div id="wallet" class="section">
+  <div class="card">
+    <input id="walletUser" placeholder="User">
+    <input id="walletAmt" placeholder="Amount">
+    <button onclick="addWallet()">Add Money</button>
+  </div>
+</div>
 
 </body>
 </html>
