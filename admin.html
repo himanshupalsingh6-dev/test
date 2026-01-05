@@ -1,13 +1,64 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Admin Debug</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>QuickPress Admin Panel</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f4f4f4;
+}
+.header{
+  background:#FFD400;
+  padding:16px;
+  font-size:22px;
+  font-weight:900;
+  text-align:center;
+}
+.container{
+  padding:12px;
+}
+.card{
+  background:#fff;
+  margin-bottom:12px;
+  padding:14px;
+  border-radius:12px;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+}
+.items{
+  font-size:14px;
+  opacity:.9;
+  margin:6px 0;
+}
+.status{
+  font-weight:900;
+  margin:6px 0;
+}
+button{
+  padding:8px 14px;
+  border:none;
+  border-radius:8px;
+  font-weight:800;
+  cursor:pointer;
+  margin-right:6px;
+}
+.accept{background:#2ecc71;color:#fff}
+.reject{background:#e74c3c;color:#fff}
+</style>
 
 <script type="module">
+/* ================= FIREBASE ================= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore, collection, getDocs, onSnapshot
+  getFirestore,
+  collection,
+  getDocs,
+  onSnapshot,
+  updateDoc,
+  doc
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -19,26 +70,85 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-console.log("Admin connected to Firebase");
+/* ================= 🔔 BELL ================= */
+const bell = new Audio("sounds/order.mp3");
+let soundEnabled = localStorage.getItem("soundEnabled") === "yes";
+document.body.addEventListener("click",()=>{
+  soundEnabled = true;
+  localStorage.setItem("soundEnabled","yes");
+});
+let firstLoad = true;
 
+/* ================= REALTIME ================= */
+onSnapshot(collection(db,"orders"), snap=>{
+  if(firstLoad){
+    firstLoad = false;
+    loadOrders();
+    return;
+  }
+
+  snap.docChanges().forEach(c=>{
+    if(c.type==="added"){
+      loadOrders();
+      if(soundEnabled) bell.play();
+      alert("🔔 New Order Received");
+    }
+  });
+});
+
+/* ================= LOAD & RENDER ================= */
 async function loadOrders(){
+  const box = document.getElementById("orders");
+  box.innerHTML = "";
+
   const snap = await getDocs(collection(db,"orders"));
-  console.log("Orders count:", snap.size);
+
+  if(snap.empty){
+    box.innerHTML = "<p>No orders yet</p>";
+    return;
+  }
 
   snap.forEach(d=>{
-    console.log("Order:", d.id, d.data());
+    const o = d.data();
+
+    let itemsHtml = "";
+    if(o.items){
+      o.items.forEach(i=>{
+        itemsHtml += `${i.name} × ${i.qty}<br>`;
+      });
+    }
+
+    box.innerHTML += `
+      <div class="card">
+        <b>Order ID:</b> ${d.id}<br>
+        <div class="items">
+          <b>Items:</b><br>
+          ${itemsHtml}
+        </div>
+        <b>Total:</b> ₹${o.grandTotal}<br>
+        <div class="status">Status: ${o.status}</div>
+
+        <button class="accept" onclick="setStatus('${d.id}','Accepted')">Accept</button>
+        <button class="reject" onclick="setStatus('${d.id}','Rejected')">Reject</button>
+      </div>
+    `;
   });
 }
 
-onSnapshot(collection(db,"orders"), snap=>{
-  console.log("Realtime snapshot:", snap.size);
-});
+/* ================= UPDATE STATUS ================= */
+window.setStatus = async function(id,status){
+  await updateDoc(doc(db,"orders",id),{status});
+  loadOrders();
+};
 
-loadOrders();
+window.onload = loadOrders;
 </script>
 </head>
 
 <body>
-<h2>Open Console (Inspect)</h2>
+
+<div class="header">QuickPress – Admin Panel</div>
+<div class="container" id="orders"></div>
+
 </body>
 </html>
