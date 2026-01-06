@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<script src="products.js"></script>
 
 <style>
 body{margin:0;font-family:Arial;background:#f6f7f9}
@@ -19,43 +18,18 @@ body{margin:0;font-family:Arial;background:#f6f7f9}
   background:#FFD400;padding:6px 12px;border-radius:20px;
   font-weight:900;cursor:pointer
 }
-.hero{
-  background:#FFD400;padding:30px 16px
-}
+.hero{background:#FFD400;padding:36px 16px}
 .cat-wrap{
-  display:flex;gap:10px;overflow-x:auto;padding:16px
+  display:flex;gap:12px;overflow-x:auto;padding:16px
 }
 .cat{
-  background:#fff;border-radius:14px;padding:14px;
-  min-width:120px;text-align:center;font-weight:800;
+  background:#fff;border-radius:16px;
+  padding:16px;min-width:120px;
+  text-align:center;font-weight:900;
   box-shadow:0 4px 10px rgba(0,0,0,.1);
   cursor:pointer
 }
-.products{
-  display:grid;grid-template-columns:repeat(2,1fr);
-  gap:12px;padding:16px
-}
-.card{
-  background:#fff;border-radius:16px;padding:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.1)
-}
-.icon{text-align:center;font-size:40px}
-.add{
-  margin-top:10px;width:100%;padding:10px;
-  background:#FFD400;border:none;border-radius:12px;
-  font-weight:900
-}
-.qty{
-  display:flex;justify-content:space-between;
-  background:#eee;border-radius:12px;padding:6px 10px;margin-top:10px
-}
-.qty button{
-  background:#000;color:#fff;border:none;
-  width:28px;height:28px;border-radius:50%
-}
-@media(max-width:420px){
-  .products{grid-template-columns:1fr}
-}
+.cat span{font-size:30px;display:block}
 </style>
 </head>
 
@@ -63,13 +37,7 @@ body{margin:0;font-family:Arial;background:#f6f7f9}
 
 <div class="nav">
   <div class="logo">QuickPress</div>
-  <div>
-    <span onclick="location.href='partner-login.html'">Join Us</span>
-    &nbsp;&nbsp;
-    <span onclick="location.href='login.html'">Login</span>
-    &nbsp;&nbsp;
-    <span class="cart" onclick="goCheckout()">₹ <span id="total">0</span></span>
-  </div>
+  <div class="cart" onclick="location.href='cart.html'">🛒 Cart</div>
 </div>
 
 <div class="hero">
@@ -78,76 +46,19 @@ body{margin:0;font-family:Arial;background:#f6f7f9}
 </div>
 
 <div class="cat-wrap">
-  <div class="cat" onclick="filterCat('Shirt')">👕 Shirt</div>
-  <div class="cat" onclick="filterCat('Pant')">👖 Pant</div>
-  <div class="cat" onclick="filterCat('Saree')">🥻 Saree</div>
-  <div class="cat" onclick="filterCat('Woollen')">🧥 Woollen</div>
-  <div class="cat" onclick="filterCat('Coat')">🧥 Coat</div>
-  <div class="cat" onclick="filterCat('Blazer')">🕴️ Blazer</div>
-  <div class="cat" onclick="filterCat('School')">🎒 School</div>
+  <div class="cat" onclick="go('Shirt')"><span>👕</span>Shirt</div>
+  <div class="cat" onclick="go('Pant')"><span>👖</span>Pant</div>
+  <div class="cat" onclick="go('Saree')"><span>🥻</span>Saree</div>
+  <div class="cat" onclick="go('Woollen')"><span>🧥</span>Woollen</div>
+  <div class="cat" onclick="go('Coat')"><span>🧥</span>Coat</div>
+  <div class="cat" onclick="go('Blazer')"><span>🕴️</span>Blazer</div>
+  <div class="cat" onclick="go('School')"><span>🎒</span>School</div>
 </div>
 
-<div class="products" id="products"></div>
-
 <script>
-let cart = JSON.parse(localStorage.getItem("cart")||"[]");
-let current = PRODUCTS;
-
-function render(){
-  products.innerHTML="";
-  current.forEach(p=>{
-    const c = cart.find(i=>i.id==p.id);
-    products.innerHTML+=`
-      <div class="card">
-        <div class="icon">${p.icon}</div>
-        <b>${p.name}</b><br>₹${p.price}
-        ${!c
-          ? `<button class="add" onclick="add(${p.id})">ADD</button>`
-          : `<div class="qty">
-               <button onclick="dec(${p.id})">−</button>
-               <b>${c.qty}</b>
-               <button onclick="inc(${p.id})">+</button>
-             </div>`
-        }
-      </div>
-    `;
-  });
-  updateTotal();
+function go(cat){
+  location.href = "products.html?cat=" + cat;
 }
-
-function add(id){
-  const p=PRODUCTS.find(x=>x.id==id);
-  cart.push({...p,qty:1});
-  save();
-}
-function inc(id){
-  cart.find(i=>i.id==id).qty++;
-  save();
-}
-function dec(id){
-  const i=cart.findIndex(x=>x.id==id);
-  cart[i].qty--;
-  if(cart[i].qty==0) cart.splice(i,1);
-  save();
-}
-function save(){
-  localStorage.setItem("cart",JSON.stringify(cart));
-  render();
-}
-function updateTotal(){
-  let t=0;
-  cart.forEach(i=>t+=i.price*i.qty);
-  total.innerText=t;
-}
-function filterCat(c){
-  current=PRODUCTS.filter(p=>p.cat==c);
-  render();
-}
-function goCheckout(){
-  location.href="checkout.html";
-}
-
-render();
 </script>
 
 </body>
