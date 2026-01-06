@@ -1,95 +1,46 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Your Cart – QuickPress</title>
-
-<!-- CART LOGIC -->
-<script src="js/cart.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{--y:#FFD400}
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f6f6f6;
-}
-
-/* HEADER */
+body{margin:0;font-family:Arial;background:#f4f4f4}
 .header{
-  background:#fff;
-  padding:14px;
+  background:#FFD400;
+  padding:16px;
+  text-align:center;
   font-size:20px;
   font-weight:900;
-  text-align:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
 }
-
-/* CARD */
 .card{
   background:#fff;
   margin:12px;
   padding:14px;
   border-radius:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
 }
-
-/* ITEM ROW */
 .item{
   display:flex;
   justify-content:space-between;
-  align-items:center;
-  margin:10px 0;
-}
-.qty{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.qty button{
-  width:26px;
-  height:26px;
-  border:none;
-  border-radius:50%;
-  font-weight:900;
-  background:var(--y);
-}
-
-/* TOTAL */
-.row{
-  display:flex;
-  justify-content:space-between;
-  margin:6px 0;
+  margin-bottom:8px;
 }
 .total{
   font-size:18px;
   font-weight:900;
+  margin:16px;
 }
-
-/* FOOTER */
-.footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-  right:0;
-  background:#fff;
-  padding:12px;
-  box-shadow:0 -4px 12px rgba(0,0,0,.1);
-}
-.footer button{
-  width:100%;
+.btn{
+  width:90%;
+  margin:20px auto;
+  display:block;
   padding:14px;
-  background:#27ae60;
+  background:#000;
   color:#fff;
   border:none;
-  border-radius:16px;
-  font-weight:900;
+  border-radius:14px;
   font-size:16px;
-}
-.empty{
-  text-align:center;
-  opacity:.6;
+  font-weight:900;
 }
 </style>
 </head>
@@ -98,66 +49,36 @@ body{
 
 <div class="header">Your Cart</div>
 
-<!-- CART ITEMS -->
-<div class="card" id="cartItems"></div>
+<div id="items"></div>
 
-<!-- BILL -->
-<div class="card">
-  <div class="row">Items Total <span id="itemsTotal">₹0</span></div>
-  <div class="row">Delivery Charge <span>₹20</span></div>
-  <div class="row">Handling Charge <span>₹3</span></div>
-  <hr>
-  <div class="row total">Grand Total <span id="grandTotal">₹0</span></div>
+<div class="total">
+  Total: ₹<span id="sum">0</span>
 </div>
 
-<!-- FOOTER -->
-<div class="footer">
-  <button onclick="location.href='checkout.html'">
-    Proceed to Checkout
-  </button>
-</div>
+<button class="btn" onclick="goCheckout()">Proceed to Checkout</button>
 
 <script>
-function renderCart(){
-  const box = document.getElementById("cartItems");
-  const cart = getCart();
-  box.innerHTML = "";
+const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+let total = 0;
 
-  if(cart.length === 0){
-    box.innerHTML = `<div class="empty">Your cart is empty</div>`;
-    document.getElementById("itemsTotal").innerText = "₹0";
-    document.getElementById("grandTotal").innerText = "₹0";
-    return;
-  }
-
-  let total = 0;
-
+if(cart.length === 0){
+  items.innerHTML = "<div class='card'>Cart is empty</div>";
+}else{
   cart.forEach(i=>{
-    const price = i.price * i.qty;
-    total += price;
-
-    box.innerHTML += `
-      <div class="item">
-        <div>
-          <b>${i.name}</b><br>
-          ₹${i.price} × ${i.qty}
-        </div>
-        <div class="qty">
-          <button onclick="removeItem('${i.name}');renderCart()">−</button>
-          <b>${i.qty}</b>
-          <button onclick="addItem('${i.name}',${i.price});renderCart()">+</button>
-        </div>
-        <div>₹${price}</div>
-      </div>
-    `;
+    items.innerHTML += `
+      <div class="card item">
+        <span>${i.name} × ${i.qty}</span>
+        <span>₹${i.price * i.qty}</span>
+      </div>`;
+    total += i.price * i.qty;
   });
-
-  document.getElementById("itemsTotal").innerText = "₹" + total;
-  document.getElementById("grandTotal").innerText =
-    "₹" + (total === 0 ? 0 : total + 20 + 3);
 }
 
-renderCart();
+sum.innerText = total;
+
+function goCheckout(){
+  location.href = "checkout.html";
+}
 </script>
 
 </body>
