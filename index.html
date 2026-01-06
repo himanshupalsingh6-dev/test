@@ -1,289 +1,153 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
-<title>QuickPress – 10 Min Ironing & Delivery</title>
+<title>QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="products.js"></script>
 
 <style>
-:root{
-  --yellow:#FFD400;
-  --black:#111;
-  --bg:#f6f7f9;
-  --card:#fff;
-  --green:#2ecc71;
-  --blue:#3498db;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
-  color:#222;
-}
-
-/* NAVBAR */
+body{margin:0;font-family:Arial;background:#f6f7f9}
 .nav{
-  position:sticky;top:0;z-index:10;
-  background:#fff;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 16px;
-  box-shadow:0 2px 8px rgba(0,0,0,.08);
+  position:sticky;top:0;z-index:9;
+  background:#fff;display:flex;justify-content:space-between;
+  align-items:center;padding:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.1)
 }
 .logo{font-weight:900;font-size:20px}
 .cart{
-  background:var(--yellow);
-  padding:6px 14px;border-radius:20px;
-  font-weight:900;
+  background:#FFD400;padding:6px 12px;border-radius:20px;
+  font-weight:900;cursor:pointer
 }
-
-/* HERO */
 .hero{
-  background:linear-gradient(180deg,#FFD400,#ffef90);
-  padding:40px 16px;
+  background:#FFD400;padding:30px 16px
 }
-.hero h1{margin:0;font-size:32px;font-weight:900}
-.hero p{margin:12px 0;font-size:16px}
-.cta{
-  background:#000;color:#fff;border:none;
-  padding:14px 24px;border-radius:30px;
-  font-size:16px;font-weight:900;
-}
-
-/* LOCATION */
-.location{
-  margin:16px;background:#fff;padding:14px;
-  border-radius:14px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-
-/* SEARCH */
-.search{margin:16px}
-.search input{
-  width:100%;padding:12px;
-  border-radius:12px;border:1px solid #ccc;
-}
-
-/* CATEGORY */
 .cat-wrap{
-  display:flex;gap:10px;overflow-x:auto;
-  padding:0 16px 12px;
+  display:flex;gap:10px;overflow-x:auto;padding:16px
 }
 .cat{
-  min-width:120px;
-  background:#fff;border-radius:16px;
-  padding:14px;text-align:center;
-  font-weight:800;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-  cursor:pointer;
+  background:#fff;border-radius:14px;padding:14px;
+  min-width:120px;text-align:center;font-weight:800;
+  box-shadow:0 4px 10px rgba(0,0,0,.1);
+  cursor:pointer
 }
-.cat span{font-size:26px;display:block}
-
-/* SECTION */
-.section{
-  margin:22px 16px;
-  font-size:22px;font-weight:900;
-}
-
-/* PRODUCTS */
 .products{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:0 16px;
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:12px;padding:16px
 }
 .card{
-  background:#fff;border-radius:16px;
-  padding:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.1);
+  background:#fff;border-radius:16px;padding:14px;
+  box-shadow:0 6px 14px rgba(0,0,0,.1)
 }
-.icon{
-  font-size:42px;text-align:center;
-}
-.card h4{text-align:center;margin:8px 0}
-.price{text-align:center;font-weight:900}
+.icon{text-align:center;font-size:40px}
 .add{
-  margin-top:10px;width:100%;
-  padding:10px;border:none;
-  background:var(--yellow);
-  border-radius:12px;font-weight:900;
+  margin-top:10px;width:100%;padding:10px;
+  background:#FFD400;border:none;border-radius:12px;
+  font-weight:900
 }
 .qty{
-  display:flex;justify-content:space-between;align-items:center;
-  background:#f1f1f1;border-radius:12px;
-  padding:6px 10px;margin-top:10px;
+  display:flex;justify-content:space-between;
+  background:#eee;border-radius:12px;padding:6px 10px;margin-top:10px
 }
 .qty button{
-  border:none;background:#000;color:#fff;
-  width:28px;height:28px;border-radius:50%;
+  background:#000;color:#fff;border:none;
+  width:28px;height:28px;border-radius:50%
 }
-
-/* ACHIEVEMENTS */
-.ach{
-  display:grid;grid-template-columns:repeat(3,1fr);
-  gap:12px;margin:16px;
-}
-.ach div{
-  background:#fff;border-radius:16px;
-  padding:16px;text-align:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-.ach b{font-size:22px}
-
-/* HOW IT WORKS */
-.timeline{
-  display:grid;grid-template-columns:repeat(4,1fr);
-  gap:10px;margin:16px;
-}
-.step{
-  background:#fff;border-radius:16px;
-  padding:14px;text-align:center;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-}
-.step span{font-size:28px;display:block}
-
-/* FOOTER */
-.footer{
-  background:#111;color:#fff;
-  padding:24px;margin-top:30px;
-  font-size:14px;
-}
-
-/* MOBILE */
 @media(max-width:420px){
   .products{grid-template-columns:1fr}
-  .timeline{grid-template-columns:repeat(2,1fr)}
-  .ach{grid-template-columns:repeat(2,1fr)}
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAV -->
 <div class="nav">
   <div class="logo">QuickPress</div>
-  <div class="cart">₹ <span id="total">0</span></div>
+  <div>
+    <span onclick="location.href='partner-login.html'">Join Us</span>
+    &nbsp;&nbsp;
+    <span onclick="location.href='login.html'">Login</span>
+    &nbsp;&nbsp;
+    <span class="cart" onclick="goCheckout()">₹ <span id="total">0</span></span>
+  </div>
 </div>
 
-<!-- HERO -->
 <div class="hero">
   <h1>⚡ 10 Minute Ironing & Delivery</h1>
-  <p>Fast • Clean • Doorstep Service</p>
-  <button class="cta">Order Now</button>
+  <p>Fast • Clean • Doorstep</p>
 </div>
 
-<!-- LOCATION -->
-<div class="location">
-  Delivering to <b>Your Area</b>
-</div>
-
-<!-- SEARCH -->
-<div class="search">
-  <input placeholder="Search (shirt, pant, saree…)" oninput="search(this.value)">
-</div>
-
-<!-- CATEGORY -->
 <div class="cat-wrap">
-  <div class="cat" onclick="filterCat('Shirt')"><span>👕</span>Shirt</div>
-  <div class="cat" onclick="filterCat('Pant')"><span>👖</span>Pant</div>
-  <div class="cat" onclick="filterCat('Saree')"><span>🥻</span>Saree</div>
-  <div class="cat" onclick="filterCat('Woollen')"><span>🧥</span>Woollen</div>
-  <div class="cat" onclick="filterCat('Coat')"><span>🧥</span>Coat</div>
-  <div class="cat" onclick="filterCat('Blazer')"><span>🕴️</span>Blazer</div>
-  <div class="cat" onclick="filterCat('School')"><span>🎒</span>School Dress</div>
+  <div class="cat" onclick="filterCat('Shirt')">👕 Shirt</div>
+  <div class="cat" onclick="filterCat('Pant')">👖 Pant</div>
+  <div class="cat" onclick="filterCat('Saree')">🥻 Saree</div>
+  <div class="cat" onclick="filterCat('Woollen')">🧥 Woollen</div>
+  <div class="cat" onclick="filterCat('Coat')">🧥 Coat</div>
+  <div class="cat" onclick="filterCat('Blazer')">🕴️ Blazer</div>
+  <div class="cat" onclick="filterCat('School')">🎒 School</div>
 </div>
 
-<!-- PRODUCTS -->
-<div class="section" id="title">Popular Items</div>
 <div class="products" id="products"></div>
 
-<!-- ACHIEVEMENTS -->
-<div class="section">Our Achievements</div>
-<div class="ach">
-  <div><b>10K+</b><br>Clothes Ironed</div>
-  <div><b>2K+</b><br>Happy Customers</div>
-  <div><b>4.9⭐</b><br>Customer Rating</div>
-</div>
-
-<!-- HOW -->
-<div class="section">How QuickPress Works</div>
-<div class="timeline">
-  <div class="step"><span>📱</span>Order</div>
-  <div class="step"><span>🏠</span>Pickup</div>
-  <div class="step"><span>🔥</span>Iron</div>
-  <div class="step"><span>🚀</span>Deliver</div>
-</div>
-
-<!-- FOOTER -->
-<div class="footer">
-  © QuickPress • Contact • Privacy • Terms
-</div>
-
 <script>
-const items=[
- {id:1,name:"Cotton Shirt",cat:"Shirt",price:5,icon:"👕"},
- {id:2,name:"Formal Shirt",cat:"Shirt",price:6,icon:"👔"},
- {id:3,name:"Jeans Pant",cat:"Pant",price:7,icon:"👖"},
- {id:4,name:"Cotton Pant",cat:"Pant",price:6,icon:"👖"},
- {id:5,name:"Silk Saree",cat:"Saree",price:12,icon:"🥻"},
- {id:6,name:"Woollen Sweater",cat:"Woollen",price:15,icon:"🧥"},
- {id:7,name:"Winter Coat",cat:"Coat",price:18,icon:"🧥"},
- {id:8,name:"Blazer",cat:"Blazer",price:20,icon:"🕴️"},
- {id:9,name:"School Uniform",cat:"School",price:8,icon:"🎒"},
-];
+let cart = JSON.parse(localStorage.getItem("cart")||"[]");
+let current = PRODUCTS;
 
-let cart={};
-let current=items;
-
-function render(list){
+function render(){
   products.innerHTML="";
-  list.forEach(p=>{
-    const q=cart[p.id]||0;
+  current.forEach(p=>{
+    const c = cart.find(i=>i.id==p.id);
     products.innerHTML+=`
       <div class="card">
         <div class="icon">${p.icon}</div>
-        <h4>${p.name}</h4>
-        <div class="price">₹${p.price}</div>
-        ${q==0
+        <b>${p.name}</b><br>₹${p.price}
+        ${!c
           ? `<button class="add" onclick="add(${p.id})">ADD</button>`
           : `<div class="qty">
                <button onclick="dec(${p.id})">−</button>
-               <b>${q}</b>
+               <b>${c.qty}</b>
                <button onclick="inc(${p.id})">+</button>
              </div>`
         }
       </div>
     `;
   });
-  total.innerText=calc();
+  updateTotal();
 }
 
-function add(id){cart[id]=1;render(current)}
-function inc(id){cart[id]++;render(current)}
-function dec(id){cart[id]--;if(cart[id]==0)delete cart[id];render(current)}
-function calc(){
+function add(id){
+  const p=PRODUCTS.find(x=>x.id==id);
+  cart.push({...p,qty:1});
+  save();
+}
+function inc(id){
+  cart.find(i=>i.id==id).qty++;
+  save();
+}
+function dec(id){
+  const i=cart.findIndex(x=>x.id==id);
+  cart[i].qty--;
+  if(cart[i].qty==0) cart.splice(i,1);
+  save();
+}
+function save(){
+  localStorage.setItem("cart",JSON.stringify(cart));
+  render();
+}
+function updateTotal(){
   let t=0;
-  Object.keys(cart).forEach(id=>{
-    const p=items.find(x=>x.id==id);
-    t+=p.price*cart[id];
-  });
-  return t;
+  cart.forEach(i=>t+=i.price*i.qty);
+  total.innerText=t;
 }
-
 function filterCat(c){
-  document.getElementById("title").innerText=c;
-  current=items.filter(i=>i.cat==c);
-  render(current);
+  current=PRODUCTS.filter(p=>p.cat==c);
+  render();
+}
+function goCheckout(){
+  location.href="checkout.html";
 }
 
-function search(v){
-  v=v.toLowerCase();
-  current=items.filter(i=>i.name.toLowerCase().includes(v));
-  render(current);
-}
-
-render(items);
+render();
 </script>
 
 </body>
