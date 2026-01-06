@@ -1,115 +1,127 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Partner Panel – QuickPress</title>
+<meta charset="UTF-8">
+<title>Products – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<script src="products.js"></script>
+
 <style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-.header{
-  background:#FFD400;
-  padding:14px;
-  font-size:20px;
-  font-weight:900;
-  text-align:center;
+body{margin:0;font-family:Arial;background:#f6f7f9}
+.nav{
+  position:sticky;top:0;background:#fff;
+  padding:12px;display:flex;
+  justify-content:space-between;
+  box-shadow:0 2px 6px rgba(0,0,0,.1)
+}
+.cat-wrap{
+  display:flex;gap:10px;overflow-x:auto;
+  padding:12px;background:#fff
+}
+.cat{
+  padding:10px 14px;background:#FFD400;
+  border-radius:20px;font-weight:900;
+  cursor:pointer
+}
+.products{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:12px;padding:12px
 }
 .card{
-  background:#fff;
-  margin:12px;
+  background:#fff;border-radius:16px;
   padding:14px;
-  border-radius:12px;
+  box-shadow:0 6px 14px rgba(0,0,0,.1)
 }
-button{
-  padding:6px 10px;
-  border:none;
-  border-radius:6px;
-  font-weight:800;
-  margin-right:6px;
+.icon{text-align:center;font-size:40px}
+.add{
+  width:100%;padding:10px;
+  background:#FFD400;border:none;
+  border-radius:12px;font-weight:900
+}
+.qty{
+  display:flex;justify-content:space-between;
+  background:#eee;border-radius:12px;
+  padding:6px 10px;margin-top:8px
+}
+.qty button{
+  background:#000;color:#fff;border:none;
+  width:28px;height:28px;border-radius:50%
+}
+@media(max-width:420px){
+  .products{grid-template-columns:1fr}
 }
 </style>
+</head>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getFirestore, collection, query, where,
-  getDocs, updateDoc, doc
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+<body>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
-};
+<div class="nav">
+  <b>Products</b>
+  <button onclick="location.href='cart.html'">🛒 Cart</button>
+</div>
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+<div class="cat-wrap" id="cats"></div>
+<div class="products" id="list"></div>
 
-const email = localStorage.getItem("partnerEmail");
-if(!email){
-  location.href="login.html";
+<script>
+const cart = JSON.parse(localStorage.getItem("cart")||"[]");
+const url = new URLSearchParams(location.search);
+let currentCat = url.get("cat") || "All";
+
+const categories = ["All","Shirt","Pant","Saree","Woollen","Coat","Blazer","School"];
+
+cats.innerHTML = categories.map(c =>
+  `<div class="cat" onclick="filter('${c}')">${c}</div>`
+).join("");
+
+function filter(c){
+  currentCat = c;
+  render();
 }
 
-/* LOAD ORDERS */
-async function loadOrders(){
-  const q = query(
-    collection(db,"orders"),
-    where("partnerEmail","==",email)
-  );
-
-  const snap = await getDocs(q);
-  const box = document.getElementById("orders");
-  box.innerHTML="";
-
-  snap.forEach(d=>{
-    const o=d.data();
-    let items="";
-    o.items?.forEach(i=>items+=`${i.name} × ${i.qty}<br>`);
-
-    box.innerHTML+=`
+function render(){
+  list.innerHTML="";
+  PRODUCTS.filter(p =>
+    currentCat=="All" || p.cat==currentCat
+  ).forEach(p=>{
+    const c = cart.find(i=>i.id==p.id);
+    list.innerHTML += `
       <div class="card">
-        <b>Order:</b> ${d.id}<br>
-        ${items}
-        <b>Status:</b> ${o.partnerStatus || "Assigned"}<br><br>
-        <button onclick="updateStatus('${d.id}','Ironed')">Ironed</button>
-        <button onclick="updateStatus('${d.id}','Ready')">Ready</button>
+        <div class="icon">${p.icon}</div>
+        <b>${p.name}</b><br>₹${p.price}
+        ${!c
+          ? `<button class="add" onclick="add(${p.id})">ADD</button>`
+          : `<div class="qty">
+              <button onclick="dec(${p.id})">−</button>
+              <b>${c.qty}</b>
+              <button onclick="inc(${p.id})">+</button>
+            </div>`
+        }
       </div>
     `;
   });
 }
 
-window.updateStatus = async function(id,status){
-  await updateDoc(doc(db,"orders",id),{
-    partnerStatus:status
-  });
-  loadOrders();
-};
-
-/* LOAD WALLET */
-async function loadWallet(){
-  const q=query(
-    collection(db,"partners"),
-    where("email","==",email)
-  );
-  const snap=await getDocs(q);
-  snap.forEach(d=>{
-    wallet.innerText=d.data().wallet || 0;
-  });
+function add(id){
+  const p=PRODUCTS.find(x=>x.id==id);
+  cart.push({...p,qty:1});
+  save();
+}
+function inc(id){cart.find(i=>i.id==id).qty++;save()}
+function dec(id){
+  const i=cart.findIndex(x=>x.id==id);
+  cart[i].qty--;
+  if(cart[i].qty==0) cart.splice(i,1);
+  save();
+}
+function save(){
+  localStorage.setItem("cart",JSON.stringify(cart));
+  render();
 }
 
-loadOrders();
-loadWallet();
+filter(currentCat);
 </script>
-</head>
-
-<body>
-
-<div class="header">Partner Dashboard</div>
-
-<div class="card">
-  <b>Wallet:</b> ₹<span id="wallet">0</span>
-</div>
-
-<div id="orders"></div>
 
 </body>
 </html>
