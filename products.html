@@ -1,129 +1,220 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
+<title>Products – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>QuickPress – Products</title>
 
-<script src="js/cart.js"></script>
+<!-- PRODUCTS DATA -->
+<script src="products.js"></script>
 
 <style>
-:root{--y:#FFD400}
-body{margin:0;font-family:Arial;background:#f6f6f6}
+:root{
+  --yellow:#FFD400;
+  --black:#111;
+  --bg:#f6f7f9;
+  --card:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg);
+}
 
-/* HEADER */
-.header{
+/* NAVBAR */
+.nav{
   position:sticky;top:0;z-index:10;
-  background:#fff;padding:10px;
-  display:flex;gap:10px;align-items:center;
-  box-shadow:0 2px 8px rgba(0,0,0,.1)
+  background:#fff;
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 14px;
+  box-shadow:0 2px 8px rgba(0,0,0,.1);
 }
-.logo{font-weight:900}
-.search{flex:1;padding:8px;border-radius:10px;border:1px solid #ddd}
-.cart{background:var(--y);padding:6px 12px;border-radius:20px;font-weight:900}
+.nav button{
+  border:none;background:#000;color:#fff;
+  padding:6px 12px;border-radius:20px;
+}
+.cart{
+  background:var(--yellow);
+  padding:6px 14px;border-radius:20px;
+  font-weight:900;
+}
 
-/* CATEGORY */
-.cats{display:flex;gap:10px;overflow-x:auto;padding:10px}
-.cat{padding:8px 14px;background:#fff;border-radius:20px;font-weight:700;cursor:pointer}
-.cat.active{background:var(--y)}
+/* CATEGORY SLIDER */
+.cat-wrap{
+  display:flex;gap:10px;overflow-x:auto;
+  padding:12px;background:#fff;
+}
+.cat{
+  padding:10px 16px;
+  border-radius:20px;
+  background:#eee;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+}
+.cat.active{
+  background:var(--yellow);
+}
 
-/* GRID */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;padding:12px}
-
-/* CARD */
+/* PRODUCTS GRID */
+.products{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+  padding:12px;
+}
 .card{
-  background:#fff;border-radius:16px;padding:12px;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-  animation:slide .4s ease;
+  background:#fff;
+  border-radius:18px;
+  padding:14px;
+  box-shadow:0 6px 14px rgba(0,0,0,.1);
+  animation:fade .25s ease;
 }
-@keyframes slide{from{opacity:0;transform:translateY(10px)}to{opacity:1}}
-
-.card img{width:100%;height:80px;object-fit:contain}
-.add-btn,.qty{
-  margin-top:8px;background:var(--y);
-  border-radius:10px;padding:8px;
-  font-weight:900;border:none;width:100%
+@keyframes fade{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1}
 }
-.qty{display:flex;justify-content:space-between}
-.qty span{cursor:pointer;animation:bounce .2s}
-@keyframes bounce{50%{transform:scale(1.2)}}
+.icon{
+  font-size:44px;
+  text-align:center;
+}
+.name{
+  font-weight:900;
+  margin-top:6px;
+  text-align:center;
+}
+.price{
+  text-align:center;
+  font-weight:800;
+  margin-top:2px;
+}
+.add{
+  margin-top:10px;
+  width:100%;
+  padding:10px;
+  border:none;
+  background:var(--yellow);
+  border-radius:14px;
+  font-weight:900;
+}
+.qty{
+  margin-top:10px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:#f1f1f1;
+  border-radius:14px;
+  padding:6px 12px;
+}
+.qty button{
+  border:none;
+  background:#000;
+  color:#fff;
+  width:30px;
+  height:30px;
+  border-radius:50%;
+  font-size:16px;
+}
 
-/* FOOTER */
-.footer{position:fixed;bottom:0;left:0;right:0;background:#fff;padding:10px}
-.footer button{
-  width:100%;padding:12px;background:#27ae60;
-  color:#fff;border:none;border-radius:14px;font-weight:900
+/* MOBILE */
+@media(max-width:420px){
+  .products{grid-template-columns:1fr}
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">
-  <div class="logo">QuickPress</div>
-  <input class="search" id="search" placeholder="Search clothes">
-  <div class="cart" id="navCartAmount">₹0</div>
+<!-- NAVBAR -->
+<div class="nav">
+  <button onclick="history.back()">← Back</button>
+  <div class="cart" onclick="goCart()">₹ <span id="total">0</span></div>
 </div>
 
-<div class="cats" id="cats"></div>
-<div class="grid" id="grid"></div>
+<!-- CATEGORY SLIDER -->
+<div class="cat-wrap" id="cats"></div>
 
-<div class="footer">
-  <button onclick="location.href='cart.html'">View Cart</button>
-</div>
+<!-- PRODUCTS -->
+<div class="products" id="list"></div>
 
 <script>
-/* CDN IMAGES */
-const products=[
- {name:"Shirt",price:10,cat:"Shirts",img:"https://img.icons8.com/color/96/shirt.png"},
- {name:"Pant",price:15,cat:"Pants",img:"https://img.icons8.com/color/96/trousers.png"},
- {name:"Saree",price:20,cat:"Saree",img:"https://img.icons8.com/color/96/sari.png"},
- {name:"Woollen",price:25,cat:"Woollen",img:"https://img.icons8.com/color/96/jacket.png"}
-];
+/* CART */
+let cart = JSON.parse(localStorage.getItem("cart")||"[]");
 
-const categories=["All",...new Set(products.map(p=>p.cat))];
-let activeCat="All";
+/* CATEGORIES */
+const categories = ["All","Shirt","Pant","Saree","Woollen","Coat","Blazer","School"];
+let currentCat = new URLSearchParams(location.search).get("cat") || "All";
 
-const catsBox=document.getElementById("cats");
-categories.forEach(c=>{
-  catsBox.innerHTML+=`<div class="cat ${c==="All"?"active":""}" onclick="setCat('${c}',this)">${c}</div>`;
-});
+/* BUILD CATEGORY SLIDER */
+cats.innerHTML = categories.map(c=>
+  `<div class="cat ${c==currentCat?'active':''}" onclick="filter('${c}')">${c}</div>`
+).join("");
 
-function setCat(c,el){
-  activeCat=c;
+function filter(cat){
+  currentCat = cat;
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
-  el.classList.add("active");
+  [...document.querySelectorAll(".cat")].find(x=>x.innerText==cat).classList.add("active");
   render();
 }
 
-document.getElementById("search").addEventListener("input",render);
-
+/* RENDER PRODUCTS */
 function render(){
-  const q=document.getElementById("search").value.toLowerCase();
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
+  list.innerHTML="";
+  PRODUCTS
+    .filter(p=>currentCat=="All" || p.cat==currentCat)
+    .forEach(p=>{
+      const c = cart.find(i=>i.id==p.id);
+      list.innerHTML+=`
+        <div class="card">
+          <div class="icon">${p.icon}</div>
+          <div class="name">${p.name}</div>
+          <div class="price">₹${p.price}</div>
 
-  products
-   .filter(p=>(activeCat==="All"||p.cat===activeCat) && p.name.toLowerCase().includes(q))
-   .forEach(p=>{
-     const qty=getQty(p.name);
-     grid.innerHTML+=`
-      <div class="card">
-        <img src="${p.img}">
-        <h4>${p.name}</h4>
-        ₹${p.price}
-        ${
-          qty===0
-          ? `<button class="add-btn" onclick="addItem('${p.name}',${p.price});render()">ADD</button>`
-          : `<div class="qty">
-               <span onclick="removeItem('${p.name}');render()">−</span>
-               <span>${qty}</span>
-               <span onclick="addItem('${p.name}',${p.price});render()">+</span>
-             </div>`
-        }
-      </div>`;
-   });
+          ${!c
+            ? `<button class="add" onclick="add(${p.id})">ADD</button>`
+            : `<div class="qty">
+                 <button onclick="dec(${p.id})">−</button>
+                 <b>${c.qty}</b>
+                 <button onclick="inc(${p.id})">+</button>
+               </div>`
+          }
+        </div>
+      `;
+    });
+  updateTotal();
 }
+
+/* CART FUNCTIONS */
+function add(id){
+  const p = PRODUCTS.find(x=>x.id==id);
+  cart.push({...p,qty:1});
+  save();
+}
+function inc(id){
+  cart.find(i=>i.id==id).qty++;
+  save();
+}
+function dec(id){
+  const i = cart.findIndex(x=>x.id==id);
+  cart[i].qty--;
+  if(cart[i].qty==0) cart.splice(i,1);
+  save();
+}
+function save(){
+  localStorage.setItem("cart",JSON.stringify(cart));
+  render();
+}
+function updateTotal(){
+  let t=0;
+  cart.forEach(i=>t+=i.price*i.qty);
+  total.innerText=t;
+}
+function goCart(){
+  location.href="cart.html";
+}
+
+/* INIT */
 render();
 </script>
 
