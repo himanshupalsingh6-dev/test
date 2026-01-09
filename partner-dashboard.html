@@ -2,6 +2,8 @@
 <html>
 <head>
   <title>Partner Dashboard – QuickPress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
     body {
       margin: 0;
@@ -9,60 +11,126 @@
       font-family: Arial, sans-serif;
       background: #fff8e1;
     }
+
     header {
-      background: #ff9800;
+      background: linear-gradient(90deg, #ff9800, #ff6f00);
       color: white;
       padding: 15px;
       text-align: center;
       font-size: 20px;
+      font-weight: bold;
     }
-    .section {
+
+    .container {
       padding: 15px;
     }
+
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 15px 0 10px;
+      color: #333;
+    }
+
     .card {
       background: white;
+      border-radius: 12px;
       padding: 12px;
-      margin-bottom: 10px;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      margin-bottom: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      border-left: 5px solid #ff9800;
     }
+
+    .order-id {
+      font-weight: bold;
+      color: #ff9800;
+    }
+
+    .order-row {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .status {
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+    }
+
     .btn {
-      padding: 8px 12px;
-      background: #ff9800;
-      color: white;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
+      width: 100%;
+      padding: 10px;
       margin-top: 8px;
+      border: none;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      color: white;
+      background: #ff9800;
     }
+
     .btn.green {
       background: #4caf50;
     }
-    .status {
-      font-weight: bold;
-      margin-top: 5px;
+
+    .btn:hover {
+      opacity: 0.9;
     }
+
+    .empty {
+      text-align: center;
+      color: #999;
+      font-size: 14px;
+      padding: 20px 0;
+    }
+
+    .footer {
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      background: white;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: space-around;
+      padding: 8px 0;
+    }
+
+    .footer div {
+      text-align: center;
+      font-size: 12px;
+      color: #ff9800;
+      font-weight: bold;
+    }
+
   </style>
 </head>
 <body>
 
 <header>
-  Partner Dashboard – QuickPress
+  👔 Partner Dashboard – QuickPress
 </header>
 
-<div class="section">
-  <h3>New Orders</h3>
+<div class="container">
+
+  <!-- New Orders -->
+  <div class="section-title">🆕 New Orders</div>
   <div id="newOrders"></div>
-</div>
 
-<div class="section">
-  <h3>In Process Orders</h3>
+  <!-- In Process Orders -->
+  <div class="section-title">⚙️ In Process Orders</div>
   <div id="processOrders"></div>
+
+  <!-- Completed Orders -->
+  <div class="section-title">✅ Completed Orders</div>
+  <div id="completedOrders"></div>
+
 </div>
 
-<div class="section">
-  <h3>Completed Orders</h3>
-  <div id="completedOrders"></div>
+<!-- Bottom Nav -->
+<div class="footer">
+  <div>Orders</div>
+  <div>Earnings</div>
+  <div>Profile</div>
 </div>
 
 <script type="module">
@@ -92,7 +160,11 @@
   const processOrdersDiv = document.getElementById("processOrders");
   const completedOrdersDiv = document.getElementById("completedOrders");
 
-  // New Orders (assigned but not accepted)
+  function renderEmpty(div, text) {
+    div.innerHTML = `<div class="empty">${text}</div>`;
+  }
+
+  // New Orders
   const newOrdersQuery = query(
     collection(db, "orders"),
     where("partnerId", "==", partnerId),
@@ -101,13 +173,16 @@
 
   onSnapshot(newOrdersQuery, (snapshot) => {
     newOrdersDiv.innerHTML = "";
+    if (snapshot.empty) {
+      renderEmpty(newOrdersDiv, "No new orders");
+    }
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       newOrdersDiv.innerHTML += `
         <div class="card">
-          <div><b>Order ID:</b> ${docSnap.id}</div>
-          <div><b>Total:</b> ₹${data.grandTotal}</div>
-          <div class="status">Status: ${data.status}</div>
+          <div class="order-id">Order #${docSnap.id}</div>
+          <div class="order-row">Total: ₹${data.grandTotal}</div>
+          <div class="order-row status">Status: ${data.status}</div>
           <button class="btn" onclick="acceptOrder('${docSnap.id}')">Accept Order</button>
         </div>
       `;
@@ -123,13 +198,16 @@
 
   onSnapshot(processOrdersQuery, (snapshot) => {
     processOrdersDiv.innerHTML = "";
+    if (snapshot.empty) {
+      renderEmpty(processOrdersDiv, "No orders in process");
+    }
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       processOrdersDiv.innerHTML += `
         <div class="card">
-          <div><b>Order ID:</b> ${docSnap.id}</div>
-          <div><b>Total:</b> ₹${data.grandTotal}</div>
-          <div class="status">Status: ${data.status}</div>
+          <div class="order-id">Order #${docSnap.id}</div>
+          <div class="order-row">Total: ₹${data.grandTotal}</div>
+          <div class="order-row status">Status: ${data.status}</div>
           <button class="btn green" onclick="markReady('${docSnap.id}')">Mark as Ready</button>
         </div>
       `;
@@ -145,32 +223,30 @@
 
   onSnapshot(completedOrdersQuery, (snapshot) => {
     completedOrdersDiv.innerHTML = "";
+    if (snapshot.empty) {
+      renderEmpty(completedOrdersDiv, "No completed orders yet");
+    }
     snapshot.forEach((docSnap) => {
       const data = docSnap.data();
       completedOrdersDiv.innerHTML += `
         <div class="card">
-          <div><b>Order ID:</b> ${docSnap.id}</div>
-          <div><b>Total:</b> ₹${data.grandTotal}</div>
-          <div class="status">Status: ${data.status}</div>
+          <div class="order-id">Order #${docSnap.id}</div>
+          <div class="order-row">Total: ₹${data.grandTotal}</div>
+          <div class="order-row status">Status: ${data.status}</div>
         </div>
       `;
     });
   });
 
-  // Accept Order
+  // Actions
   window.acceptOrder = async (orderId) => {
     const orderRef = doc(db, "orders", orderId);
-    await updateDoc(orderRef, {
-      status: "Accepted"
-    });
+    await updateDoc(orderRef, { status: "Accepted" });
   };
 
-  // Mark as Ready
   window.markReady = async (orderId) => {
     const orderRef = doc(db, "orders", orderId);
-    await updateDoc(orderRef, {
-      status: "Ready"
-    });
+    await updateDoc(orderRef, { status: "Ready" });
   };
 
 </script>
