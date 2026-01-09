@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Profile – QuickPress</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f5f5f5;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #ff9800, #ff6f00);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom-left-radius: 25px;
+      border-bottom-right-radius: 25px;
+    }
+
+    .avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: white;
+      color: #ff9800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 36px;
+      margin: 0 auto 10px;
+      font-weight: bold;
+    }
+
+    .name {
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .card {
+      background: white;
+      margin: 15px;
+      padding: 15px;
+      border-radius: 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    .row {
+      display: flex;
+      justify-content: space-between;
+      margin: 10px 0;
+      font-size: 14px;
+    }
+
+    .label {
+      color: #777;
+    }
+
+    .value {
+      font-weight: bold;
+      color: #333;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      cursor: pointer;
+    }
+
+    .btn.logout {
+      background: #e74c3c;
+      color: white;
+    }
+
+    .btn.orders {
+      background: #2196f3;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+<!-- 🔒 LOGIN CHECK -->
+<script>
+  const customerId = localStorage.getItem("customerId");
+  if (!customerId) {
+    window.location.href = "customer-login.html";
+  }
+</script>
+
+<div class="header">
+  <div class="avatar">👤</div>
+  <div class="name" id="cname">Customer</div>
+</div>
+
+<div class="card">
+  <div class="row">
+    <div class="label">Email</div>
+    <div class="value" id="cemail">-</div>
+  </div>
+  <div class="row">
+    <div class="label">Phone</div>
+    <div class="value" id="cphone">-</div>
+  </div>
+</div>
+
+<div class="card">
+  <button class="btn orders" onclick="goOrders()">My Orders</button>
+  <button class="btn logout" onclick="logout()">Logout</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const customerId = localStorage.getItem("customerId");
+
+const snap = await getDoc(doc(db, "users", customerId));
+
+if (snap.exists()) {
+  const data = snap.data();
+  document.getElementById("cname").innerText = data.name;
+  document.getElementById("cemail").innerText = data.email;
+  document.getElementById("cphone").innerText = data.phone;
+}
+
+window.logout = () => {
+  localStorage.clear();
+  window.location.href = "customer-login.html";
+};
+
+window.goOrders = () => {
+  window.location.href = "my-orders.html";
+};
+</script>
+
+</body>
+</html>
