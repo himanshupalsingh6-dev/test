@@ -5,70 +5,100 @@
 <title>My Orders – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
+<!-- ================= FIREBASE + REALTIME ================= -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore, collection, query, orderBy, getDocs
+  getFirestore,
+  collection,
+  query,
+  orderBy,
+  onSnapshot
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
+/* 🔥 FIREBASE CONFIG (same as checkout) */
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
   projectId: "quickpress-web"
 };
 
+/* INIT */
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* LOAD ORDERS */
-window.onload = async ()=>{
-  const ordersRef = collection(db,"orders");
-  const q = query(ordersRef, orderBy("createdAt","desc"));
-  const snap = await getDocs(q);
+/* REAL-TIME LISTENER */
+const q = query(
+  collection(db, "orders"),
+  orderBy("createdAt", "desc")
+);
 
-  if(snap.empty){
-    document.getElementById("list").innerHTML =
-      "<div class='empty'>No orders yet</div>";
+onSnapshot(q, (snapshot) => {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  if (snapshot.empty) {
+    list.innerHTML = `<div class="empty">No orders yet</div>`;
     return;
   }
 
-  snap.forEach(doc=>{
+  snapshot.forEach((doc) => {
     const o = doc.data();
+
     let itemsHTML = "";
-    o.items.forEach(i=>{
+    o.items.forEach(i => {
       itemsHTML += `${i.name} × ${i.qty}<br>`;
     });
 
-    document.getElementById("list").innerHTML += `
+    list.innerHTML += `
       <div class="order">
-        <div class="row">
-          <b>Order</b>
+        <div class="top">
+          <div>
+            <b>Order ID</b><br>
+            <small>${doc.id}</small>
+          </div>
           <span class="status ${o.status}">
             ${o.status}
           </span>
         </div>
-        <div class="items">${itemsHTML}</div>
-        <div class="total">Total ₹${o.grandTotal}</div>
+
+        <div class="items">
+          ${itemsHTML}
+        </div>
+
+        <div class="bottom">
+          <b>Total ₹${o.grandTotal}</b>
+        </div>
       </div>
     `;
   });
-};
+});
 </script>
 
+<!-- ================= STYLES ================= -->
 <style>
+:root{
+  --yellow:#FFD400;
+  --bg:#f6f7f9;
+  --card:#fff;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:#f6f7f9;
+  background:var(--bg);
 }
+
+/* HEADER */
 .header{
-  background:#FFD400;
+  background:var(--yellow);
   padding:16px;
   text-align:center;
   font-size:20px;
   font-weight:900;
 }
+
+/* ORDER CARD */
 .order{
   background:#fff;
   margin:16px;
@@ -76,14 +106,24 @@ body{
   border-radius:18px;
   box-shadow:0 4px 12px rgba(0,0,0,.1);
 }
-.row{
+.top{
   display:flex;
   justify-content:space-between;
   align-items:center;
 }
+.items{
+  margin-top:12px;
+  font-size:14px;
+}
+.bottom{
+  margin-top:12px;
+  font-weight:900;
+}
+
+/* STATUS BADGES */
 .status{
-  padding:4px 10px;
-  border-radius:12px;
+  padding:6px 12px;
+  border-radius:14px;
   font-size:12px;
   font-weight:900;
 }
@@ -91,18 +131,13 @@ body{
 .status.Accepted{background:#81ecec}
 .status.Ready{background:#74b9ff;color:#fff}
 .status.Delivered{background:#55efc4}
-.items{
-  margin-top:10px;
-  font-size:14px;
-}
-.total{
-  margin-top:10px;
-  font-weight:900;
-}
+
+/* EMPTY */
 .empty{
   text-align:center;
   margin:60px;
-  font-weight:700;
+  font-weight:800;
+  color:#555;
 }
 </style>
 </head>
@@ -110,6 +145,7 @@ body{
 <body>
 
 <div class="header">My Orders</div>
+
 <div id="list"></div>
 
 </body>
