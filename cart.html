@@ -46,6 +46,14 @@ body{margin:0;font-family:Arial;background:#f4f4f4}
 </head>
 
 <body>
+<script>
+  const customerId = localStorage.getItem("customerId");
+
+  if (!customerId) {
+    alert("Please login to continue");
+    window.location.href = "customer-login.html";
+  }
+</script>
 
 <div class="header">Your Cart</div>
 
