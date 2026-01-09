@@ -1,139 +1,124 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Partner Login – QuickPress</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-body{
-  margin:0;
-  font-family:Arial, sans-serif;
-  background:#f4f4f4;
-}
-.login-box{
-  max-width:360px;
-  margin:80px auto;
-  background:#fff;
-  padding:24px;
-  border-radius:14px;
-  box-shadow:0 6px 18px rgba(0,0,0,0.15);
-}
-.login-box h2{
-  text-align:center;
-  margin-bottom:20px;
-}
-input{
-  width:100%;
-  padding:12px;
-  margin-bottom:14px;
-  font-size:16px;
-  border-radius:8px;
-  border:1px solid #ccc;
-}
-button{
-  width:100%;
-  padding:12px;
-  font-size:16px;
-  font-weight:700;
-  background:#FFD400;
-  border:none;
-  border-radius:8px;
-  cursor:pointer;
-}
-.msg{
-  margin-top:12px;
-  text-align:center;
-  font-size:14px;
-  color:red;
-}
-</style>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from
-  "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-import {
-  getFirestore, collection, query, where, getDocs
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-/* 🔥 SAME FIREBASE CONFIG (DO NOT CHANGE) */
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-window.partnerLogin = async () => {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
-  const msg = document.getElementById("msg");
-
-  msg.innerText = "";
-
-  if(!email || !password){
-    msg.innerText = "Email and password required";
-    return;
-  }
-
-  try{
-    // 🔐 Firebase Auth login
-    await signInWithEmailAndPassword(auth, email, password);
-
-    // 🔍 Check partner approval
-    const q = query(
-      collection(db, "partners"),
-      where("email", "==", email),
-      where("approved", "==", true)
-    );
-
-    const snap = await getDocs(q);
-
-    if(snap.empty){
-      msg.innerText = "Partner not approved by admin yet";
-      return;
+  <title>Partner Login – QuickPress</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: #fff8e1;
+      font-family: Arial, sans-serif;
     }
-
-    // ✅ Save partner session
-    localStorage.setItem("partnerEmail", email);
-
-    // 👉 Redirect to partner dashboard
-    window.location.href = "partner-dashboard.html";
-
-  }catch(err){
-    msg.innerText = err.message;
-  }
-};
-</script>
+    .box {
+      max-width: 380px;
+      margin: 80px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #ff9800;
+      margin-bottom: 20px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 12px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #e68900;
+    }
+    .msg {
+      margin-top: 10px;
+      text-align: center;
+      color: red;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="login-box">
+<div class="box">
   <h2>Partner Login</h2>
 
-  <input
-    id="email"
-    type="email"
-    placeholder="Email"
-    autocomplete="email"
-  >
-
-  <input
-    id="password"
-    type="password"
-    placeholder="Password"
-    autocomplete="current-password"
-  >
+  <input type="email" id="email" placeholder="Email">
+  <input type="password" id="password" placeholder="Password">
 
   <button onclick="partnerLogin()">Login</button>
 
-  <div id="msg" class="msg"></div>
+  <div class="msg" id="msg"></div>
 </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+    authDomain: "quickpress-web.firebaseapp.com",
+    projectId: "quickpress-web",
+    storageBucket: "quickpress-web.appspot.com",
+    messagingSenderId: "909067547966",
+    appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function partnerLogin() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+    const msg = document.getElementById("msg");
+
+    msg.innerText = "";
+
+    if (!email || !password) {
+      msg.innerText = "Please fill all fields";
+      return;
+    }
+
+    const q = query(
+      collection(db, "partners"),
+      where("email", "==", email),
+      where("password", "==", password)
+    );
+
+    const querySnapshot = await getDocs(q);
+
+    if (querySnapshot.empty) {
+      msg.innerText = "Invalid credentials";
+      return;
+    }
+
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+
+      if (data.approved === true) {
+        localStorage.setItem("partnerId", doc.id);
+        localStorage.setItem("partnerName", data.name);
+        window.location.href = "partner-dashboard.html";
+      } else {
+        msg.innerText = "Your account is pending approval by admin";
+      }
+    });
+  }
+
+  window.partnerLogin = partnerLogin;
+</script>
 
 </body>
 </html>
