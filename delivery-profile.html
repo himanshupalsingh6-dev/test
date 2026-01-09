@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile – QuickPress Delivery</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin:0; font-family:Segoe UI; background:#f5f5f5; }
+    .header { background:linear-gradient(135deg,#ff9800,#ff6f00); color:white; padding:25px; text-align:center; border-bottom-left-radius:25px; border-bottom-right-radius:25px; }
+    .avatar { width:80px; height:80px; background:white; color:#ff9800; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:36px; margin:0 auto 10px; }
+    .name { font-size:20px; font-weight:bold; }
+    .card { background:white; margin:15px; padding:15px; border-radius:14px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
+    .row { margin:10px 0; font-size:14px; }
+    .label { color:#777; }
+    .value { font-weight:bold; }
+    .btn { width:100%; padding:12px; background:#e74c3c; color:white; border:none; border-radius:10px; font-size:15px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">🚚</div>
+  <div class="name" id="dname">Delivery Boy</div>
+</div>
+
+<div class="card">
+  <div class="row"><span class="label">Email:</span> <span class="value" id="demail"></span></div>
+  <div class="row"><span class="label">Wallet:</span> ₹<span class="value" id="dwallet"></span></div>
+</div>
+
+<div class="card">
+  <button class="btn" onclick="logout()">Logout</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const deliveryId = localStorage.getItem("deliveryId");
+
+if(!deliveryId){
+  window.location.href = "delivery-login.html";
+}
+
+const snap = await getDoc(doc(db,"delivery",deliveryId));
+const data = snap.data();
+
+document.getElementById("dname").innerText = data.name;
+document.getElementById("demail").innerText = data.email;
+document.getElementById("dwallet").innerText = data.wallet || 0;
+
+window.logout = ()=>{
+  localStorage.clear();
+  window.location.href = "delivery-login.html";
+};
+</script>
+
+</body>
+</html>
