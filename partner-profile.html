@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Profile – QuickPress Partner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin:0; font-family:Segoe UI; background:#f5f5f5; }
+    .header { background:#ff9800; color:white; padding:20px; text-align:center; border-bottom-left-radius:20px; border-bottom-right-radius:20px; }
+    .avatar { width:70px; height:70px; background:white; color:#ff9800; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:30px; margin:0 auto 10px; }
+    .card { background:white; margin:15px; padding:15px; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.1); }
+    .row { margin:10px 0; font-size:14px; }
+    .label { color:#777; }
+    .value { font-weight:bold; }
+    .btn { width:100%; padding:12px; background:#ff9800; color:white; border:none; border-radius:10px; font-size:15px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="avatar">👔</div>
+  <div id="pname">Partner Name</div>
+</div>
+
+<div class="card">
+  <div class="row"><span class="label">Email:</span> <span class="value" id="pemail"></span></div>
+  <div class="row"><span class="label">Wallet:</span> ₹<span class="value" id="pwallet"></span></div>
+</div>
+
+<div class="card">
+  <button class="btn" onclick="logout()">Logout</button>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web",
+  storageBucket: "quickpress-web.appspot.com",
+  messagingSenderId: "909067547966",
+  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const partnerId = localStorage.getItem("partnerId");
+
+const snap = await getDoc(doc(db,"partners",partnerId));
+const data = snap.data();
+
+document.getElementById("pname").innerText = data.name;
+document.getElementById("pemail").innerText = data.email;
+document.getElementById("pwallet").innerText = data.wallet || 0;
+
+window.logout = () => {
+  localStorage.clear();
+  window.location.href = "partner-login.html";
+};
+</script>
+
+</body>
+</html>
