@@ -1,235 +1,179 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>Partner Dashboard – QuickPress</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --yellow:#FFD400;
-  --dark:#111;
-  --bg:#f6f7f9;
-  --card:#fff;
-  --green:#2ecc71;
-  --blue:#3498db;
-}
-
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
-  color:#222;
-}
-
-/* HEADER */
-.topbar{
-  background:var(--yellow);
-  padding:14px 18px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo{
-  font-weight:900;
-  font-size:20px;
-}
-.logout{
-  background:#000;
-  color:#fff;
-  border:none;
-  padding:8px 14px;
-  border-radius:20px;
-  cursor:pointer;
-}
-
-/* PROFILE */
-.profile{
-  margin:16px;
-  background:var(--card);
-  border-radius:14px;
-  padding:16px;
-  display:flex;
-  align-items:center;
-  gap:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-}
-.avatar{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:#ddd;
-}
-.profile b{
-  font-size:16px;
-}
-
-/* SECTION TITLE */
-.section{
-  margin:18px;
-  font-size:18px;
-  font-weight:800;
-}
-
-/* ORDER CARD */
-.order{
-  background:var(--card);
-  margin:16px;
-  border-radius:16px;
-  padding:16px;
-  box-shadow:0 6px 14px rgba(0,0,0,.1);
-  animation:slide .35s ease;
-}
-@keyframes slide{
-  from{opacity:0;transform:translateY(10px)}
-  to{opacity:1}
-}
-.order-id{
-  font-weight:700;
-  font-size:14px;
-}
-.items{
-  margin:10px 0;
-  font-size:14px;
-  line-height:1.5;
-}
-.badge{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:20px;
-  font-size:12px;
-  font-weight:700;
-  margin-bottom:10px;
-}
-.assigned{background:#ffeaa7}
-.ironed{background:#dff9fb}
-.ready{background:#d4edda}
-
-.actions{
-  display:flex;
-  gap:10px;
-}
-.btn{
-  flex:1;
-  border:none;
-  padding:12px;
-  border-radius:12px;
-  font-weight:800;
-  cursor:pointer;
-  transition:.2s;
-}
-.btn:hover{transform:scale(1.03)}
-.iron{background:var(--blue);color:#fff}
-.readybtn{background:var(--green);color:#fff}
-
-/* EMPTY */
-.empty{
-  text-align:center;
-  margin:80px 0;
-  color:#777;
-}
-</style>
-
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getFirestore, collection, query, where,
-  getDocs, updateDoc, doc
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
-const email = localStorage.getItem("partnerEmail");
-if(!email) location.href="partner-login.html";
-
-document.addEventListener("DOMContentLoaded",()=>{
-  document.getElementById("email").innerText=email;
-  loadOrders();
-});
-
-async function loadOrders(){
-  const box=document.getElementById("orders");
-  box.innerHTML="";
-
-  const q=query(
-    collection(db,"orders"),
-    where("partnerEmail","==",email)
-  );
-
-  const snap=await getDocs(q);
-
-  if(snap.empty){
-    box.innerHTML=`<div class="empty">No orders assigned yet</div>`;
-    return;
-  }
-
-  snap.forEach(d=>{
-    const o=d.data();
-    let list="";
-    o.items?.forEach(i=>{
-      list+=`${i.name} × ${i.qty}<br>`;
-    });
-
-    const status=o.partnerStatus||"Assigned";
-    const badgeClass=status.toLowerCase();
-
-    box.innerHTML+=`
-      <div class="order">
-        <div class="order-id">Order ID: ${d.id}</div>
-        <span class="badge ${badgeClass}">${status}</span>
-
-        <div class="items">${list}</div>
-
-        <div class="actions">
-          <button class="btn iron" onclick="updateStatus('${d.id}','Ironed')">Ironed</button>
-          <button class="btn readybtn" onclick="updateStatus('${d.id}','Ready')">Ready</button>
-        </div>
-      </div>
-    `;
-  });
-}
-
-window.updateStatus=async(id,status)=>{
-  await updateDoc(doc(db,"orders",id),{
-    partnerStatus:status
-  });
-  loadOrders();
-};
-
-window.logout=()=>{
-  localStorage.removeItem("partnerEmail");
-  location.href="partner-login.html";
-};
-</script>
+  <title>Partner Dashboard – QuickPress</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background: #fff8e1;
+    }
+    header {
+      background: #ff9800;
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 20px;
+    }
+    .section {
+      padding: 15px;
+    }
+    .card {
+      background: white;
+      padding: 12px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    }
+    .btn {
+      padding: 8px 12px;
+      background: #ff9800;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .btn.green {
+      background: #4caf50;
+    }
+    .status {
+      font-weight: bold;
+      margin-top: 5px;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="topbar">
-  <div class="logo">QuickPress Partner</div>
-  <button class="logout" onclick="logout()">Logout</button>
+<header>
+  Partner Dashboard – QuickPress
+</header>
+
+<div class="section">
+  <h3>New Orders</h3>
+  <div id="newOrders"></div>
 </div>
 
-<div class="profile">
-  <div class="avatar"></div>
-  <div>
-    <b id="email"></b><br>
-    <small>Ironing Partner</small>
-  </div>
+<div class="section">
+  <h3>In Process Orders</h3>
+  <div id="processOrders"></div>
 </div>
 
-<div class="section">Assigned Orders</div>
+<div class="section">
+  <h3>Completed Orders</h3>
+  <div id="completedOrders"></div>
+</div>
 
-<div id="orders"></div>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+  import { getFirestore, collection, query, where, onSnapshot, doc, updateDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+    authDomain: "quickpress-web.firebaseapp.com",
+    projectId: "quickpress-web",
+    storageBucket: "quickpress-web.appspot.com",
+    messagingSenderId: "909067547966",
+    appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const partnerId = localStorage.getItem("partnerId");
+
+  if (!partnerId) {
+    alert("Not logged in");
+    window.location.href = "partner-login.html";
+  }
+
+  const newOrdersDiv = document.getElementById("newOrders");
+  const processOrdersDiv = document.getElementById("processOrders");
+  const completedOrdersDiv = document.getElementById("completedOrders");
+
+  // New Orders (assigned but not accepted)
+  const newOrdersQuery = query(
+    collection(db, "orders"),
+    where("partnerId", "==", partnerId),
+    where("status", "==", "Assigned")
+  );
+
+  onSnapshot(newOrdersQuery, (snapshot) => {
+    newOrdersDiv.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      newOrdersDiv.innerHTML += `
+        <div class="card">
+          <div><b>Order ID:</b> ${docSnap.id}</div>
+          <div><b>Total:</b> ₹${data.grandTotal}</div>
+          <div class="status">Status: ${data.status}</div>
+          <button class="btn" onclick="acceptOrder('${docSnap.id}')">Accept Order</button>
+        </div>
+      `;
+    });
+  });
+
+  // In Process Orders
+  const processOrdersQuery = query(
+    collection(db, "orders"),
+    where("partnerId", "==", partnerId),
+    where("status", "==", "Accepted")
+  );
+
+  onSnapshot(processOrdersQuery, (snapshot) => {
+    processOrdersDiv.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      processOrdersDiv.innerHTML += `
+        <div class="card">
+          <div><b>Order ID:</b> ${docSnap.id}</div>
+          <div><b>Total:</b> ₹${data.grandTotal}</div>
+          <div class="status">Status: ${data.status}</div>
+          <button class="btn green" onclick="markReady('${docSnap.id}')">Mark as Ready</button>
+        </div>
+      `;
+    });
+  });
+
+  // Completed Orders
+  const completedOrdersQuery = query(
+    collection(db, "orders"),
+    where("partnerId", "==", partnerId),
+    where("status", "==", "Ready")
+  );
+
+  onSnapshot(completedOrdersQuery, (snapshot) => {
+    completedOrdersDiv.innerHTML = "";
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      completedOrdersDiv.innerHTML += `
+        <div class="card">
+          <div><b>Order ID:</b> ${docSnap.id}</div>
+          <div><b>Total:</b> ₹${data.grandTotal}</div>
+          <div class="status">Status: ${data.status}</div>
+        </div>
+      `;
+    });
+  });
+
+  // Accept Order
+  window.acceptOrder = async (orderId) => {
+    const orderRef = doc(db, "orders", orderId);
+    await updateDoc(orderRef, {
+      status: "Accepted"
+    });
+  };
+
+  // Mark as Ready
+  window.markReady = async (orderId) => {
+    const orderRef = doc(db, "orders", orderId);
+    await updateDoc(orderRef, {
+      status: "Ready"
+    });
+  };
+
+</script>
 
 </body>
 </html>
