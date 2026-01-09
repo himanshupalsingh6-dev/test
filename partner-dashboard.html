@@ -8,17 +8,72 @@
     body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background: #fff8e1;
+      font-family: 'Segoe UI', Arial, sans-serif;
+      background: #f5f5f5;
     }
 
-    header {
-      background: linear-gradient(90deg, #ff9800, #ff6f00);
+    .header {
+      background: linear-gradient(135deg, #ff9800, #ff6f00);
       color: white;
-      padding: 15px;
-      text-align: center;
+      padding: 20px 15px;
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+
+    .profile-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: white;
+      color: #ff9800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       font-size: 20px;
       font-weight: bold;
+    }
+
+    .greeting {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .name {
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .stats {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 15px;
+    }
+
+    .stat-card {
+      background: white;
+      color: #333;
+      width: 32%;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: bold;
+      color: #ff9800;
+    }
+
+    .stat-label {
+      font-size: 12px;
+      color: #777;
     }
 
     .container {
@@ -26,7 +81,7 @@
     }
 
     .section-title {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: bold;
       margin: 15px 0 10px;
       color: #333;
@@ -34,57 +89,54 @@
 
     .card {
       background: white;
-      border-radius: 12px;
-      padding: 12px;
+      border-radius: 14px;
+      padding: 14px;
       margin-bottom: 12px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      border-left: 5px solid #ff9800;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
     }
 
     .order-id {
       font-weight: bold;
       color: #ff9800;
+      margin-bottom: 5px;
     }
 
     .order-row {
-      margin: 4px 0;
-      font-size: 14px;
+      font-size: 13px;
+      margin: 3px 0;
+      color: #555;
     }
 
     .status {
-      font-size: 13px;
       font-weight: bold;
-      color: #555;
+      font-size: 12px;
+      margin-top: 4px;
     }
 
     .btn {
       width: 100%;
       padding: 10px;
-      margin-top: 8px;
+      margin-top: 10px;
       border: none;
-      border-radius: 8px;
-      font-size: 15px;
+      border-radius: 10px;
+      font-size: 14px;
       cursor: pointer;
       color: white;
-      background: #ff9800;
+      background: linear-gradient(135deg, #ff9800, #ff6f00);
     }
 
     .btn.green {
-      background: #4caf50;
-    }
-
-    .btn:hover {
-      opacity: 0.9;
+      background: linear-gradient(135deg, #4caf50, #2e7d32);
     }
 
     .empty {
       text-align: center;
       color: #999;
-      font-size: 14px;
+      font-size: 13px;
       padding: 20px 0;
     }
 
-    .footer {
+    .bottom-nav {
       position: fixed;
       bottom: 0;
       width: 100%;
@@ -93,11 +145,11 @@
       display: flex;
       justify-content: space-around;
       padding: 8px 0;
+      font-size: 12px;
     }
 
-    .footer div {
+    .bottom-nav div {
       text-align: center;
-      font-size: 12px;
       color: #ff9800;
       font-weight: bold;
     }
@@ -106,28 +158,45 @@
 </head>
 <body>
 
-<header>
-  👔 Partner Dashboard – QuickPress
-</header>
+<div class="header">
+  <div class="profile-row">
+    <div class="avatar">👔</div>
+    <div>
+      <div class="greeting">Welcome back 👋</div>
+      <div class="name" id="partnerName">Partner</div>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-value" id="newCount">0</div>
+      <div class="stat-label">New</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="processCount">0</div>
+      <div class="stat-label">In Process</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" id="doneCount">0</div>
+      <div class="stat-label">Completed</div>
+    </div>
+  </div>
+</div>
 
 <div class="container">
 
-  <!-- New Orders -->
   <div class="section-title">🆕 New Orders</div>
   <div id="newOrders"></div>
 
-  <!-- In Process Orders -->
-  <div class="section-title">⚙️ In Process Orders</div>
+  <div class="section-title">⚙️ In Process</div>
   <div id="processOrders"></div>
 
-  <!-- Completed Orders -->
-  <div class="section-title">✅ Completed Orders</div>
+  <div class="section-title">✅ Completed</div>
   <div id="completedOrders"></div>
 
 </div>
 
-<!-- Bottom Nav -->
-<div class="footer">
+<div class="bottom-nav">
   <div>Orders</div>
   <div>Earnings</div>
   <div>Profile</div>
@@ -150,105 +219,96 @@
   const db = getFirestore(app);
 
   const partnerId = localStorage.getItem("partnerId");
+  const partnerName = localStorage.getItem("partnerName");
 
   if (!partnerId) {
     alert("Not logged in");
     window.location.href = "partner-login.html";
   }
 
+  document.getElementById("partnerName").innerText = partnerName || "Partner";
+
   const newOrdersDiv = document.getElementById("newOrders");
   const processOrdersDiv = document.getElementById("processOrders");
   const completedOrdersDiv = document.getElementById("completedOrders");
+
+  const newCount = document.getElementById("newCount");
+  const processCount = document.getElementById("processCount");
+  const doneCount = document.getElementById("doneCount");
 
   function renderEmpty(div, text) {
     div.innerHTML = `<div class="empty">${text}</div>`;
   }
 
   // New Orders
-  const newOrdersQuery = query(
-    collection(db, "orders"),
-    where("partnerId", "==", partnerId),
-    where("status", "==", "Assigned")
+  onSnapshot(
+    query(collection(db, "orders"), where("partnerId", "==", partnerId), where("status", "==", "Assigned")),
+    (snapshot) => {
+      newOrdersDiv.innerHTML = "";
+      newCount.innerText = snapshot.size;
+      if (snapshot.empty) renderEmpty(newOrdersDiv, "No new orders");
+      snapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        newOrdersDiv.innerHTML += `
+          <div class="card">
+            <div class="order-id">Order #${docSnap.id}</div>
+            <div class="order-row">Total: ₹${d.grandTotal}</div>
+            <div class="order-row status">Status: ${d.status}</div>
+            <button class="btn" onclick="acceptOrder('${docSnap.id}')">Accept Order</button>
+          </div>
+        `;
+      });
+    }
   );
 
-  onSnapshot(newOrdersQuery, (snapshot) => {
-    newOrdersDiv.innerHTML = "";
-    if (snapshot.empty) {
-      renderEmpty(newOrdersDiv, "No new orders");
+  // In Process
+  onSnapshot(
+    query(collection(db, "orders"), where("partnerId", "==", partnerId), where("status", "==", "Accepted")),
+    (snapshot) => {
+      processOrdersDiv.innerHTML = "";
+      processCount.innerText = snapshot.size;
+      if (snapshot.empty) renderEmpty(processOrdersDiv, "No orders in process");
+      snapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        processOrdersDiv.innerHTML += `
+          <div class="card">
+            <div class="order-id">Order #${docSnap.id}</div>
+            <div class="order-row">Total: ₹${d.grandTotal}</div>
+            <div class="order-row status">Status: ${d.status}</div>
+            <button class="btn green" onclick="markReady('${docSnap.id}')">Mark as Ready</button>
+          </div>
+        `;
+      });
     }
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      newOrdersDiv.innerHTML += `
-        <div class="card">
-          <div class="order-id">Order #${docSnap.id}</div>
-          <div class="order-row">Total: ₹${data.grandTotal}</div>
-          <div class="order-row status">Status: ${data.status}</div>
-          <button class="btn" onclick="acceptOrder('${docSnap.id}')">Accept Order</button>
-        </div>
-      `;
-    });
-  });
-
-  // In Process Orders
-  const processOrdersQuery = query(
-    collection(db, "orders"),
-    where("partnerId", "==", partnerId),
-    where("status", "==", "Accepted")
   );
 
-  onSnapshot(processOrdersQuery, (snapshot) => {
-    processOrdersDiv.innerHTML = "";
-    if (snapshot.empty) {
-      renderEmpty(processOrdersDiv, "No orders in process");
+  // Completed
+  onSnapshot(
+    query(collection(db, "orders"), where("partnerId", "==", partnerId), where("status", "==", "Ready")),
+    (snapshot) => {
+      completedOrdersDiv.innerHTML = "";
+      doneCount.innerText = snapshot.size;
+      if (snapshot.empty) renderEmpty(completedOrdersDiv, "No completed orders");
+      snapshot.forEach((docSnap) => {
+        const d = docSnap.data();
+        completedOrdersDiv.innerHTML += `
+          <div class="card">
+            <div class="order-id">Order #${docSnap.id}</div>
+            <div class="order-row">Total: ₹${d.grandTotal}</div>
+            <div class="order-row status">Status: ${d.status}</div>
+          </div>
+        `;
+      });
     }
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      processOrdersDiv.innerHTML += `
-        <div class="card">
-          <div class="order-id">Order #${docSnap.id}</div>
-          <div class="order-row">Total: ₹${data.grandTotal}</div>
-          <div class="order-row status">Status: ${data.status}</div>
-          <button class="btn green" onclick="markReady('${docSnap.id}')">Mark as Ready</button>
-        </div>
-      `;
-    });
-  });
-
-  // Completed Orders
-  const completedOrdersQuery = query(
-    collection(db, "orders"),
-    where("partnerId", "==", partnerId),
-    where("status", "==", "Ready")
   );
 
-  onSnapshot(completedOrdersQuery, (snapshot) => {
-    completedOrdersDiv.innerHTML = "";
-    if (snapshot.empty) {
-      renderEmpty(completedOrdersDiv, "No completed orders yet");
-    }
-    snapshot.forEach((docSnap) => {
-      const data = docSnap.data();
-      completedOrdersDiv.innerHTML += `
-        <div class="card">
-          <div class="order-id">Order #${docSnap.id}</div>
-          <div class="order-row">Total: ₹${data.grandTotal}</div>
-          <div class="order-row status">Status: ${data.status}</div>
-        </div>
-      `;
-    });
-  });
-
-  // Actions
-  window.acceptOrder = async (orderId) => {
-    const orderRef = doc(db, "orders", orderId);
-    await updateDoc(orderRef, { status: "Accepted" });
+  window.acceptOrder = async (id) => {
+    await updateDoc(doc(db, "orders", id), { status: "Accepted" });
   };
 
-  window.markReady = async (orderId) => {
-    const orderRef = doc(db, "orders", orderId);
-    await updateDoc(orderRef, { status: "Ready" });
+  window.markReady = async (id) => {
+    await updateDoc(doc(db, "orders", id), { status: "Ready" });
   };
-
 </script>
 
 </body>
