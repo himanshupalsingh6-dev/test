@@ -1,5 +1,5 @@
 window.PRODUCTS = [
-  {id:1, name:"Cotton Shirt", cat:"Shirt", price:5, icon:"👕"},
+  {id:1, name:"Cotton Shirt", cat:"Shirt", price:586985, icon:"👕"},
   {id:2, name:"Formal Shirt", cat:"Shirt", price:6, icon:"👔"},
   {id:3, name:"Jeans Pant", cat:"Pant", price:7, icon:"👖"},
   {id:4, name:"Cotton Pant", cat:"Pant", price:6, icon:"👖"},
