@@ -195,3 +195,22 @@ document.addEventListener("DOMContentLoaded", ()=>{
   loadOrders();
   loadDashboard();
 });
+const notifySound = new Audio("sounds/notify.mp3");
+
+onSnapshot(
+  query(collection(db,"orders"), orderBy("createdAt","desc")),
+  (snap)=>{
+    snap.docChanges().forEach(change=>{
+      if(change.type === "added"){
+        notifySound.play();
+        showNotification("New Order Received", "A new order has been placed");
+      }
+    });
+  }
+);
+
+function showNotification(title, body){
+  if(Notification.permission === "granted"){
+    new Notification(title, { body });
+  }
+}
