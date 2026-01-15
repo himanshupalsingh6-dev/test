@@ -2,122 +2,43 @@
 <html>
 <head>
   <title>Partner Login – QuickPress</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      background: #fff8e1;
-      font-family: Arial, sans-serif;
-    }
-    .box {
-      max-width: 380px;
-      margin: 80px auto;
-      background: #ffffff;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    }
-    h2 {
-      text-align: center;
-      color: #ff9800;
-      margin-bottom: 20px;
-    }
-    input {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    button {
-      width: 100%;
-      padding: 12px;
-      background: #ff9800;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #e68900;
-    }
-    .msg {
-      margin-top: 10px;
-      text-align: center;
-      color: red;
-    }
-  </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Partner Login</h2>
-
-  <input type="email" id="email" placeholder="Email">
-  <input type="password" id="password" placeholder="Password">
-
-  <button onclick="partnerLogin()">Login</button>
-
-  <div class="msg" id="msg"></div>
-</div>
+<h2>Partner Login</h2>
+<input id="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button id="loginBtn">Login</button>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-  import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-    authDomain: "quickpress-web.firebaseapp.com",
-    projectId: "quickpress-web",
-    storageBucket: "quickpress-web.appspot.com",
-    messagingSenderId: "909067547966",
-    appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
-  };
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-  async function partnerLogin() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
-    const msg = document.getElementById("msg");
+document.getElementById("loginBtn").onclick = async ()=>{
+  const email = email.value;
+  const password = password.value;
 
-    msg.innerText = "";
+  const cred = await signInWithEmailAndPassword(auth, email, password);
 
-    if (!email || !password) {
-      msg.innerText = "Please fill all fields";
-      return;
-    }
-
-    const q = query(
-      collection(db, "partners"),
-      where("email", "==", email),
-      where("password", "==", password)
-    );
-
-    const querySnapshot = await getDocs(q);
-
-    if (querySnapshot.empty) {
-      msg.innerText = "Invalid credentials";
-      return;
-    }
-
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-
-      if (data.approved === true) {
-        localStorage.setItem("partnerId", doc.id);
-        localStorage.setItem("partnerName", data.name);
-        window.location.href = "partner-dashboard.html";
-      } else {
-        msg.innerText = "Your account is pending approval by admin";
-      }
-    });
+  const snap = await getDoc(doc(db,"partners",cred.user.uid));
+  if(!snap.exists()){
+    alert("Not a partner account");
+    return;
   }
 
-  window.partnerLogin = partnerLogin;
+  window.location.href = "partner-dashboard.html";
+};
 </script>
 
 </body>
