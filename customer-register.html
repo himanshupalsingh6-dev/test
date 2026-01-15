@@ -3,30 +3,20 @@
 <head>
   <title>Register – QuickPress</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body{margin:0;font-family:Segoe UI;background:#fff8e1}
-    .box{max-width:380px;margin:80px auto;background:white;padding:25px;border-radius:14px;box-shadow:0 2px 10px rgba(0,0,0,0.1)}
-    h2{text-align:center;color:#ff9800}
-    input{width:100%;padding:10px;margin:10px 0;border-radius:8px;border:1px solid #ccc}
-    button{width:100%;padding:12px;background:#ff9800;color:white;border:none;border-radius:10px;font-size:16px}
-    .link{text-align:center;margin-top:10px;font-size:14px}
-  </style>
 </head>
 <body>
 
-<div class="box">
-  <h2>Create Account</h2>
-  <input id="name" placeholder="Full Name">
-  <input id="phone" placeholder="Phone">
-  <input id="email" placeholder="Email">
-  <input id="password" type="password" placeholder="Password">
-  <button onclick="register()">Register</button>
-  <div class="link">Already have account? <a href="customer-login.html">Login</a></div>
-</div>
+<h2>Create Account</h2>
+<input id="name" placeholder="Full Name"><br>
+<input id="phone" placeholder="Phone"><br>
+<input id="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button id="registerBtn">Register</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
@@ -35,25 +25,22 @@ const firebaseConfig = {
 };
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getFirestore(app);
 
-window.register = async ()=>{
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value.trim();
+document.getElementById("registerBtn").onclick = async ()=>{
+  const name = document.getElementById("name").value;
+  const phone = document.getElementById("phone").value;
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  if(!name || !phone || !email || !password){
-    alert("Fill all fields");
-    return;
-  }
+  const userCred = await createUserWithEmailAndPassword(auth, email, password);
 
-  await addDoc(collection(db,"users"),{
-    name, phone, email, password,
-    createdAt: serverTimestamp()
+  await setDoc(doc(db,"users",userCred.user.uid),{
+    name, phone, email, role:"customer"
   });
 
-  alert("Account created. Please login.");
+  alert("Registered Successfully");
   window.location.href = "customer-login.html";
 };
 </script>
