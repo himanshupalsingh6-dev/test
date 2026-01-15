@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Login – QuickPress</title>
+</head>
+<body>
+
+<h2>Admin Login</h2>
+<input id="email" placeholder="Email"><br>
+<input id="password" type="password" placeholder="Password"><br>
+<button id="loginBtn">Login</button>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+document.getElementById("loginBtn").onclick = async ()=>{
+  const email = email.value;
+  const password = password.value;
+
+  const cred = await signInWithEmailAndPassword(auth, email, password);
+
+  const snap = await getDoc(doc(db,"admins",cred.user.uid));
+  if(!snap.exists()){
+    alert("Not an admin account");
+    return;
+  }
+
+  window.location.href = "admin.html";
+};
+</script>
+
+</body>
+</html>
