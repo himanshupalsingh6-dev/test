@@ -237,6 +237,67 @@ function toggleMenu(){
   document.getElementById("navLinks").classList.toggle("show");
 }
 </script>
+<!-- ================= CUSTOMER REVIEWS (DROP-IN BLOCK) ================= -->
+<style>
+/* Reviews section */
+.qp-reviews{
+  padding:18px;
+}
+.qp-reviews h2{
+  margin:0 0 12px;
+}
+.qp-reviews-row{
+  display:flex;
+  gap:14px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+.qp-review{
+  min-width:220px;
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+}
+.qp-review b{
+  display:block;
+  margin-bottom:6px;
+}
+.qp-review p{
+  font-size:14px;
+  color:#444;
+  margin:0 0 6px;
+}
+.qp-review .stars{
+  color:#FFD400;
+  font-size:14px;
+}
+</style>
+
+<div class="qp-reviews">
+  <h2>Customer Reviews</h2>
+
+  <div class="qp-reviews-row">
+    <div class="qp-review">
+      <b>Rohit</b>
+      <p>Fast service 🔥 Clothes perfectly ironed.</p>
+      <div class="stars">★★★★★</div>
+    </div>
+
+    <div class="qp-review">
+      <b>Anjali</b>
+      <p>Very convenient and affordable.</p>
+      <div class="stars">★★★★★</div>
+    </div>
+
+    <div class="qp-review">
+      <b>Amit</b>
+      <p>Best ironing service near my home.</p>
+      <div class="stars">★★★★☆</div>
+    </div>
+  </div>
+</div>
+<!-- ================= END CUSTOMER REVIEWS ================= -->
 
 </body>
 </html>
