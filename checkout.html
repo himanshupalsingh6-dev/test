@@ -37,10 +37,15 @@ body{
   background:var(--yellow);
   border-radius:14px;
   font-weight:900;
+  cursor:pointer;
+}
+.btn:disabled{
+  opacity:.6;
 }
 .center{
   text-align:center;
-  margin-top:40px;
+  margin-top:60px;
+  color:#555;
 }
 </style>
 </head>
@@ -52,19 +57,21 @@ body{
 
   <div id="summary" class="card"></div>
 
-  <button class="btn" onclick="placeOrder()">Place Order</button>
+  <button class="btn" id="orderBtn" onclick="placeOrder()">Place Order</button>
 </div>
 
-<!-- FIREBASE -->
+<!-- ================= FIREBASE ================= -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { initializeApp, getApps } from
+"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
 import { getAuth, onAuthStateChanged } from
 "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   getFirestore, collection, addDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+} from
+"https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG (YOUR PROJECT) */
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
@@ -74,29 +81,38 @@ const firebaseConfig = {
   appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
 };
 
-const app = initializeApp(firebaseConfig);
+/* ✅ SAFE INIT (NO DUPLICATE APP BUG) */
+const app = getApps().length
+  ? getApps()[0]
+  : initializeApp(firebaseConfig);
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-/* 🔐 AUTH CHECK */
+/* ================= AUTH CHECK ================= */
 let currentUser = null;
+
 onAuthStateChanged(auth, user => {
   if(!user){
     alert("Please login first");
-    location.href="customer-login.html";
-  } else {
+    location.href = "customer-login.html";
+  }else{
     currentUser = user;
     loadSummary();
   }
 });
 
-/* 📦 LOAD CART & BILL */
-let cart = JSON.parse(localStorage.getItem("cart")||"[]");
+/* ================= CART & BILL ================= */
+const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+const summary = document.getElementById("summary");
+const orderBtn = document.getElementById("orderBtn");
+
+let orderData = null;
 
 function loadSummary(){
   if(cart.length === 0){
     document.querySelector(".page").innerHTML =
-      `<div class="center">Cart is empty</div>`;
+      `<div class="center">Your cart is empty</div>`;
     return;
   }
 
@@ -116,20 +132,23 @@ function loadSummary(){
     <div class="row total"><span>Total</span><span>₹${grandTotal}</span></div>
   `;
 
-  window.orderData = { subtotal, gst, deliveryCharge, grandTotal };
+  orderData = { subtotal, gst, deliveryCharge, grandTotal };
 }
 
-/* 🚀 PLACE ORDER */
+/* ================= PLACE ORDER ================= */
 window.placeOrder = async function(){
-  if(!currentUser) return;
+  if(!currentUser || !orderData) return;
+
+  orderBtn.disabled = true;
+  orderBtn.innerText = "Placing Order...";
 
   try{
     await addDoc(collection(db,"orders"),{
       userId: currentUser.uid,
-      items: cart.map(i=>({
-        name:i.name,
-        qty:i.qty,
-        price:i.price
+      items: cart.map(i => ({
+        name: i.name,
+        qty: i.qty,
+        price: i.price
       })),
       subtotal: orderData.subtotal,
       gst: orderData.gst,
@@ -141,11 +160,13 @@ window.placeOrder = async function(){
 
     localStorage.removeItem("cart");
     alert("Order placed successfully 🎉");
-    location.href="myorders.html";
+    location.href = "myorders.html";
 
   }catch(err){
-    alert("Order failed ❌");
-    console.error(err);
+    alert("Order failed ❌\n" + err.code + " : " + err.message);
+    console.error("ORDER ERROR:", err);
+    orderBtn.disabled = false;
+    orderBtn.innerText = "Place Order";
   }
 };
 </script>
