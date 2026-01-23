@@ -1,34 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Customer Login – QuickPress</title>
+  <title>Customer Login</title>
 </head>
 <body>
 
-<h2>Customer Login</h2>
-<input id="email" placeholder="Email"><br>
-<input id="password" type="password" placeholder="Password"><br>
-<button id="loginBtn">Login</button>
+<h2>Login</h2>
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+<button onclick="login()">Login</button>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword } from
+"https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
   projectId: "quickpress-web"
-};
+});
 
-const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
-document.getElementById("loginBtn").onclick = async ()=>{
-  const email = email.value;
-  const password = password.value;
-
-  await signInWithEmailAndPassword(auth, email, password);
-  window.location.href = "index.html";
+window.login = async ()=>{
+  await signInWithEmailAndPassword(
+    auth,
+    email.value,
+    password.value
+  );
+  location.href="checkout.html";
 };
 </script>
 
