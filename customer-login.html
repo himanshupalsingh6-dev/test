@@ -144,7 +144,11 @@ window.login = async function(){
   btn.innerText = "Logging in...";
 
   try{
-    await signInWithEmailAndPassword(auth, email, password);
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+
+    /* 🔥 VERY IMPORTANT (NAVBAR FIX) */
+    localStorage.setItem("userId", cred.user.uid);
+
     location.href = "index.html";
   }catch(err){
     msg.innerText = err.message;
