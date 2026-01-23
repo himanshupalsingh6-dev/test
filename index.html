@@ -563,6 +563,35 @@ function goAccount(){
     window.location.href = "index.html";
   }
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+  const userId = localStorage.getItem("userId");
+  const loginBtn = document.getElementById("loginBtn");
+  const accountMenu = document.getElementById("accountMenu");
+
+  if (!loginBtn || !accountMenu) {
+    console.log("Navbar elements not found");
+    return;
+  }
+
+  if (userId) {
+    loginBtn.style.display = "none";
+    accountMenu.style.display = "inline-block";
+  } else {
+    loginBtn.style.display = "inline-block";
+    accountMenu.style.display = "none";
+  }
+
+  window.logout = function () {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("cart");
+    alert("Logged out successfully");
+    window.location.href = "index.html";
+  };
+
+});
+</script>
 
 </body>
 </html>
