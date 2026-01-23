@@ -298,6 +298,150 @@ function toggleMenu(){
   </div>
 </div>
 <!-- ================= END CUSTOMER REVIEWS ================= -->
+<!-- ================= AUTO SLIDE REVIEWS + FOOTER STATS (DROP-IN) ================= -->
+<style>
+/* ===== Reviews ===== */
+.qp-reviews{
+  padding:18px;
+}
+.qp-reviews h2{
+  margin:0 0 12px;
+}
+.qp-reviews-row{
+  display:flex;
+  gap:14px;
+  overflow:hidden;
+}
+.qp-reviews-track{
+  display:flex;
+  gap:14px;
+  animation: qp-slide 18s linear infinite;
+}
+.qp-review{
+  min-width:220px;
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+}
+.qp-review b{display:block;margin-bottom:6px}
+.qp-review p{font-size:14px;color:#444;margin:0 0 6px}
+.qp-review .stars{color:#FFD400;font-size:14px}
+
+@keyframes qp-slide{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+
+/* ===== Footer Stats ===== */
+.qp-footer{
+  background:#fff;
+  margin-top:28px;
+  padding:22px 18px 90px;
+  box-shadow:0 -2px 10px rgba(0,0,0,.06);
+}
+.qp-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+.qp-stat{
+  background:#f6f7f9;
+  border-radius:16px;
+  padding:14px;
+  text-align:center;
+  font-weight:800;
+}
+.qp-stat span{
+  display:block;
+  font-size:20px;
+}
+.qp-copy{
+  margin-top:14px;
+  text-align:center;
+  color:#555;
+  font-size:13px;
+}
+</style>
+
+<!-- REVIEWS -->
+<div class="qp-reviews">
+  <h2>Customer Reviews</h2>
+  <div class="qp-reviews-row">
+    <div class="qp-reviews-track">
+      <!-- set 1 -->
+      <div class="qp-review">
+        <b>Rohit</b>
+        <p>Fast service 🔥 Clothes perfectly ironed.</p>
+        <div class="stars">★★★★★</div>
+      </div>
+      <div class="qp-review">
+        <b>Anjali</b>
+        <p>Very convenient and affordable.</p>
+        <div class="stars">★★★★★</div>
+      </div>
+      <div class="qp-review">
+        <b>Amit</b>
+        <p>Best ironing service near my home.</p>
+        <div class="stars">★★★★☆</div>
+      </div>
+
+      <!-- duplicate set for smooth loop -->
+      <div class="qp-review">
+        <b>Rohit</b>
+        <p>Fast service 🔥 Clothes perfectly ironed.</p>
+        <div class="stars">★★★★★</div>
+      </div>
+      <div class="qp-review">
+        <b>Anjali</b>
+        <p>Very convenient and affordable.</p>
+        <div class="stars">★★★★★</div>
+      </div>
+      <div class="qp-review">
+        <b>Amit</b>
+        <p>Best ironing service near my home.</p>
+        <div class="stars">★★★★☆</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER STATS -->
+<div class="qp-footer">
+  <div class="qp-stats">
+    <div class="qp-stat">
+      <span id="qpOrders">7,248</span>
+      Total Orders
+    </div>
+    <div class="qp-stat">
+      <span id="qpDeliveries">6,931</span>
+      Total Deliveries
+    </div>
+    <div class="qp-stat">
+      <span id="qpPartners">25+</span>
+      Partners
+    </div>
+  </div>
+  <div class="qp-copy">
+    © 2026 QuickPress • Fast Ironing & Doorstep Delivery
+  </div>
+</div>
+
+<script>
+/* OPTIONAL: number animation on load */
+function animateCount(id, end){
+  let el=document.getElementById(id), cur=0;
+  const step=Math.ceil(end/60);
+  const t=setInterval(()=>{
+    cur+=step;
+    if(cur>=end){cur=end;clearInterval(t)}
+    el.innerText=cur.toLocaleString();
+  },20);
+}
+animateCount("qpOrders",7248);
+animateCount("qpDeliveries",6931);
+</script>
+<!-- ================= END BLOCK ================= -->
 
 </body>
 </html>
