@@ -1,47 +1,184 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <title>My Account – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+:root{
+  --yellow:#FFD400;
+  --bg:#f6f7f9;
+}
+*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:system-ui;
-  background:#f6f7f9;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
+  background:var(--bg);
 }
-h2{padding:14px;margin:0}
-.box{
-  background:#fff;
-  margin:12px;
+.header{
   padding:16px;
+  font-size:20px;
+  font-weight:900;
+}
+.card{
+  background:#fff;
+  margin:14px;
+  padding:16px;
+  border-radius:16px;
+  box-shadow:0 6px 16px rgba(0,0,0,.1);
+}
+.card h3{
+  margin:0 0 12px;
+}
+input,textarea{
+  width:100%;
+  padding:12px;
+  margin-bottom:12px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  font-size:14px;
+}
+textarea{resize:none}
+button{
+  width:100%;
+  padding:14px;
+  border:none;
   border-radius:14px;
+  background:var(--yellow);
+  font-weight:900;
+  cursor:pointer;
+}
+.secondary{
+  background:#eee;
+  margin-top:10px;
+}
+.msg{
+  text-align:center;
+  font-size:14px;
+  margin-top:8px;
+}
+.logout{
+  color:red;
+  text-align:center;
+  margin:20px 0;
   font-weight:800;
   cursor:pointer;
 }
-.box:hover{background:#f0f0f0}
 </style>
 </head>
 
 <body>
 
-<h2>My Account</h2>
+<div class="header">👤 My Account</div>
 
-<div class="box" onclick="go('myorders.html')">📦 My Orders</div>
-<div class="box" onclick="go('profile.html')">👤 Profile</div>
-<div class="box" onclick="logout()">🚪 Logout</div>
+<!-- PROFILE -->
+<div class="card">
+  <h3>Profile</h3>
+  <input id="name" placeholder="Full Name">
+  <input id="phone" placeholder="Phone Number">
+  <input id="email" placeholder="Email" disabled>
+  <button onclick="saveProfile()">Save Profile</button>
+  <div id="profileMsg" class="msg"></div>
+</div>
 
-<script>
-function go(p){
-  location.href = p;
-}
-function logout(){
-  localStorage.removeItem("userId");
-  localStorage.removeItem("cart");
-  alert("Logged out");
-  location.href = "index.html";
-}
+<!-- ADDRESS -->
+<div class="card">
+  <h3>Address</h3>
+  <textarea id="address" rows="3" placeholder="Full address"></textarea>
+  <button onclick="saveAddress()">Save Address</button>
+  <div id="addressMsg" class="msg"></div>
+</div>
+
+<div class="logout" onclick="logout()">🚪 Logout</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  doc, 
+  getDoc, 
+  setDoc 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web",
+  storageBucket: "quickpress-web.appspot.com",
+  messagingSenderId: "909067547966",
+  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+};
+
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUserId = null;
+
+/* LOAD USER */
+onAuthStateChanged(auth, async user=>{
+  if(!user){
+    location.href="customer-login.html";
+    return;
+  }
+  currentUserId = user.uid;
+  document.getElementById("email").value = user.email;
+
+  try{
+    const ref = doc(db,"users",currentUserId);
+    const snap = await getDoc(ref);
+    if(snap.exists()){
+      const d = snap.data();
+      document.getElementById("name").value = d.name || "";
+      document.getElementById("phone").value = d.phone || "";
+      document.getElementById("address").value = d.address || "";
+    }
+  }catch(err){
+    console.error(err);
+  }
+});
+
+/* SAVE PROFILE */
+window.saveProfile = async function(){
+  const msg = document.getElementById("profileMsg");
+  msg.innerText="Saving...";
+  try{
+    await setDoc(doc(db,"users",currentUserId),{
+      name: name.value,
+      phone: phone.value
+    },{merge:true});
+    msg.innerText="✅ Profile saved";
+  }catch(e){
+    msg.innerText="❌ Failed to save";
+  }
+};
+
+/* SAVE ADDRESS */
+window.saveAddress = async function(){
+  const msg = document.getElementById("addressMsg");
+  msg.innerText="Saving...";
+  try{
+    await setDoc(doc(db,"users",currentUserId),{
+      address: address.value
+    },{merge:true});
+    msg.innerText="✅ Address saved";
+  }catch(e){
+    msg.innerText="❌ Failed to save";
+  }
+};
+
+/* LOGOUT */
+window.logout = async function(){
+  await signOut(auth);
+  location.href="index.html";
+};
 </script>
 
 </body>
