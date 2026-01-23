@@ -528,6 +528,40 @@ if (navs.length > 1) {
   }
 }
 </script>
+<script>
+/*
+  FORCE REMOVE OLD HEADER / TOP BAR
+  (QuickPress + Select Location wala)
+*/
+
+// 1️⃣ header tag agar ho
+document.querySelectorAll("header").forEach(h => {
+  h.style.display = "none";
+});
+
+// 2️⃣ top-level div jo pehle aata hai (old header hota hai)
+const bodyChildren = document.body.children;
+if (bodyChildren.length > 0) {
+  const first = bodyChildren[0];
+
+  // agar wo advance navbar nahi hai
+  if (!first.classList.contains("nav")) {
+    first.style.display = "none";
+  }
+}
+
+// 3️⃣ extra safety: text-based match
+document.querySelectorAll("div").forEach(div => {
+  if (
+    div.innerText &&
+    div.innerText.includes("QuickPress") &&
+    div.innerText.includes("Select Location") &&
+    !div.classList.contains("nav")
+  ) {
+    div.style.display = "none";
+  }
+});
+</script>
 
 </body>
 </html>
