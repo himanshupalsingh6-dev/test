@@ -2,21 +2,19 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>QuickPress – My Orders</title>
+<title>My Orders – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{--yellow:#FFD400;--bg:#f6f7f9}
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
+  font-family:system-ui;
+  background:#f6f7f9;
 }
-.page{padding:18px}
+.page{padding:16px}
 .card{
   background:#fff;
-  border-radius:16px;
+  border-radius:14px;
   padding:14px;
   margin-bottom:12px;
   box-shadow:0 6px 14px rgba(0,0,0,.08);
@@ -28,18 +26,15 @@ body{
   font-size:12px;
   font-weight:800;
 }
-.Placed{background:#fff3cd;color:#856404}
-.Ready{background:#d4edda;color:#155724}
-.Delivered{background:#d1ecf1;color:#0c5460}
+.Placed{background:#fff3cd}
+.Ready{background:#d4edda}
+.Delivered{background:#d1ecf1}
 .empty{
+  margin-top:40px;
   text-align:center;
-  margin-top:60px;
   color:#555;
 }
-.small{
-  font-size:13px;
-  color:#555;
-}
+.small{font-size:13px;color:#555}
 </style>
 </head>
 
@@ -47,104 +42,81 @@ body{
 
 <div class="page">
   <h2>My Orders</h2>
-  <div id="orders"></div>
+  <div id="orders">Checking login…</div>
 </div>
 
-<!-- ================= FIREBASE ================= -->
 <script type="module">
 import { initializeApp, getApps } from
 "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged
-} from
+import { getAuth, onAuthStateChanged } from
 "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 import {
   getFirestore,
   collection,
   query,
   where,
-  orderBy,
   getDocs
 } from
 "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
+/* 🔥 Firebase config */
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web",
-  storageBucket: "quickpress-web.appspot.com",
-  messagingSenderId: "909067547966",
-  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
+  projectId: "quickpress-web"
 };
 
-/* SAFE INIT */
-const app = getApps().length
-  ? getApps()[0]
-  : initializeApp(firebaseConfig);
-
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 const ordersDiv = document.getElementById("orders");
 
-/* ================= AUTH GUARD ================= */
+/* 🔐 AUTH GUARD + STRICT UID */
 onAuthStateChanged(auth, async user => {
   if(!user){
     alert("Please login first");
-    location.href="customer-login.html";
+    location.href = "customer-login.html";
     return;
   }
   loadOrders(user.uid);
 });
 
-/* ================= LOAD ORDERS ================= */
+/* 📦 LOAD ORDERS */
 async function loadOrders(uid){
-  ordersDiv.innerHTML = "Loading orders...";
+  ordersDiv.innerHTML = "Loading orders…";
 
   try{
     const q = query(
       collection(db,"orders"),
-      where("userId","==",uid),
-      const q = query(
-  collection(db,"orders"),
-  where("userId","==",uid)
-);
+      where("userId","==",uid)
+    );
 
     const snap = await getDocs(q);
 
     if(snap.empty){
       ordersDiv.innerHTML =
-        `<div class="empty">No orders yet</div>`;
+        `<div class="empty">No orders found</div>`;
       return;
     }
 
     ordersDiv.innerHTML = "";
 
-    snap.forEach(doc => {
-      const o = doc.data();
-
+    snap.forEach(d => {
+      const o = d.data();
       ordersDiv.innerHTML += `
         <div class="card">
-          <div class="row">
-            <b>Order ID:</b> ${doc.id}
+          <div><b>Order ID:</b> ${d.id}</div>
+          <div class="small">
+            ${o.items.map(i=>`${i.name} × ${i.qty}`).join(", ")}
           </div>
-          <div class="row small">
-            Items: ${o.items.map(i=>`${i.name} × ${i.qty}`).join(", ")}
-          </div>
-          <div class="row">
-            <b>Total:</b> ₹${o.grandTotal}
-          </div>
-          <div class="row">
-            <span class="status ${o.status}">${o.status}</span>
-          </div>
+          <div><b>Total:</b> ₹${o.grandTotal}</div>
+          <span class="status ${o.status}">${o.status}</span>
         </div>
       `;
     });
 
   }catch(err){
-    console.error(err);
+    console.error("MY ORDERS ERROR:", err);
     ordersDiv.innerHTML =
       `<div class="empty">Failed to load orders</div>`;
   }
