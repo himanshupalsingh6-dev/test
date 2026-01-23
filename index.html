@@ -499,6 +499,35 @@ function toggle(x){
 function order(){location.href="products.html"}
 function login(){location.href="customer-login.html"}
 </script>
+<script>
+/*
+  REMOVE / HIDE OLD HEADER
+  (jo duplicate aa raha hai)
+*/
+
+// possible old header selectors
+const oldHeaders = document.querySelectorAll(
+  "header, .header, .top-header, .site-header, .old-header"
+);
+
+oldHeaders.forEach(h => {
+  // agar ye advance navbar nahi hai
+  if (!h.classList.contains("nav")) {
+    h.style.display = "none";
+  }
+});
+
+/*
+  EXTRA SAFETY:
+  agar pehla element duplicate navbar ho
+*/
+const navs = document.querySelectorAll(".nav");
+if (navs.length > 1) {
+  for (let i = 0; i < navs.length - 1; i++) {
+    navs[i].style.display = "none";
+  }
+}
+</script>
 
 </body>
 </html>
