@@ -20,58 +20,64 @@ body{
   color:#000;
 }
 
-/* NAV */
+/* ================= NAV ================= */
 .nav{
+  position:sticky;top:0;z-index:20;
+  background:#fff;
+  padding:12px 14px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:14px 16px;
-  background:#fff;
   box-shadow:0 2px 10px rgba(0,0,0,.1);
-  position:sticky;top:0;z-index:10;
 }
 .logo{
   font-size:20px;
   font-weight:900;
 }
-.nav a{
-  text-decoration:none;
-  font-weight:800;
-  color:#000;
-  margin-left:14px;
+.loc{
+  font-size:13px;
+  font-weight:700;
+  color:#555;
 }
 
-/* HERO */
+/* ================= HERO SLIDER ================= */
 .hero{
-  padding:30px 18px;
+  overflow:hidden;
+  position:relative;
 }
-.hero h1{
+.slides{
+  display:flex;
+  transition:.4s;
+}
+.slide{
+  min-width:100%;
+  padding:28px 18px;
+}
+.slide h1{
   font-size:28px;
   font-weight:900;
   line-height:1.2;
 }
-.hero span{
-  color:#000;
+.slide span{
   background:var(--yellow);
   padding:2px 8px;
   border-radius:6px;
 }
-.hero p{
-  margin-top:10px;
+.slide p{
+  margin-top:8px;
   color:#444;
 }
-.hero button{
-  margin-top:18px;
+.slide button{
+  margin-top:14px;
   width:100%;
   padding:14px;
-  font-size:16px;
-  font-weight:900;
   border:none;
-  border-radius:14px;
   background:var(--yellow);
+  border-radius:14px;
+  font-weight:900;
 }
 
-/* STATS */
+/* ================= STATS ================= */
 .stats{
   display:grid;
   grid-template-columns:repeat(3,1fr);
@@ -85,16 +91,14 @@ body{
   text-align:center;
   box-shadow:0 6px 14px rgba(0,0,0,.08);
 }
-.stat b{
-  font-size:18px;
-}
+.stat b{font-size:18px}
 
-/* SERVICES */
+/* ================= SERVICES ================= */
 .section{
   padding:18px;
 }
 .section h2{
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 .services{
   display:grid;
@@ -108,90 +112,157 @@ body{
   box-shadow:0 6px 14px rgba(0,0,0,.08);
   text-align:center;
 }
-.card div{
-  font-size:36px;
+.card div{font-size:36px}
+
+/* ================= REVIEWS ================= */
+.reviews{
+  display:flex;
+  gap:12px;
+  overflow-x:auto;
+}
+.review{
+  min-width:220px;
+  background:#fff;
+  padding:14px;
+  border-radius:16px;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+}
+.review b{display:block;margin-bottom:4px}
+
+/* ================= FAQ ================= */
+.faq{
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  margin-bottom:10px;
+}
+.q{
+  font-weight:900;
+  cursor:pointer;
+}
+.a{
+  display:none;
+  margin-top:6px;
+  color:#444;
 }
 
-/* FOOTER */
-.footer{
-  margin-top:30px;
-  padding:18px;
+/* ================= BOTTOM NAV ================= */
+.bottom{
+  position:fixed;
+  bottom:0;left:0;right:0;
+  background:#fff;
+  display:flex;
+  justify-content:space-around;
+  padding:10px 0;
+  box-shadow:0 -2px 10px rgba(0,0,0,.1);
+}
+.bottom div{
   text-align:center;
-  font-size:14px;
+  font-size:12px;
+  font-weight:700;
+}
+.bottom span{display:block;font-size:18px}
+
+.footer{
+  padding:60px 18px 90px;
+  text-align:center;
   color:#555;
+  font-size:14px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- NAVBAR -->
+<!-- NAV -->
 <div class="nav">
   <div class="logo">⚡ QuickPress</div>
-  <div>
-    <a href="customer-login.html">Login</a>
-    <a href="products.html">Order</a>
-  </div>
+  <div class="loc">📍 Select Location</div>
 </div>
 
 <!-- HERO -->
 <div class="hero">
-  <h1>
-    Get Clothes Ironed in  
-    <span>10 Minutes</span>
-  </h1>
-  <p>
-    Fast ironing & doorstep delivery in your city.  
-    Press. Pack. Deliver.
-  </p>
-  <button onclick="goOrder()">Order Now</button>
+  <div class="slides" id="slides">
+    <div class="slide">
+      <h1>Clothes Ironed in <span>10 Minutes</span></h1>
+      <p>Fast ironing & doorstep delivery</p>
+      <button onclick="order()">Order Now</button>
+    </div>
+    <div class="slide">
+      <h1>Professional Press <span>At Home</span></h1>
+      <p>No more waiting, no more wrinkles</p>
+      <button onclick="order()">Get Started</button>
+    </div>
+  </div>
 </div>
 
 <!-- STATS -->
 <div class="stats">
-  <div class="stat">
-    <b>4.8 ★</b><br>Rating
-  </div>
-  <div class="stat">
-    <b>5K+</b><br>Orders
-  </div>
-  <div class="stat">
-    <b>20+</b><br>Partners
-  </div>
+  <div class="stat"><b>4.9 ★</b><br>Rating</div>
+  <div class="stat"><b>7K+</b><br>Orders</div>
+  <div class="stat"><b>25+</b><br>Partners</div>
 </div>
 
 <!-- SERVICES -->
 <div class="section">
-  <h2>Our Services</h2>
-  <div class="services">
-    <div class="card">
-      <div>👕</div>
-      Shirt / T-Shirt
-    </div>
-    <div class="card">
-      <div>👖</div>
-      Pant / Jeans
-    </div>
-    <div class="card">
-      <div>🥻</div>
-      Saree
-    </div>
-    <div class="card">
-      <div>🧥</div>
-      Coat / Blazer
-    </div>
-  </div>
+<h2>Services</h2>
+<div class="services">
+  <div class="card"><div>👕</div>Shirts</div>
+  <div class="card"><div>👖</div>Pants</div>
+  <div class="card"><div>🥻</div>Saree</div>
+  <div class="card"><div>🧥</div>Coat</div>
+</div>
 </div>
 
-<!-- FOOTER -->
+<!-- REVIEWS -->
+<div class="section">
+<h2>Customer Reviews</h2>
+<div class="reviews">
+  <div class="review"><b>Rohit</b>Fast service 🔥</div>
+  <div class="review"><b>Anjali</b>Very convenient</div>
+  <div class="review"><b>Amit</b>Best ironing service</div>
+</div>
+</div>
+
+<!-- FAQ -->
+<div class="section">
+<h2>FAQs</h2>
+<div class="faq">
+  <div class="q" onclick="toggle(this)">How fast is delivery?</div>
+  <div class="a">Within 10–15 minutes.</div>
+</div>
+<div class="faq">
+  <div class="q" onclick="toggle(this)">Is pickup free?</div>
+  <div class="a">Yes, doorstep pickup & delivery.</div>
+</div>
+</div>
+
 <div class="footer">
-  © 2026 QuickPress • 10-Minute Ironing Service
+© 2026 QuickPress • Press • Pack • Deliver
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom">
+  <div onclick="order()"><span>🛒</span>Order</div>
+  <div onclick="login()"><span>👤</span>Login</div>
 </div>
 
 <script>
-function goOrder(){
-  location.href="products.html";
+/* SLIDER */
+let i=0;
+setInterval(()=>{
+  i=(i+1)%2;
+  slides.style.transform=`translateX(-${i*100}%)`;
+},3000);
+
+/* FAQ */
+function toggle(x){
+  const a=x.nextElementSibling;
+  a.style.display=a.style.display=="block"?"none":"block";
 }
+
+function order(){location.href="products.html"}
+function login(){location.href="customer-login.html"}
 </script>
 
 </body>
