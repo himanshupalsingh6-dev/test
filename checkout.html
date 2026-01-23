@@ -1,154 +1,32 @@
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-onAuthStateChanged(auth,(user)=>{
-  if(!user){
-    window.location.href = "customer-login.html";
-  }
-});
-</script>
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Checkout – QuickPress</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Checkout</title>
+</head>
+<body>
 
+<h2>Checkout</h2>
+<button onclick="place()">Place Order</button>
+
+<!-- 🔐 LOGIN GUARD -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
-import {
-  getFirestore, collection, addDoc, serverTimestamp
-} from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
+import { initializeApp } from
+"https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from
+"https://www.gstatic.com/firebasejs/12.7.0/firebase-auth.js";
 
-/* Firebase */
-const firebaseConfig = {
+const app = initializeApp({
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
   projectId: "quickpress-web"
-};
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+});
 
-/* Load cart */
-const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-let total = 0;
-
-window.onload = ()=>{
-  if(cart.length === 0){
-    alert("Cart is empty");
-    location.href="index.html";
-    return;
-  }
-  cart.forEach(i=>{
-    list.innerHTML += `
-      ${i.name} × ${i.qty} = ₹${i.price*i.qty}<br>
-    `;
-    total += i.price * i.qty;
-  });
-  sum.innerText = total;
-};
-
-window.placeOrder = async ()=>{
-  const nameVal = document.getElementById("name").value.trim();
-  const phoneVal = document.getElementById("phone").value.trim();
-  const addressVal = document.getElementById("address").value.trim();
-
-  if(!nameVal || !phoneVal || !addressVal){
-    alert("Please fill all address fields");
-    return;
-  }
-
-  await addDoc(collection(db,"orders"),{
-    items: cart,
-    grandTotal: total,
-    customer:{
-      name: nameVal,
-      phone: phoneVal,
-      address: addressVal
-    },
-    status: "Placed",
-    createdAt: serverTimestamp()
-  });
-
-  localStorage.removeItem("cart");
-  alert("Order placed successfully 🎉");
-  location.href="index.html";
-};
+const auth = getAuth(app);
+onAuthStateChanged(auth,user=>{
+  if(!user) location.href="customer-login.html";
+});
 </script>
 
-<style>
-body{margin:0;font-family:Arial;background:#f4f4f4}
-.header{
-  background:#FFD400;
-  padding:16px;
-  text-align:center;
-  font-size:20px;
-  font-weight:900;
-}
-.card{
-  background:#fff;
-  margin:12px;
-  padding:14px;
-  border-radius:14px;
-}
-input,textarea{
-  width:100%;
-  padding:12px;
-  margin-bottom:10px;
-}
-.btn{
-  width:90%;
-  margin:20px auto;
-  display:block;
-  padding:14px;
-  background:#000;
-  color:#fff;
-  border:none;
-  border-radius:14px;
-  font-size:16px;
-  font-weight:900;
-}
-</style>
-
-</head>
-
-<body>
-<script>
-  const customerId = localStorage.getItem("customerId");
-
-  if (!customerId) {
-    alert("Please login to continue");
-    window.location.href = "customer-login.html";
-  }
-</script>
-
-<div class="header">Checkout</div>
-
-<div class="card">
-  <b>Order Summary</b><br><br>
-  <div id="list"></div>
-  <br>
-  <b>Total ₹<span id="sum">0</span></b>
-</div>
-
-<div class="card">
-  <b>Delivery Address</b><br><br>
-  <input id="name" placeholder="Full Name">
-  <input id="phone" placeholder="Mobile Number">
-  <textarea id="address" placeholder="Full Address"></textarea>
-</div>
-
-<button class="btn" onclick="placeOrder()">Place Order</button>
-
+<script type="module" src="js/checkout.js"></script>
 </body>
 </html>
