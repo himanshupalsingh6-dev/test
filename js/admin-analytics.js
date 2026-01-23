@@ -1,96 +1,130 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-app.js";
 import {
-  getFirestore, collection, getDocs
+  getFirestore,
+  collection,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/12.7.0/firebase-firestore.js";
 
+/* Firebase */
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
   projectId: "quickpress-web"
 };
-
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-/* Elements */
-const totalCustomersEl = document.getElementById("totalCustomers");
-const totalPartnersEl = document.getElementById("totalPartners");
-const totalDeliveryEl = document.getElementById("totalDelivery");
-const totalOrdersEl = document.getElementById("totalOrders");
-const totalRevenueEl = document.getElementById("totalRevenue");
-
-/* Fetch counts */
-async function loadCounts(){
-  const usersSnap = await getDocs(collection(db,"users"));
-  const partnersSnap = await getDocs(collection(db,"partners"));
-  const deliverySnap = await getDocs(collection(db,"delivery"));
-  const ordersSnap = await getDocs(collection(db,"orders"));
-
-  totalCustomersEl.innerText = usersSnap.size;
-  totalPartnersEl.innerText = partnersSnap.size;
-  totalDeliveryEl.innerText = deliverySnap.size;
-  totalOrdersEl.innerText = ordersSnap.size;
-
-  let revenue = 0;
-  ordersSnap.forEach(d=>{
-    revenue += Number(d.data().grandTotal) || 0;
-  });
-  totalRevenueEl.innerText = revenue;
-
-  buildCharts(ordersSnap);
-}
-
 /* Charts */
-function buildCharts(ordersSnap){
+let statusChart, revenueChart;
+let allOrders = [];
+
+/* Load orders */
+async function loadOrders(){
+  const snap = await getDocs(collection(db,"orders"));
+  allOrders = [];
+  snap.forEach(d=>{
+    allOrders.push({ id:d.id, ...d.data() });
+  });
+  buildCharts(allOrders);
+}
+loadOrders();
+
+/* Build charts */
+function buildCharts(orders){
   let statusCount = {
-    Placed:0, Assigned:0, Accepted:0, Ready:0, Picked:0, Delivered:0
+    Placed:0, Assigned:0, Accepted:0,
+    Ready:0, Picked:0, Delivered:0
   };
+  let revenueByDate = {};
 
-  let revenueByDay = {};
-
-  ordersSnap.forEach(d=>{
-    const o = d.data();
+  orders.forEach(o=>{
     if(statusCount[o.status] !== undefined){
       statusCount[o.status]++;
     }
 
-    let dateKey = "Today";
     if(o.createdAt?.seconds){
-      dateKey = new Date(o.createdAt.seconds*1000).toLocaleDateString();
-    }
-
-    revenueByDay[dateKey] = (revenueByDay[dateKey] || 0) + (Number(o.grandTotal) || 0);
-  });
-
-  const ordersCtx = document.getElementById("ordersChart").getContext("2d");
-  new Chart(ordersCtx,{
-    type:"pie",
-    data:{
-      labels:Object.keys(statusCount),
-      datasets:[{
-        data:Object.values(statusCount),
-        backgroundColor:["#3498db","#9b59b6","#f1c40f","#e67e22","#1abc9c","#2ecc71"]
-      }]
+      const date = new Date(o.createdAt.seconds*1000)
+        .toISOString().slice(0,10);
+      revenueByDate[date] =
+        (revenueByDate[date]||0) + (Number(o.grandTotal)||0);
     }
   });
 
-  const revCtx = document.getElementById("revenueChart").getContext("2d");
-  new Chart(revCtx,{
-    type:"line",
-    data:{
-      labels:Object.keys(revenueByDay),
-      datasets:[{
-        label:"Revenue",
-        data:Object.values(revenueByDay),
-        borderColor:"#ff9800",
-        fill:false,
-        tension:0.3
-      }]
-    },
-    options:{
-      scales:{ y:{ beginAtZero:true } }
+  /* Status Pie */
+  if(statusChart) statusChart.destroy();
+  statusChart = new Chart(
+    document.getElementById("statusChart"),
+    {
+      type:"pie",
+      data:{
+        labels:Object.keys(statusCount),
+        datasets:[{
+          data:Object.values(statusCount),
+          backgroundColor:[
+            "#3498db","#9b59b6","#f1c40f",
+            "#e67e22","#1abc9c","#2ecc71"
+          ]
+        }]
+      }
     }
-  });
+  );
+
+  /* Revenue Line */
+  const days = Object.keys(revenueByDate).sort();
+  if(revenueChart) revenueChart.destroy();
+  revenueChart = new Chart(
+    document.getElementById("revenueChart"),
+    {
+      type:"line",
+      data:{
+        labels:days,
+        datasets:[{
+          label:"Revenue",
+          data:days.map(d=>revenueByDate[d]),
+          borderColor:"#ff9800",
+          fill:false,
+          tension:0.3
+        }]
+      },
+      options:{
+        scales:{ y:{ beginAtZero:true } }
+      }
+    }
+  );
 }
 
-loadCounts();
+/* Apply date filter */
+window.applyFilter = ()=>{
+  const from = document.getElementById("fromDate").value;
+  const to = document.getElementById("toDate").value;
+
+  const filtered = allOrders.filter(o=>{
+    if(!o.createdAt?.seconds) return false;
+    const d = new Date(o.createdAt.seconds*1000)
+      .toISOString().slice(0,10);
+    if(from && d < from) return false;
+    if(to && d > to) return false;
+    return true;
+  });
+
+  buildCharts(filtered);
+};
+
+/* Export CSV */
+window.exportCSV = ()=>{
+  let csv = "OrderID,Total,Status,Date\n";
+  allOrders.forEach(o=>{
+    const date = o.createdAt?.seconds
+      ? new Date(o.createdAt.seconds*1000).toLocaleDateString()
+      : "";
+    csv += `${o.id},${o.grandTotal||0},${o.status},${date}\n`;
+  });
+
+  const blob = new Blob([csv],{type:"text/csv"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "quickpress_report.csv";
+  a.click();
+  URL.revokeObjectURL(url);
+};
