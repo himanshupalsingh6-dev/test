@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin – Orders</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <style>
+    body{
+      margin:0;
+      font-family:Arial;
+      background:#f4f4f4;
+    }
+    .header{
+      background:#ff9800;
+      color:white;
+      padding:14px;
+      font-size:18px;
+      font-weight:bold;
+    }
+    .filters{
+      display:flex;
+      gap:8px;
+      padding:10px;
+      background:#fff;
+      overflow-x:auto;
+    }
+    .filters button{
+      padding:8px 14px;
+      border:none;
+      border-radius:20px;
+      background:#eee;
+      cursor:pointer;
+      font-weight:bold;
+    }
+    .filters button.active{
+      background:#ff9800;
+      color:white;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+    }
+    th,td{
+      padding:10px;
+      border-bottom:1px solid #ddd;
+      font-size:13px;
+      text-align:left;
+    }
+    th{
+      background:#fafafa;
+    }
+    .status{
+      padding:4px 8px;
+      border-radius:10px;
+      font-size:11px;
+      font-weight:bold;
+    }
+    .Placed{background:#e3f2fd}
+    .Assigned{background:#fff3e0}
+    .Accepted{background:#e8f5e9}
+    .Ready{background:#ede7f6}
+    .Delivered{background:#c8e6c9}
+    .btn{
+      padding:6px 10px;
+      border:none;
+      border-radius:6px;
+      background:#ff9800;
+      color:white;
+      cursor:pointer;
+      font-size:12px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="header">📦 Orders Management</div>
+
+<div class="filters">
+  <button class="active" onclick="setFilter('all')">All</button>
+  <button onclick="setFilter('today')">Today</button>
+  <button onclick="setFilter('pending')">Pending</button>
+  <button onclick="setFilter('Delivered')">Delivered</button>
+</div>
+
+<table>
+  <thead>
+    <tr>
+      <th>Order ID</th>
+      <th>Total</th>
+      <th>Status</th>
+      <th>Date</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody id="ordersTable"></tbody>
+</table>
+
+<script type="module" src="js/admin-orders.js"></script>
+</body>
+</html>
