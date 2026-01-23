@@ -1,181 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
 <meta charset="UTF-8">
 <title>My Account – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
-:root{
-  --yellow:#FFD400;
-  --bg:#f6f7f9;
-  --card:#fff;
-  --text:#222;
-}
-body.dark{
-  --bg:#111;
-  --card:#1e1e1e;
-  --text:#eee;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
-  color:var(--text);
+  font-family:system-ui;
+  background:#f6f7f9;
 }
-
-/* HEADER */
-.header{
-  background:var(--yellow);
-  padding:16px;
-  font-size:20px;
-  font-weight:900;
-  text-align:center;
-}
-
-/* PROFILE */
-.profile{
-  background:var(--card);
-  margin:16px;
-  padding:16px;
-  border-radius:18px;
-  box-shadow:0 4px 10px rgba(0,0,0,.1);
-  display:flex;
-  align-items:center;
-  gap:14px;
-}
-.avatar{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:#ccc;
-}
-.profile b{font-size:16px}
-
-/* LIST */
-.list{
-  margin:16px;
-}
-.item{
-  background:var(--card);
-  border-radius:16px;
-  padding:16px;
-  margin-bottom:12px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-weight:800;
-  box-shadow:0 4px 10px rgba(0,0,0,.08);
-  cursor:pointer;
-}
-.item span{
-  font-size:18px;
-}
-
-/* TOGGLE */
-.toggle{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-.switch{
-  width:46px;
-  height:26px;
-  background:#ccc;
-  border-radius:20px;
-  position:relative;
-}
-.switch::after{
-  content:"";
-  width:22px;
-  height:22px;
+.box{
   background:#fff;
-  position:absolute;
-  top:2px;
-  left:2px;
-  border-radius:50%;
-  transition:.3s;
+  margin:12px;
+  padding:16px;
+  border-radius:14px;
+  font-weight:700;
 }
-body.dark .switch{
-  background:#FFD400;
-}
-body.dark .switch::after{
-  left:22px;
-}
+.box:hover{background:#f0f0f0}
 </style>
 </head>
 
 <body>
 
-<div class="header">My Account</div>
+<h2 style="padding:12px">My Account</h2>
 
-<!-- PROFILE -->
-<div class="profile">
-  <div class="avatar"></div>
-  <div>
-    <b id="name">Guest User</b><br>
-    <small id="phone">+91 XXXXXXXX</small>
-  </div>
-</div>
+<div class="box" onclick="go('myorders.html')">📦 My Orders</div>
+<div class="box" onclick="go('profile.html')">👤 Profile</div>
+<div class="box" onclick="go('address.html')">📍 Address</div>
+<div class="box" onclick="go('support.html')">💬 Support</div>
+<div class="box" onclick="logout()">🚪 Logout</div>
 
-<!-- MENU -->
-<div class="list">
+<script type="module">
+import { initializeApp, getApps } from
+"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { getAuth, signOut } from
+"https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
 
-  <div class="item" onclick="go('myorders.html')">
-    <div>📦 Your Orders</div>
-    <span>›</span>
-  </div>
+const firebaseConfig = {
+  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
+  authDomain: "quickpress-web.firebaseapp.com",
+  projectId: "quickpress-web"
+};
 
-  <div class="item" onclick="alert('Payment methods coming soon')">
-    <div>💳 Payment Methods</div>
-    <span>›</span>
-  </div>
+const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-  <div class="item" onclick="alert('Address book coming soon')">
-    <div>🏠 Address Book</div>
-    <span>›</span>
-  </div>
-
-  <div class="item" onclick="alert('Support coming soon')">
-    <div>🆘 Help & Support</div>
-    <span>›</span>
-  </div>
-
-  <div class="item">
-    <div class="toggle">
-      🌙 Dark Mode
-      <div class="switch" onclick="toggleDark()"></div>
-    </div>
-  </div>
-
-  <div class="item" onclick="logout()">
-    <div>🚪 Logout</div>
-    <span>›</span>
-  </div>
-
-</div>
-
-<script>
-/* DARK MODE */
-function toggleDark(){
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "darkMode",
-    document.body.classList.contains("dark")
-  );
-}
-
-/* LOAD MODE */
-if(localStorage.getItem("darkMode")==="true"){
-  document.body.classList.add("dark");
-}
-
-/* LOGOUT */
-function logout(){
-  localStorage.clear();
+window.logout = async function(){
+  await signOut(auth);
+  alert("Logged out");
   location.href="index.html";
-}
+};
+
+window.go = p => location.href=p;
 </script>
 
 </body>
