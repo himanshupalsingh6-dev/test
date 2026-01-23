@@ -542,6 +542,27 @@ function goAccount(){
   location.href="account.html";
 }
 </script>
+<script>
+  const userId = localStorage.getItem("userId");
+
+  const loginBtn = document.getElementById("loginBtn");
+  const accountMenu = document.getElementById("accountMenu");
+
+  if (userId) {
+    loginBtn.style.display = "none";
+    accountMenu.style.display = "inline-block";
+  } else {
+    loginBtn.style.display = "inline-block";
+    accountMenu.style.display = "none";
+  }
+
+  function logout() {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("cart");
+    alert("Logged out successfully");
+    window.location.href = "index.html";
+  }
+</script>
 
 </body>
 </html>
