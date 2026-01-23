@@ -2,18 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Products – QuickPress</title>
+<title>QuickPress – Products</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- PRODUCTS DATA -->
-<script src="products.js"></script>
 
 <style>
 :root{
   --yellow:#FFD400;
-  --black:#111;
   --bg:#f6f7f9;
-  --card:#fff;
 }
 *{box-sizing:border-box}
 body{
@@ -22,33 +17,25 @@ body{
   background:var(--bg);
 }
 
-/* NAVBAR */
-.nav{
-  position:sticky;top:0;z-index:10;
-  background:#fff;
-  display:flex;justify-content:space-between;align-items:center;
-  padding:12px 14px;
-  box-shadow:0 2px 8px rgba(0,0,0,.1);
+/* ===== PAGE ===== */
+.page{
+  padding:18px;
 }
-.nav button{
-  border:none;background:#000;color:#fff;
-  padding:6px 12px;border-radius:20px;
-}
-.cart{
-  background:var(--yellow);
-  padding:6px 14px;border-radius:20px;
-  font-weight:900;
+h2{
+  margin-bottom:12px;
 }
 
-/* CATEGORY SLIDER */
-.cat-wrap{
-  display:flex;gap:10px;overflow-x:auto;
-  padding:12px;background:#fff;
+/* ===== CATEGORY ===== */
+.cats{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  margin-bottom:16px;
 }
 .cat{
-  padding:10px 16px;
+  padding:8px 14px;
+  background:#fff;
   border-radius:20px;
-  background:#eee;
   font-weight:800;
   cursor:pointer;
   white-space:nowrap;
@@ -57,37 +44,29 @@ body{
   background:var(--yellow);
 }
 
-/* PRODUCTS GRID */
+/* ===== PRODUCTS ===== */
 .products{
   display:grid;
   grid-template-columns:repeat(2,1fr);
-  gap:12px;
-  padding:12px;
+  gap:14px;
 }
 .card{
   background:#fff;
   border-radius:18px;
   padding:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.1);
-  animation:fade .25s ease;
-}
-@keyframes fade{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1}
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+  text-align:center;
 }
 .icon{
-  font-size:44px;
-  text-align:center;
+  font-size:42px;
 }
 .name{
   font-weight:900;
   margin-top:6px;
-  text-align:center;
 }
 .price{
-  text-align:center;
   font-weight:800;
-  margin-top:2px;
+  margin:4px 0;
 }
 .add{
   margin-top:10px;
@@ -114,63 +93,81 @@ body{
   width:30px;
   height:30px;
   border-radius:50%;
-  font-size:16px;
 }
 
-/* MOBILE */
-@media(max-width:420px){
-  .products{grid-template-columns:1fr}
+/* ===== CART BAR ===== */
+.cart-bar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  background:#fff;
+  padding:14px;
+  box-shadow:0 -2px 10px rgba(0,0,0,.15);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.cart-bar button{
+  padding:10px 16px;
+  border:none;
+  background:var(--yellow);
+  border-radius:20px;
+  font-weight:900;
 }
 </style>
 </head>
 
 <body>
-<script>
-  const customerId = localStorage.getItem("customerId");
 
-  if (!customerId) {
-    alert("Please login to continue");
-    window.location.href = "customer-login.html";
-  }
-</script>
+<div class="page">
+  <h2>Select Items</h2>
 
-<!-- NAVBAR -->
-<div class="nav">
-  <button onclick="history.back()">← Back</button>
-  <div class="cart" onclick="goCart()">₹ <span id="total">0</span></div>
+  <!-- CATEGORY -->
+  <div class="cats" id="cats"></div>
+
+  <!-- PRODUCTS -->
+  <div class="products" id="list"></div>
 </div>
 
-<!-- CATEGORY SLIDER -->
-<div class="cat-wrap" id="cats"></div>
-
-<!-- PRODUCTS -->
-<div class="products" id="list"></div>
+<!-- CART BAR -->
+<div class="cart-bar" id="cartBar" style="display:none">
+  <div><b id="cartCount">0</b> items • ₹<b id="cartTotal">0</b></div>
+  <button onclick="goCart()">View Cart</button>
+</div>
 
 <script>
-/* CART */
+/* ===== DATA ===== */
+const PRODUCTS = [
+  {id:1,name:"Shirt",price:10,cat:"Clothes",icon:"👕"},
+  {id:2,name:"Pant",price:12,cat:"Clothes",icon:"👖"},
+  {id:3,name:"Saree",price:25,cat:"Clothes",icon:"🥻"},
+  {id:4,name:"Coat",price:30,cat:"Winter",icon:"🧥"},
+  {id:5,name:"Sweater",price:20,cat:"Winter",icon:"🧶"},
+];
+
+const categories = ["All","Clothes","Winter"];
+
 let cart = JSON.parse(localStorage.getItem("cart")||"[]");
+let currentCat = "All";
 
-/* CATEGORIES */
-const categories = ["All","Shirt","Pant","Saree","Woollen","Coat","Blazer","School"];
-let currentCat = new URLSearchParams(location.search).get("cat") || "All";
-
-/* BUILD CATEGORY SLIDER */
-cats.innerHTML = categories.map(c=>
-  `<div class="cat ${c==currentCat?'active':''}" onclick="filter('${c}')">${c}</div>`
+/* ===== CATEGORY RENDER ===== */
+cats.innerHTML = categories.map(c =>
+  `<div class="cat ${c==currentCat?'active':''}" onclick="filterCat('${c}')">${c}</div>`
 ).join("");
 
-function filter(cat){
-  currentCat = cat;
+function filterCat(c){
+  currentCat=c;
   document.querySelectorAll(".cat").forEach(x=>x.classList.remove("active"));
-  [...document.querySelectorAll(".cat")].find(x=>x.innerText==cat).classList.add("active");
+  [...document.querySelectorAll(".cat")].find(x=>x.innerText==c).classList.add("active");
   render();
 }
 
-/* RENDER PRODUCTS */
+/* ===== PRODUCT RENDER ===== */
 function render(){
   list.innerHTML="";
   PRODUCTS
-    .filter(p=>currentCat=="All" || p.cat==currentCat)
+    .filter(p=>currentCat=="All"||p.cat==currentCat)
     .forEach(p=>{
       const c = cart.find(i=>i.id==p.id);
       list.innerHTML+=`
@@ -182,18 +179,18 @@ function render(){
           ${!c
             ? `<button class="add" onclick="add(${p.id})">ADD</button>`
             : `<div class="qty">
-                 <button onclick="dec(${p.id})">−</button>
-                 <b>${c.qty}</b>
-                 <button onclick="inc(${p.id})">+</button>
-               </div>`
+                <button onclick="dec(${p.id})">−</button>
+                <b>${c.qty}</b>
+                <button onclick="inc(${p.id})">+</button>
+              </div>`
           }
         </div>
       `;
     });
-  updateTotal();
+  updateCartBar();
 }
 
-/* CART FUNCTIONS */
+/* ===== CART LOGIC ===== */
 function add(id){
   const p = PRODUCTS.find(x=>x.id==id);
   cart.push({...p,qty:1});
@@ -213,10 +210,15 @@ function save(){
   localStorage.setItem("cart",JSON.stringify(cart));
   render();
 }
-function updateTotal(){
-  let t=0;
-  cart.forEach(i=>t+=i.price*i.qty);
-  total.innerText=t;
+function updateCartBar(){
+  let total=0, count=0;
+  cart.forEach(i=>{
+    total+=i.price*i.qty;
+    count+=i.qty;
+  });
+  cartBar.style.display = cart.length?"flex":"none";
+  cartTotal.innerText=total;
+  cartCount.innerText=count;
 }
 function goCart(){
   location.href="cart.html";
