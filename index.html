@@ -442,6 +442,22 @@ animateCount("qpOrders",7248);
 animateCount("qpDeliveries",6931);
 </script>
 <!-- ================= END BLOCK ================= -->
+<script>
+/* REMOVE DUPLICATE (UPPER) CUSTOMER REVIEWS */
+const reviewHeadings = document.querySelectorAll("h2");
+let found = false;
+
+reviewHeadings.forEach(h => {
+  if (h.innerText.trim() === "Customer Reviews") {
+    if (!found) {
+      // pehla (upar wala) remove
+      const section = h.parentElement;
+      section && (section.style.display = "none");
+      found = true;
+    }
+  }
+});
+</script>
 
 </body>
 </html>
