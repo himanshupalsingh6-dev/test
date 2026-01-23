@@ -562,6 +562,42 @@ document.querySelectorAll("div").forEach(div => {
   }
 });
 </script>
+<script>
+/*
+  FINAL FORCE CLEANUP
+  1) Dummy demo section
+  2) Old header bar
+*/
+
+// 1️⃣ Remove demo text section
+document.querySelectorAll("h2, h1, p").forEach(el => {
+  if (
+    el.innerText.includes("QuickPress Home Page") ||
+    el.innerText.includes("Advance software-level navbar demo")
+  ) {
+    el.parentElement.style.display = "none";
+  }
+});
+
+// 2️⃣ Remove old thin header (QuickPress + Select Location)
+document.querySelectorAll("div").forEach(div => {
+  if (
+    div.innerText &&
+    div.innerText.trim() === "⚡ QuickPress        📍 Select Location"
+  ) {
+    div.style.display = "none";
+  }
+
+  // fallback: text match
+  if (
+    div.innerText.includes("QuickPress") &&
+    div.innerText.includes("Select Location") &&
+    !div.classList.contains("nav")
+  ) {
+    div.style.display = "none";
+  }
+});
+</script>
 
 </body>
 </html>
