@@ -4,18 +4,21 @@
 <meta charset="UTF-8">
 <title>My Account – QuickPress</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <style>
 body{
   margin:0;
   font-family:system-ui;
   background:#f6f7f9;
 }
+h2{padding:14px;margin:0}
 .box{
   background:#fff;
   margin:12px;
   padding:16px;
   border-radius:14px;
-  font-weight:700;
+  font-weight:800;
+  cursor:pointer;
 }
 .box:hover{background:#f0f0f0}
 </style>
@@ -23,36 +26,22 @@ body{
 
 <body>
 
-<h2 style="padding:12px">My Account</h2>
+<h2>My Account</h2>
 
 <div class="box" onclick="go('myorders.html')">📦 My Orders</div>
 <div class="box" onclick="go('profile.html')">👤 Profile</div>
-<div class="box" onclick="go('address.html')">📍 Address</div>
-<div class="box" onclick="go('support.html')">💬 Support</div>
 <div class="box" onclick="logout()">🚪 Logout</div>
 
-<script type="module">
-import { initializeApp, getApps } from
-"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import { getAuth, signOut } from
-"https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
-  authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
-};
-
-const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
-const auth = getAuth(app);
-
-window.logout = async function(){
-  await signOut(auth);
+<script>
+function go(p){
+  location.href = p;
+}
+function logout(){
+  localStorage.removeItem("userId");
+  localStorage.removeItem("cart");
   alert("Logged out");
-  location.href="index.html";
-};
-
-window.go = p => location.href=p;
+  location.href = "index.html";
+}
 </script>
 
 </body>
