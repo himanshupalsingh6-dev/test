@@ -8,9 +8,8 @@
 <style>
 :root{
   --yellow:#FFD400;
-  --black:#111;
   --bg:#f6f7f9;
-  --card:#fff;
+  --black:#111;
 }
 *{box-sizing:border-box}
 body{
@@ -20,199 +19,22 @@ body{
   color:#000;
 }
 
-/* ================= NAV ================= */
-.nav{
-  position:sticky;top:0;z-index:20;
-  background:#fff;
-  padding:12px 14px;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  box-shadow:0 2px 10px rgba(0,0,0,.1);
-}
-.logo{
-  font-size:20px;
-  font-weight:900;
-}
-.loc{
-  font-size:13px;
-  font-weight:700;
-  color:#555;
-}
-
-/* ================= HERO SLIDER ================= */
-.hero{
-  overflow:hidden;
-  position:relative;
-}
-.slides{
-  display:flex;
-  transition:.4s;
-}
-.slide{
-  min-width:100%;
-  padding:28px 18px;
-}
-.slide h1{
-  font-size:28px;
-  font-weight:900;
-  line-height:1.2;
-}
-.slide span{
-  background:var(--yellow);
-  padding:2px 8px;
-  border-radius:6px;
-}
-.slide p{
-  margin-top:8px;
-  color:#444;
-}
-.slide button{
-  margin-top:14px;
-  width:100%;
-  padding:14px;
-  border:none;
-  background:var(--yellow);
-  border-radius:14px;
-  font-weight:900;
-}
-
-/* ================= STATS ================= */
-.stats{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-  padding:18px;
-}
-.stat{
-  background:#fff;
-  border-radius:16px;
-  padding:14px;
-  text-align:center;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-}
-.stat b{font-size:18px}
-
-/* ================= SERVICES ================= */
-.section{
-  padding:18px;
-}
-.section h2{
-  margin-bottom:12px;
-}
-.services{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-.card{
-  background:#fff;
-  border-radius:18px;
-  padding:16px;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-  text-align:center;
-}
-.card div{font-size:36px}
-
-/* ================= REVIEWS ================= */
-.reviews{
-  display:flex;
-  gap:12px;
-  overflow-x:auto;
-}
-.review{
-  min-width:220px;
-  background:#fff;
-  padding:14px;
-  border-radius:16px;
-  box-shadow:0 6px 14px rgba(0,0,0,.08);
-}
-.review b{display:block;margin-bottom:4px}
-
-/* ================= FAQ ================= */
-.faq{
-  background:#fff;
-  border-radius:16px;
-  padding:14px;
-  margin-bottom:10px;
-}
-.q{
-  font-weight:900;
-  cursor:pointer;
-}
-.a{
-  display:none;
-  margin-top:6px;
-  color:#444;
-}
-
-/* ================= BOTTOM NAV ================= */
-.bottom{
-  position:fixed;
-  bottom:0;left:0;right:0;
-  background:#fff;
-  display:flex;
-  justify-content:space-around;
-  padding:10px 0;
-  box-shadow:0 -2px 10px rgba(0,0,0,.1);
-}
-.bottom div{
-  text-align:center;
-  font-size:12px;
-  font-weight:700;
-}
-.bottom span{display:block;font-size:18px}
-
-.footer{
-  padding:60px 18px 90px;
-  text-align:center;
-  color:#555;
-  font-size:14px;
-}
-</style>
-</head>
-
-<body>
-
-<!-- NAV -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>QuickPress – Advance Navbar</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<style>
-:root{
-  --yellow:#FFD400;
-  --black:#111;
-  --bg:#f6f7f9;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
-}
-
 /* ================= NAVBAR ================= */
 .nav{
   position:sticky;
   top:0;
   z-index:1000;
   background:#fff;
+  padding:12px 16px;
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:12px 16px;
-  box-shadow:0 2px 10px rgba(0,0,0,.12);
+  box-shadow:0 2px 10px rgba(0,0,0,.1);
 }
-
-/* LEFT */
 .nav-left{
   display:flex;
   align-items:center;
-  gap:14px;
+  gap:12px;
 }
 .logo{
   font-size:20px;
@@ -224,8 +46,6 @@ body{
   color:#555;
   cursor:pointer;
 }
-
-/* LINKS */
 .nav-links{
   display:flex;
   align-items:center;
@@ -237,24 +57,16 @@ body{
   color:#000;
   font-size:14px;
 }
-
-/* CART */
 .cart{
   background:var(--yellow);
   padding:6px 14px;
   border-radius:20px;
   font-weight:900;
-  cursor:pointer;
 }
-
-/* DROPDOWN */
 .dropdown{
   position:relative;
   font-weight:800;
   cursor:pointer;
-}
-.dropdown span{
-  font-size:14px;
 }
 .dropdown-menu{
   display:none;
@@ -264,27 +76,16 @@ body{
   background:#fff;
   border-radius:14px;
   box-shadow:0 10px 30px rgba(0,0,0,.15);
-  min-width:200px;
   overflow:hidden;
+  min-width:180px;
 }
 .dropdown-menu a{
   display:block;
   padding:10px 14px;
-  text-decoration:none;
-  color:#000;
-  font-size:14px;
-}
-.dropdown-menu a:hover{
-  background:#f3f3f3;
 }
 .dropdown:hover .dropdown-menu{
   display:block;
 }
-
-/* PROFILE */
-.profile{display:none}
-
-/* HAMBURGER */
 .burger{
   display:none;
   font-size:22px;
@@ -303,15 +104,72 @@ body{
     flex-direction:column;
     align-items:flex-start;
     padding:16px;
-    gap:12px;
+    gap:14px;
     transform:translateX(100%);
     transition:.3s;
     box-shadow:-4px 0 20px rgba(0,0,0,.2);
   }
-  .nav-links.show{
-    transform:translateX(0);
-  }
+  .nav-links.show{transform:translateX(0)}
   .burger{display:block}
+}
+
+/* ================= HERO ================= */
+.hero{
+  padding:32px 18px;
+}
+.hero h1{
+  font-size:30px;
+  font-weight:900;
+}
+.hero span{
+  background:var(--yellow);
+  padding:2px 8px;
+  border-radius:6px;
+}
+.hero p{
+  margin-top:8px;
+  color:#444;
+}
+.hero button{
+  margin-top:18px;
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:var(--yellow);
+  font-weight:900;
+}
+
+/* ================= STATS ================= */
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  padding:18px;
+}
+.stat{
+  background:#fff;
+  border-radius:16px;
+  padding:14px;
+  text-align:center;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
+}
+
+/* ================= SERVICES ================= */
+.section{
+  padding:18px;
+}
+.services{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+.card{
+  background:#fff;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
 }
 </style>
 </head>
@@ -320,7 +178,6 @@ body{
 
 <!-- ================= NAVBAR ================= -->
 <div class="nav">
-
   <div class="nav-left">
     <div class="logo">⚡ QuickPress</div>
     <div class="location">📍 Select Location</div>
@@ -332,271 +189,53 @@ body{
     <a href="#pricing">Pricing</a>
     <a href="products.html">Order</a>
 
-    <a href="myorders.html" class="auth-only">My Orders</a>
-
-    <!-- MORE DROPDOWN -->
     <div class="dropdown">
       <span>More ▾</span>
       <div class="dropdown-menu">
         <a href="#">Partner with Us</a>
-        <a href="#">Become Delivery Partner</a>
+        <a href="#">Delivery Partner</a>
         <a href="#">Help & Support</a>
-        <a href="#">About Us</a>
+        <a href="#">About</a>
         <a href="#">Contact</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Terms & Conditions</a>
       </div>
     </div>
 
-    <!-- LOGIN -->
-    <a href="customer-login.html" id="loginBtn">Login</a>
-
-    <!-- PROFILE -->
-    <div class="dropdown profile" id="profileMenu">
-      <span>👤 Account ▾</span>
-      <div class="dropdown-menu">
-        <a href="#">Profile</a>
-        <a href="myorders.html">My Orders</a>
-        <a href="#" onclick="logout()">Logout</a>
-      </div>
-    </div>
-
-    <div class="cart" onclick="goCart()">🛒 <span id="cartCount">0</span></div>
+    <a href="customer-login.html">Login</a>
+    <div class="cart">🛒 0</div>
   </div>
 
   <div class="burger" onclick="toggleMenu()">☰</div>
 </div>
 
-<!-- ================= PAGE DUMMY CONTENT ================= -->
-<div style="padding:40px">
-  <h2>QuickPress Home Page</h2>
-  <p>Advance software-level navbar demo.</p>
-</div>
-
-<!-- ================= JS LOGIC ================= -->
-<script>
-/* -------- LOGIN STATE (SIMULATION) -------- */
-// later Firebase Auth se replace hoga
-const isLoggedIn = false; // true / false
-
-/* -------- NAV STATE -------- */
-document.querySelectorAll(".auth-only").forEach(el=>{
-  el.style.display = isLoggedIn ? "block" : "none";
-});
-document.getElementById("profileMenu").style.display =
-  isLoggedIn ? "block" : "none";
-document.getElementById("loginBtn").style.display =
-  isLoggedIn ? "none" : "block";
-
-/* -------- MOBILE MENU -------- */
-function toggleMenu(){
-  document.getElementById("navLinks").classList.toggle("show");
-}
-
-/* -------- CART COUNT -------- */
-let cart = JSON.parse(localStorage.getItem("cart")||"[]");
-document.getElementById("cartCount").innerText = cart.length;
-
-/* -------- NAV ACTIONS -------- */
-function goCart(){
-  location.href="cart.html";
-}
-function logout(){
-  alert("Logged out");
-  location.href="index.html";
-}
-</script>
-
-</body>
-</html>
-
-<div class="nav">
-  <div class="logo">⚡ QuickPress</div>
-  <div class="loc">📍 Select Location</div>
-</div>
-
-<!-- HERO -->
+<!-- ================= HERO ================= -->
 <div class="hero">
-  <div class="slides" id="slides">
-    <div class="slide">
-      <h1>Clothes Ironed in <span>10 Minutes</span></h1>
-      <p>Fast ironing & doorstep delivery</p>
-      <button onclick="order()">Order Now</button>
-    </div>
-    <div class="slide">
-      <h1>Professional Press <span>At Home</span></h1>
-      <p>No more waiting, no more wrinkles</p>
-      <button onclick="order()">Get Started</button>
-    </div>
-  </div>
+  <h1>Professional Press <span>At Home</span></h1>
+  <p>No more waiting, no more wrinkles</p>
+  <button onclick="location.href='products.html'">Get Started</button>
 </div>
 
-<!-- STATS -->
+<!-- ================= STATS ================= -->
 <div class="stats">
   <div class="stat"><b>4.9 ★</b><br>Rating</div>
   <div class="stat"><b>7K+</b><br>Orders</div>
   <div class="stat"><b>25+</b><br>Partners</div>
 </div>
 
-<!-- SERVICES -->
-<div class="section">
-<h2>Services</h2>
-<div class="services">
-  <div class="card"><div>👕</div>Shirts</div>
-  <div class="card"><div>👖</div>Pants</div>
-  <div class="card"><div>🥻</div>Saree</div>
-  <div class="card"><div>🧥</div>Coat</div>
-</div>
-</div>
-
-<!-- REVIEWS -->
-<div class="section">
-<h2>Customer Reviews</h2>
-<div class="reviews">
-  <div class="review"><b>Rohit</b>Fast service 🔥</div>
-  <div class="review"><b>Anjali</b>Very convenient</div>
-  <div class="review"><b>Amit</b>Best ironing service</div>
-</div>
-</div>
-
-<!-- FAQ -->
-<div class="section">
-<h2>FAQs</h2>
-<div class="faq">
-  <div class="q" onclick="toggle(this)">How fast is delivery?</div>
-  <div class="a">Within 10–15 minutes.</div>
-</div>
-<div class="faq">
-  <div class="q" onclick="toggle(this)">Is pickup free?</div>
-  <div class="a">Yes, doorstep pickup & delivery.</div>
-</div>
-</div>
-
-<div class="footer">
-© 2026 QuickPress • Press • Pack • Deliver
-</div>
-
-<!-- BOTTOM NAV -->
-<div class="bottom">
-  <div onclick="order()"><span>🛒</span>Order</div>
-  <div onclick="login()"><span>👤</span>Login</div>
+<!-- ================= SERVICES ================= -->
+<div class="section" id="services">
+  <h2>Services</h2>
+  <div class="services">
+    <div class="card">👕 Shirts</div>
+    <div class="card">👖 Pants</div>
+    <div class="card">🥻 Saree</div>
+    <div class="card">🧥 Coat</div>
+  </div>
 </div>
 
 <script>
-/* SLIDER */
-let i=0;
-setInterval(()=>{
-  i=(i+1)%2;
-  slides.style.transform=`translateX(-${i*100}%)`;
-},3000);
-
-/* FAQ */
-function toggle(x){
-  const a=x.nextElementSibling;
-  a.style.display=a.style.display=="block"?"none":"block";
+function toggleMenu(){
+  document.getElementById("navLinks").classList.toggle("show");
 }
-
-function order(){location.href="products.html"}
-function login(){location.href="customer-login.html"}
-</script>
-<script>
-/*
-  REMOVE / HIDE OLD HEADER
-  (jo duplicate aa raha hai)
-*/
-
-// possible old header selectors
-const oldHeaders = document.querySelectorAll(
-  "header, .header, .top-header, .site-header, .old-header"
-);
-
-oldHeaders.forEach(h => {
-  // agar ye advance navbar nahi hai
-  if (!h.classList.contains("nav")) {
-    h.style.display = "none";
-  }
-});
-
-/*
-  EXTRA SAFETY:
-  agar pehla element duplicate navbar ho
-*/
-const navs = document.querySelectorAll(".nav");
-if (navs.length > 1) {
-  for (let i = 0; i < navs.length - 1; i++) {
-    navs[i].style.display = "none";
-  }
-}
-</script>
-<script>
-/*
-  FORCE REMOVE OLD HEADER / TOP BAR
-  (QuickPress + Select Location wala)
-*/
-
-// 1️⃣ header tag agar ho
-document.querySelectorAll("header").forEach(h => {
-  h.style.display = "none";
-});
-
-// 2️⃣ top-level div jo pehle aata hai (old header hota hai)
-const bodyChildren = document.body.children;
-if (bodyChildren.length > 0) {
-  const first = bodyChildren[0];
-
-  // agar wo advance navbar nahi hai
-  if (!first.classList.contains("nav")) {
-    first.style.display = "none";
-  }
-}
-
-// 3️⃣ extra safety: text-based match
-document.querySelectorAll("div").forEach(div => {
-  if (
-    div.innerText &&
-    div.innerText.includes("QuickPress") &&
-    div.innerText.includes("Select Location") &&
-    !div.classList.contains("nav")
-  ) {
-    div.style.display = "none";
-  }
-});
-</script>
-<script>
-/*
-  FINAL FORCE CLEANUP
-  1) Dummy demo section
-  2) Old header bar
-*/
-
-// 1️⃣ Remove demo text section
-document.querySelectorAll("h2, h1, p").forEach(el => {
-  if (
-    el.innerText.includes("QuickPress Home Page") ||
-    el.innerText.includes("Advance software-level navbar demo")
-  ) {
-    el.parentElement.style.display = "none";
-  }
-});
-
-// 2️⃣ Remove old thin header (QuickPress + Select Location)
-document.querySelectorAll("div").forEach(div => {
-  if (
-    div.innerText &&
-    div.innerText.trim() === "⚡ QuickPress        📍 Select Location"
-  ) {
-    div.style.display = "none";
-  }
-
-  // fallback: text match
-  if (
-    div.innerText.includes("QuickPress") &&
-    div.innerText.includes("Select Location") &&
-    !div.classList.contains("nav")
-  ) {
-    div.style.display = "none";
-  }
-});
 </script>
 
 </body>
