@@ -6,135 +6,112 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-:root{
-  --yellow:#FFD400;
-  --bg:#f6f7f9;
-}
-*{box-sizing:border-box}
 body{
   margin:0;
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto;
-  background:var(--bg);
+  background:#f6f7f9;
 }
 .header{
-  padding:16px;
   background:#fff;
-  font-size:20px;
-  font-weight:900;
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
   box-shadow:0 2px 10px rgba(0,0,0,.1);
 }
-.page{padding:16px}
+.header h2{margin:0}
+.logout{
+  color:red;
+  font-weight:800;
+  cursor:pointer;
+}
+.page{padding:18px}
 .card{
   background:#fff;
   border-radius:16px;
   padding:14px;
   margin-bottom:14px;
-  box-shadow:0 6px 14px rgba(0,0,0,.1);
+  box-shadow:0 6px 14px rgba(0,0,0,.08);
 }
-.small{font-size:13px;color:#555}
 .row{
   display:flex;
   justify-content:space-between;
   margin-bottom:6px;
+  font-size:14px;
 }
-select,button{
-  padding:8px 12px;
-  border-radius:10px;
-  border:1px solid #ddd;
-  font-weight:700;
+.items{
+  margin-top:8px;
+  font-size:13px;
+  color:#444;
 }
-button{
-  background:var(--yellow);
-  border:none;
-  cursor:pointer;
-}
-button:disabled{opacity:.6}
 .status{
-  display:inline-block;
-  padding:4px 10px;
-  border-radius:12px;
-  font-size:12px;
-  font-weight:900;
+  margin-top:10px;
 }
-.Placed{background:#ffe58a}
-.Ready{background:#b7eb8f}
-.Delivered{background:#91d5ff}
-.Cancelled{background:#ffccc7}
-.logout{
-  text-align:center;
-  margin:20px;
-  font-weight:900;
-  color:red;
-  cursor:pointer;
+select{
+  padding:6px;
+  border-radius:8px;
 }
-.center{
+.empty{
   text-align:center;
-  margin-top:60px;
-  color:#555;
+  color:#666;
+  margin-top:80px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="header">🛠️ QuickPress Admin Panel</div>
-<div class="page" id="orders"></div>
-<div class="logout" onclick="logout()">🚪 Logout</div>
+<div class="header">
+  <h2>⚡ QuickPress Admin</h2>
+  <div class="logout" onclick="logout()">Logout</div>
+</div>
+
+<div class="page">
+  <div id="orders"></div>
+</div>
 
 <!-- ================= FIREBASE ================= -->
 <script type="module">
-import { initializeApp, getApps } from
-"https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from
-"https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
-import {
-  getFirestore,
-  collection,
-  getDocs,
-  doc,
-  updateDoc,
-  orderBy,
-  query
-} from
-"https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+import { 
+  getAuth, 
+  onAuthStateChanged, 
+  signOut 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-auth.js";
+import { 
+  getFirestore, 
+  collection, 
+  query, 
+  orderBy, 
+  getDocs, 
+  doc, 
+  updateDoc 
+} from "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js";
 
-/* FIREBASE CONFIG */
+/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyAWTOu3JBhg3JuZg6snAxhnf_XFhLhLkbc",
   authDomain: "quickpress-web.firebaseapp.com",
-  projectId: "quickpress-web"
+  projectId: "quickpress-web",
+  storageBucket: "quickpress-web.appspot.com",
+  messagingSenderId: "909067547966",
+  appId: "1:909067547966:web:fda5e47e1e58ca7ae7a86f"
 };
 
+/* SAFE INIT */
 const app = getApps().length ? getApps()[0] : initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
 const ordersDiv = document.getElementById("orders");
 
-/* ================= ADMIN AUTH GUARD ================= */
-onAuthStateChanged(auth, async user=>{
+/* 🔐 ADMIN AUTH CHECK */
+onAuthStateChanged(auth, user => {
   if(!user){
-    location.href="customer-login.html";
-    return;
+    location.href = "admin-login.html";
+  }else{
+    loadOrders();
   }
-
-  // 🔐 CHECK ADMIN ROLE
-  const adminRef = doc(db,"admins",user.uid);
-  const adminSnap = await import(
-    "https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore.js"
-  ).then(m => m.getDoc(adminRef));
-
-  if(!adminSnap.exists()){
-    alert("Access denied");
-    location.href="index.html";
-    return;
-  }
-
-  loadOrders();
 });
 
 /* ================= LOAD ORDERS ================= */
@@ -142,97 +119,76 @@ async function loadOrders(){
   ordersDiv.innerHTML = "Loading orders...";
 
   try{
-    const q = query(
-      collection(db,"orders"),
-      orderBy("createdAt","desc")
-    );
+    const q = query(collection(db,"orders"), orderBy("createdAt","desc"));
     const snap = await getDocs(q);
 
     if(snap.empty){
-      ordersDiv.innerHTML =
-        `<div class="center">No orders found</div>`;
+      ordersDiv.innerHTML = `<div class="empty">No orders found</div>`;
       return;
     }
 
     ordersDiv.innerHTML = "";
 
-    snap.forEach(d=>{
+    snap.forEach(d => {
       const o = d.data();
 
-      const items = Array.isArray(o.items)
-        ? o.items
-        : Object.values(o.items || {});
-
-      const itemsHtml = items.map(i=>
-        `<div class="small">• ${i.name} × ${i.qty}</div>`
-      ).join("");
+      /* SAFE ITEMS HANDLING */
+      let itemsHTML = "";
+      if(Array.isArray(o.items)){
+        itemsHTML = o.items.map(i =>
+          `• ${i.name} × ${i.qty} (₹${i.price})`
+        ).join("<br>");
+      }else if(typeof o.items === "object"){
+        itemsHTML = `• ${o.items.name} × ${o.items.qty} (₹${o.items.price})`;
+      }else{
+        itemsHTML = "No items";
+      }
 
       ordersDiv.innerHTML += `
         <div class="card">
-          <div class="row">
-            <b>Order ID</b>
-            <span class="small">${d.id}</span>
-          </div>
+          <div class="row"><b>Order ID</b><span>${d.id}</span></div>
+          <div class="row"><b>User</b><span>${o.userId || "-"}</span></div>
+          <div class="row"><b>Total</b><span>₹${o.grandTotal || 0}</span></div>
+          <div class="row"><b>Status</b><span>${o.status}</span></div>
 
-          <div class="small">User: ${o.userId}</div>
-          <div class="small">Address: ${o.address || "-"}</div>
+          <div class="items">${itemsHTML}</div>
 
-          ${itemsHtml}
-
-          <div class="row">
-            <b>Total</b>
-            <span>₹${o.grandTotal}</span>
-          </div>
-
-          <div class="row">
-            <span class="status ${o.status}">${o.status}</span>
-          </div>
-
-          <div class="row">
-            <select id="st-${d.id}">
+          <div class="status">
+            <select onchange="updateStatus('${d.id}', this.value)">
               <option ${o.status==="Placed"?"selected":""}>Placed</option>
               <option ${o.status==="Ready"?"selected":""}>Ready</option>
               <option ${o.status==="Delivered"?"selected":""}>Delivered</option>
               <option ${o.status==="Cancelled"?"selected":""}>Cancelled</option>
             </select>
-
-            <button onclick="updateStatus('${d.id}')">
-              Update
-            </button>
           </div>
         </div>
       `;
     });
 
-  }catch(e){
-    console.error(e);
-    ordersDiv.innerHTML =
-      `<div class="center">Failed to load orders</div>`;
+  }catch(err){
+    console.error(err);
+    ordersDiv.innerHTML = `<div class="empty">Failed to load orders</div>`;
   }
 }
 
 /* ================= UPDATE STATUS ================= */
-window.updateStatus = async function(orderId){
-  const sel = document.getElementById("st-"+orderId);
-  const status = sel.value;
-
+window.updateStatus = async function(id, status){
   try{
-    await updateDoc(doc(db,"orders",orderId),{
-      status: status
-    });
-    alert("Status updated to " + status);
+    await updateDoc(doc(db,"orders",id),{ status });
+    alert("Status updated");
   }catch(e){
     alert("Update failed");
-    console.error(e);
   }
 };
 
 /* ================= LOGOUT ================= */
 window.logout = async function(){
   await signOut(auth);
-  location.href="index.html";
+  location.href = "admin-login.html";
 };
 </script>
 
 </body>
 </html>
+
+ 
